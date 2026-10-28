@@ -55,7 +55,7 @@ const result = runHeadless({
   onYear: (m) => {
     console.log(
       `year ${String(m.year).padStart(3)}  tick ${m.tick}  hash ${m.hash.toString(16).padStart(8, '0')}  nations ${m.living}  ` +
-        `formations ${m.formations}  flipped ${m.cellsFlipped}  tick ms mean ${m.tickMs.mean.toFixed(4)} p95 ${m.tickMs.p95.toFixed(4)}  (${(m.wallMs / 1000).toFixed(2)} s)`,
+        `formations ${m.formations}  flipped ${m.cellsFlipped}  carrier-sunk ${m.carrierSunk.toFixed(1)}  tick ms mean ${m.tickMs.mean.toFixed(4)} p95 ${m.tickMs.p95.toFixed(4)}  (${(m.wallMs / 1000).toFixed(2)} s)`,
     );
     if (!m.systems) return;
     const total = m.systems.reduce((a, s) => a + s.ms, 0);

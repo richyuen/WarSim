@@ -182,6 +182,13 @@ export const EventKind = {
    * among the living nations that day (1: the largest), (x, y) = its capital.
    */
   NuclearPower: 62,
+  /**
+   * A carrier's wings sank ships (PLAN 7.154a; critic run 17 counted none sunk from the air): a = the carrier's
+   * nation, b = the ships, (x, y) = where. Out of a sea battle (a deck wing's own strike, `strikes`) the ships its
+   * bombs sank; in one (`navalCombatSystem`) the ships the hour's fire sank, each shared by the damage its wings'
+   * bombs did of it (a fraction). Not logged: the headless report sums b (`carrierSunk`).
+   */
+  CarrierSunk: 63,
 } as const;
 export type EventKind = (typeof EventKind)[keyof typeof EventKind];
 

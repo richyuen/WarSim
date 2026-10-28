@@ -81,6 +81,10 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   From 7.151 (ADR-746): with the decks re-manned, on 1411–1420 × 20 transports at year 20 0.82 × and armed ships afloat
   0.77 × HEAD's (each lower on 6 of 10), sea battles 0.99 ×; the wings' gold came from the navy's months
   (`docs/evidence/7.151/at.md`).
+  - [x] 7.154a A carrier's strike out of a sea battle has its ticker row ("Carrier strike ashore: Japan on China", […]
+  - [ ] 7.154b The sea battles: in years 2–20 at least 1.25 × HEAD's on 1431–1440 × 20, ships sunk at sea by any
+    means and transports at year 20 not below HEAD's. Read first, on HEAD saves, where the fleets at war that meet no
+    enemy are (ADR-742 stands: the lever is not the wings); a rule only with a cause that read names.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

@@ -302,6 +302,13 @@ export interface Snapshot {
    */
   seas: Float32Array;
   /**
+   * A carrier's strikes out of a sea battle (PLAN 7.154a), RAID_STRIDE each (`worker/carrierRaids`): [kx, ky, tx,
+   * ty, by, on, ashore, fleet, mx, my, mw, mh]: the carrier's fleet's place, its target's, the carrier's nation, the
+   * target's, 1 when the target is on land, the fleet's id; the middle of the fleet and the target and the cells
+   * between them, east-west and north-south (its row's frame).
+   */
+  raids: Float32Array;
+  /**
    * The sorties in the air (PLAN 5.7a), SORTIE_STRIDE each: [bx, by, tx, ty, launch, kmh, km,
    * over, nation, aircraft, role]: a sortie as `shared/sorties` has it, its launch as hours from
    * the snapshot's tick (so that a float holds it to the second), its wing's nation and aircraft,
@@ -759,6 +766,8 @@ export interface OrderNews {
 
 /** Numbers per sea battle in a snapshot's `seas` (PLAN 4.10b). */
 export const SEA_STRIDE = 24;
+/** Numbers per carrier strike out of a sea battle in a snapshot's `raids` (PLAN 7.154a). */
+export const RAID_STRIDE = 12;
 /** A sortie in a snapshot (PLAN 5.7a): [bx, by, tx, ty, launch, kmh, km, over, nation, aircraft, role]. */
 export const SORTIE_STRIDE = 11;
 /** A sortie's role, by its aircraft's class (PLAN 5.7a): what the page draws. */

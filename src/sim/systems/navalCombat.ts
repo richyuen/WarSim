@@ -677,6 +677,8 @@ export function navalCombatSystem(world: World): void {
     const nationOf = new Map(battle.fleets.map((id) => [id, f.nation[id]!]));
 
     const pending = new Map<number, number>();
+    // Of it, what carriers' wings did, by element and the carrier's nation (PLAN 7.154a, `CarrierSunk`).
+    const fromAir = new Map<number, Map<number, number>>();
     // Each side's screen: its destroyers and its other surface ships alive at the hour's start.
     const screenOf = new Map<number, number>();
     const screen = (n: number): number => {
@@ -786,7 +788,12 @@ export function navalCombatSystem(world: World): void {
             const t = pick(table, s, SALT_CARRIER);
             const ut = units[ec.unit[t]!]!;
             const dmg = (ec.strength[s]! * shipEffectiveness(us, ut) * NAVAL_STRIKE_FIRE * buffAtk) / defOf(t) / ut.hpPerUnit;
-            if (dmg > 0) pending.set(t, (pending.get(t) ?? 0) + dmg);
+            if (dmg > 0) {
+              pending.set(t, (pending.get(t) ?? 0) + dmg);
+              const by = fromAir.get(t) ?? new Map<number, number>();
+              by.set(f.nation[wing]!, (by.get(f.nation[wing]!) ?? 0) + dmg);
+              fromAir.set(t, by);
+            }
             struck.add(ec.formation[t]!);
           }
           // Its bombs on the fleets it strikes, for the page (PLAN 7.35a; as a strike's, PLAN 5.9):
@@ -801,7 +808,14 @@ export function navalCombatSystem(world: World): void {
     // The fleets under fire this hour (PLAN 7.31): one with no weapon breaks off only once hit.
     const hit = new Set<number>();
     for (const t of pending.keys()) hit.add(ec.formation[t]!);
-    for (const t of [...pending.keys()].sort((p, q) => p - q)) applyLoss(world, t, pending.get(t)!);
+    // Ships sunk by carriers' wings, by nation: a ship lost in the hour shared by the damage each did of it.
+    const airSunk = new Map<number, number>();
+    for (const t of [...pending.keys()].sort((p, q) => p - q)) {
+      const lost = applyLoss(world, t, pending.get(t)!);
+      const by = fromAir.get(t);
+      if (lost > 0 && by) for (const [n, dmg] of by) airSunk.set(n, (airSunk.get(n) ?? 0) + (lost * dmg) / pending.get(t)!);
+    }
+    for (const [n, ships] of [...airSunk].sort((a, b) => a[0] - b[0])) world.out.emit(world.tick, EventKind.CarrierSunk, n, ships, rec.x, rec.y);
     for (const id of battle.fleets) {
       settleFormation(world, id);
       const lost = before.get(id)! - shipsOf(world, id);

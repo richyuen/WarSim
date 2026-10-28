@@ -91,11 +91,18 @@ export function App({
   const seaBattles = [...all.filter((b) => b.pair !== null), ...all.filter((b) => b.pair === null && b.strike !== null), ...all.filter((b) => b.pair === null && b.strike === null && b.closing !== null)];
   const seaKey = (b: { x: number; y: number; a: number; b: number }): string => `${b.a}-${b.b}-${Math.round(b.x)}-${Math.round(b.y)}`;
   const nameOfSide = (n: number): string => displayName(byId.get(n)?.name ?? '?');
-  const seas = seaBattles.map((b) => ({
+  const battleRows = seaBattles.map((b) => ({
     key: seaKey(b),
     kind: b.pair ? ('pair' as const) : b.strike ? ('strike' as const) : ('closing' as const),
     text: b.pair ? t('ticker.seaBattle', { a: nameOfSide(b.a), b: nameOfSide(b.b) }) : b.strike ? t('ticker.carrierStrike', { a: nameOfSide(b.strike.by), b: nameOfSide(b.strike.by === b.a ? b.b : b.a) }) : t('ticker.seaClosing', { a: nameOfSide(b.a), b: nameOfSide(b.b) }),
   }));
+  // A carrier's strikes out of a sea battle (PLAN 7.154a; critic run 17: one ashore had no row), after the
+  // battles' own strikes and before the fleets closing: by the carrier's nation and its target's.
+  const raids = hud.carrierRaids.value;
+  const raidKey = (r: { fleet: number }): string => `cv-${r.fleet}`;
+  const raidRows = raids.map((r) => ({ key: raidKey(r), kind: 'raid' as const, text: t(r.ashore ? 'ticker.carrierStrikeAshore' : 'ticker.carrierStrike', { a: nameOfSide(r.by), b: nameOfSide(r.on) }) }));
+  const firstClosing = battleRows.findIndex((r) => r.kind === 'closing');
+  const seas = firstClosing < 0 ? [...battleRows, ...raidRows] : [...battleRows.slice(0, firstClosing), ...raidRows, ...battleRows.slice(firstClosing)];
   const lastOrder = formationTitle ? orderNews.filter((n) => n.id === hud.formation.value).at(-1) : undefined;
   return (
     <>
@@ -143,6 +150,13 @@ export function App({
           orders={orders}
           seas={seas}
           onSea={(key) => {
+            // A carrier's strike out of a battle (PLAN 7.154a): its fleet and its target, framed as a battle's strike.
+            const r = raids.find((s) => raidKey(s) === key);
+            if (r) {
+              const k = r.both;
+              hud.onShowSeaBattle(k.x, k.y, [Math.max(STRIKE_VIEW_CELLS, k.w + 2 * STRIKE_MARGIN), Math.max(STRIKE_VIEW_CELLS, k.h + 2 * STRIKE_MARGIN)]);
+              return;
+            }
             const b = seaBattles.find((s) => seaKey(s) === key);
             // The pair that fights (PLAN 7.10b): its nearest two fleets at war with each other and
             // SEA_PAIR_MARGIN cells about them, clear of the panels, near enough for their fire to

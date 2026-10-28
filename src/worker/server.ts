@@ -34,6 +34,7 @@ import { airbaseRoom } from '../sim/data/airbases';
 import { nearestWingBase } from '../sim/placeForces';
 import { Refusal } from '../shared/commands';
 import { sortieEnd } from '../shared/sorties';
+import { carrierRaids } from './carrierRaids';
 import {
   BLOCK_STRIDE,
   FormationFlag,
@@ -1719,6 +1720,7 @@ export class SimServer {
       formations: { count: fc, id: fid, generation: fgen, nation: fnat, x: fx, y: fy, prevX: fpx, prevY: fpy, block: fblock, facing: ffacing, strength: fstr, template: ftpl, flags: fflags, target: ftarget, enemy: fenemy, wayStart: fwayStart, way: fway },
       majors,
       seas,
+      raids: Float32Array.from(carrierRaids(world)),
       sorties,
       elements,
       events: { count: ec, data: events, dropped: this.droppedEvents },

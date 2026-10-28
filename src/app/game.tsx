@@ -68,6 +68,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     hud.onShowPlace = (x, y) => view.showPlace(x, y);
     // The sea battles going on, for the ticker (PLAN 4.10b).
     view.onSeaBattles = (b) => (hud.seaBattles.value = b);
+    view.onCarrierRaids = (r) => (hud.carrierRaids.value = r);
     // Sea control's legend (PLAN 4.10c): its holders, and the zone under the cursor.
     view.onSeaHolders = (h) => (hud.seaHolders.value = h);
     view.onSeaHover = (z) => (hud.seaHover.value = z);

@@ -64,6 +64,8 @@ export interface YearMetrics {
   /** Cells whose controller changed during the year. */
   cellsFlipped: number;
   events: Record<string, number>;
+  /** Ships sunk by carriers' wings in the year, in a sea battle or out of one (PLAN 7.154a: the sum of `CarrierSunk`'s b). */
+  carrierSunk: number;
   tickMs: { mean: number; p95: number; max: number };
   wallMs: number;
   /** With `profile`: every system, in tick order. */
@@ -135,6 +137,7 @@ export function runHeadless(opts: HeadlessOptions): HeadlessResult {
     const y0 = now();
     const before = world.cells.controller.slice();
     const events: Record<string, number> = {};
+    let carrierSunk = 0;
     if (prof) for (const a of [prof.ms, prof.max, prof.slow, prof.slowMs]) a.fill(0);
     for (let t = 0; t < TICKS_PER_YEAR; t++) {
       const t0 = now();
@@ -143,6 +146,7 @@ export function runHeadless(opts: HeadlessOptions): HeadlessResult {
         for (let i = 0; i < ev.length; i += 6) {
           const name = EVENT_NAMES[ev[i + 1]!] ?? `kind${ev[i + 1]}`;
           events[name] = (events[name] ?? 0) + 1;
+          if (ev[i + 1] === EventKind.CarrierSunk) carrierSunk += ev[i + 3]!;
         }
         ev.length = 0;
         w.out.fires.length = 0;
@@ -164,6 +168,7 @@ export function runHeadless(opts: HeadlessOptions): HeadlessResult {
       formations: world.formations.count,
       cellsFlipped: flipped,
       events,
+      carrierSunk,
       tickMs: { mean: sum / TICKS_PER_YEAR, p95: sorted[Math.floor(0.95 * TICKS_PER_YEAR)]!, max: sorted[TICKS_PER_YEAR - 1]! },
       wallMs: now() - y0,
       ...(prof ? { systems: prof.names.map((name, i) => ({ name, ms: prof.ms[i]! / TICKS_PER_YEAR, max: prof.max[i]!, slow: prof.slow[i]!, slowMs: prof.slowMs[i]! / TICKS_PER_YEAR })) } : {}),

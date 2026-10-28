@@ -12,7 +12,7 @@ import type { Command } from '../shared/commands';
 import type { ShownAlert } from '../shared/nukeAlert';
 import type { NationStats, SimClient } from './simClient';
 import type { FormationDetail, OrderNews, TechInfo, TemplateInfo } from '../shared/protocol';
-import type { SeaBattleView } from './MapView';
+import type { CarrierRaidView, SeaBattleView } from './MapView';
 import type { MapHover } from '../ui/mapHover';
 import { t } from '../ui/i18n';
 import type { EditorState } from '../shared/editorState';
@@ -76,6 +76,8 @@ export class Hud {
   onShowPlace: (x: number, y: number) => void = () => {};
   /** The sea battles going on (PLAN 4.10b): the ticker lists them, a click flies to both fleets. */
   readonly seaBattles = signal<SeaBattleView[]>([]);
+  /** A carrier's strikes out of a sea battle (PLAN 7.154a), for the ticker. */
+  readonly carrierRaids = signal<CarrierRaidView[]>([]);
   /** Who holds the seas, and how many zones each (PLAN 4.10c), the most first; the sea-control legend. */
   readonly seaHolders = signal<{ id: number; zones: number }[]>([]);
   /** The sea zone under the cursor in the sea-control mode (PLAN 4.10c), null off the sea. */

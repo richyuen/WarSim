@@ -16136,3 +16136,24 @@ Of 7.152 (open in PLAN.md):
   nations with no men left to levy, and a war days old), HEAD 4 (`docs/evidence/7.150/at.md`).
   Read on HEAD (ADR-749, waits on the user): on 1421–1430 empty checkpoints 1 of 20, the ordered five at most 10
   years (met), the ten-day measure 1 world of 10 (`docs/evidence/7.153/read.md`).
+
+<!-- moved 2026-10-28 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.154 (open in PLAN.md):
+
+  - [x] 7.154a A carrier's strike out of a sea battle has its ticker row ("Carrier strike ashore: Japan on China",
+    framed on the carrier and its target, `worker/carrierRaids`); the ships carriers' wings sink are told
+    (`CarrierSunk`) and summed in the headless report (`carrierSunk`); `carrierRaid1938.test.ts` red without,
+    `carrierRaidRow1938.spec.ts`. No rule: the pin unchanged.

@@ -503,12 +503,16 @@ export function strikes(world: World): void {
       if (units > 0) loss.set(t, (loss.get(t) ?? 0) + units);
     }
     let took = 0;
+    // The ships its bombs sank, where it flew from a carrier (PLAN 7.154a, `CarrierSunk`).
+    let sunk = 0;
+    const fromDeck = (world.wingBase.get(id) ?? 0) < 0;
     const hit = new Set<number>();
     // What it took of each nation (PLAN 5.11a: the month's tally).
     const tookOf = new Map<number, number>();
     for (const [t, units] of loss) {
       const lost = applyLoss(world, t, units);
       took += lost;
+      if (fromDeck && rules.units[ec.unit[t]!]!.domain === Domain.sea) sunk += lost;
       hit.add(ec.formation[t]!);
       const struck = fc.nation[ec.formation[t]!]!;
       tookOf.set(struck, (tookOf.get(struck) ?? 0) + lost);
@@ -525,5 +529,6 @@ export function strikes(world: World): void {
       settleFormation(world, g);
     }
     world.out.emit(world.tick, EventKind.AirStrike, id, took, s.tx, s.ty);
+    if (sunk > 0) world.out.emit(world.tick, EventKind.CarrierSunk, fc.nation[id]!, sunk, s.tx, s.ty);
   }
 }

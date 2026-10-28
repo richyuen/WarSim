@@ -24457,3 +24457,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - `tools/sweep/criteria.ts`: `stasis` and `pass.stasis` still computed and shown; no longer in a seed's `ok` or the
   sweep's quorum. `run.ts`'s report text says so; `sweepCriteria.test.ts` expects a stable top to pass. SPEC §10.
 - **Next:** PLAN 7.154 (naval 6).
+
+## 2026-10-28 — PLAN 7.154a: a carrier's strike out of a battle has its ticker row; carriers' sinkings counted
+
+- **Start:** gate green on `4f0ba834`; critic not due. 7.154 split: (a) the row and the count, (b) the sea battles.
+- **Row:** `src/worker/carrierRaids.ts` (new): a carrier fleet in no sea battle with a wing's strike sortie in the air
+  gets a row, by the carrier's nation and its target's (the at-war formation at the aim, else the cell's holder), ashore
+  or at a fleet; the snapshot's `raids` (RAID_STRIDE 12), `hud.carrierRaids`, the ticker after the battles' strike
+  rows ("⚓ Carrier strike ashore: Japan on China", seed 99 hour 1, the critic's case); a click frames the carrier and
+  its target (`docs/evidence/7.154/`). Its own test id, `carrier-raid-row`: the sea specs count one row a battle.
+- **Count:** `EventKind.CarrierSunk` (63): out of a battle the ships a deck wing's bombs sank (`strikes`); in one the
+  hour's ships lost, each shared by the damage the wings did of it. `YearMetrics.carrierSunk` and the year line's
+  `carrier-sunk`: seed 99 year 1, 129.
+- **Test:** `tests/unit/carrierRaid1938.test.ts` (3, red without: the events); `tests/e2e/carrierRaidRow1938.spec.ts`.
+  Specs run by hand: carrierRaidRow1938, seaRow1938, carrierStrikeRow1938, seaClosingRow1938, carrierStrikeAshore1938.
+  `seaRow1938`'s Speed ×1 fire test red alone, here and on HEAD's code in a worktree alike (its timing; logged flaky
+  before); the rest green.
+- **Pin:** b22bcdd1 unchanged (events only).
+- **Next:** PLAN 7.154b (the sea battles).

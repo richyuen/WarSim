@@ -40,7 +40,7 @@ import { drawNationLabels, fadeNationLabels, GlyphSprites, layoutNationLabels, t
 import { t, type MessageKey } from '../ui/i18n';
 import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
-import { NATION_STRIDE, NationField, SEA_STRIDE, type Snapshot } from '../shared/protocol';
+import { NATION_STRIDE, NationField, RAID_STRIDE, SEA_STRIDE, type Snapshot } from '../shared/protocol';
 import { SEAM_MARGIN, cellOfPoint, itemOffsets, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
 import { groundShareAt } from '../render/map/ground';
 import { GROUND_CAP, GroundInstances } from '../render/map/GroundInstances';
@@ -592,6 +592,13 @@ export class MapView {
       this.seaKey = seaKey;
       this.onSeaBattles(this.seaBattles());
     }
+    // A carrier's strikes out of a sea battle, for the ticker (PLAN 7.154a): told when the set changes.
+    this.raids = s.raids.slice();
+    const raidKey = Array.from(this.raids, (v, k) => (k % RAID_STRIDE >= 4 && k % RAID_STRIDE < 8 ? v : Math.round(v))).join(',');
+    if (raidKey !== this.raidKey) {
+      this.raidKey = raidKey;
+      this.onCarrierRaids(this.carrierRaids());
+    }
     // A selected formation that is gone, or whose id is another nation's by now (PLAN 2.16Rk), or
     // another formation's of the same nation (PLAN 7.4f23).
     let dropped = false;
@@ -812,6 +819,8 @@ export class MapView {
   private formWay = new Float32Array(0);
   private majors = new Float32Array(0);
   private seas = new Float32Array(0);
+  private raids = new Float32Array(0);
+  private raidKey = '';
   /** Cells with fallout in the last message (PLAN 6.3c; tests). */
   falloutCells = 0;
   /** Who holds each air zone's air, by zone (PLAN 5.7c; 0 none, `AIR_CONTESTED`). */
@@ -823,6 +832,8 @@ export class MapView {
   private seaKey = '';
   /** Called when the sea battles going on change (PLAN 4.10b; the ticker's rows). */
   onSeaBattles: (battles: SeaBattleView[]) => void = () => {};
+  /** A carrier's strikes out of a sea battle, when the set changes (PLAN 7.154a). */
+  onCarrierRaids: (raids: CarrierRaidView[]) => void = () => {};
   /** Where the sea battles' marks were drawn in the last frame (tests). */
   seaMarks: { x: number; y: number }[] = [];
   /** The sorties placed on screen at the last frame (PLAN 5.7a), for tests. */
@@ -890,6 +901,14 @@ export class MapView {
   elementPlaces(f: number): [number, number][] {
     const out: [number, number][] = [];
     for (let i = 0; i < this.elementCount; i++) if (this.elementFormation[i] === f) out.push([this.elementX[i]!, this.elementY[i]!]);
+    return out;
+  }
+
+  /** A carrier's strikes out of a sea battle, from the last snapshot (PLAN 7.154a). */
+  carrierRaids(): CarrierRaidView[] {
+    const out: CarrierRaidView[] = [];
+    const r = this.raids;
+    for (let i = 0; i + RAID_STRIDE <= r.length; i += RAID_STRIDE) out.push({ kx: r[i]!, ky: r[i + 1]!, tx: r[i + 2]!, ty: r[i + 3]!, by: r[i + 4]!, on: r[i + 5]!, ashore: r[i + 6] === 1, fleet: r[i + 7]!, both: { x: r[i + 8]!, y: r[i + 9]!, w: r[i + 10]!, h: r[i + 11]! } });
     return out;
   }
 
@@ -2360,6 +2379,20 @@ export class MapView {
  * fleet, its two sides' leaders; the middle of the box of its fleets and the box's cells across
  * (PLAN 4.12a).
  */
+/** A carrier's strike out of a sea battle (PLAN 7.154a): its fleet's place, its target's, the carrier's nation and the target's, ashore or at a fleet. */
+export interface CarrierRaidView {
+  kx: number;
+  ky: number;
+  tx: number;
+  ty: number;
+  by: number;
+  on: number;
+  ashore: boolean;
+  fleet: number;
+  /** The middle of the fleet and the target and the cells between them: the row's frame. */
+  both: { x: number; y: number; w: number; h: number };
+}
+
 export interface SeaBattleView {
   x: number;
   y: number;
