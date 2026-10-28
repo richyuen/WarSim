@@ -296,6 +296,19 @@ describe('the largest battle of a war across water (PLAN 4.1d1)', () => {
     expect(battleViewM(100, 100, 19.57, [1.5, 1.5])).toBe(250);
   });
 
+  it('a fight T3 cannot hold goes out as a battle does; one it can stays at T3 (ADR-743, ADR-700)', () => {
+    const km = 19.57;
+    // ADR-700's: a block 18.8 km north of its enemy's, whole at 30 m/px in 800 px.
+    expect(battleViewM(1400, 800, km, [0, 18.8 / km], true)).toBe(T3_MAX_M);
+    // The fight of seed 5381's formation 29 on day 21: 13.1 km east and 25.6 km north of its enemy,
+    // more than 800 px hold at 30 m/px. It goes out as the war's battle view would, past T3.
+    const far: [number, number] = [13.1 / km, 25.6 / km];
+    expect(battleViewM(1400, 800, km, far, true)).toBeGreaterThan(T3_MAX_M);
+    expect(battleViewM(1400, 800, km, far, true)).toBe(battleViewM(1400, 800, km, far));
+    // East to west, 1,400 px hold far more: a pair 32 km apart that way stays at T3.
+    expect(battleViewM(1400, 800, km, [32 / km, 2 / km], true)).toBeLessThanOrEqual(T3_MAX_M);
+  });
+
   it('a sea battle goes out to its limit to hold fleets a carrier\'s reach apart (PLAN 4.12a)', () => {
     // The critic's: a box of 23.3 cells and a cell round it, in the 1,132 px left of the ranking.
     expect(battleViewM(1132, 800, 19.57, [25.3, 7], false, SEA_VIEW_MAX_M)).toBeCloseTo(((25.3 * 19.57 + 6) * 1000) / 1132, 9);

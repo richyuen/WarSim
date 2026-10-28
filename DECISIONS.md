@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-743 · 2026-10-28 · accepted — Browser specs re-anchored after PLAN 7.139–7.146 moved their 1938 histories
+### ADR-743 · 2026-10-27 · accepted — Browser specs re-anchored after PLAN 7.139–7.146 moved their 1938 histories
 
 - **Context.** `npm run check:review` before critic run 17, on `4c0cb833`: six browser specs red twice, green at
   `7b883084` (run 16's review). No drawing code changed between; the AI rules of PLAN 7.139–7.146 moved the seeded
@@ -190,6 +190,14 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   1268) and those of hours 1424 and 1477 no longer happen in that game. A British transport group against Japanese
   destroyers (hour 979) stands for the critic's. The bars unchanged; all five met (nearest 11–32 % of the width,
   least hull 13 px).
+- **fightSeen1938 (3.11), a change of the camera (ADR-700 extended):** on seed 5381's day 21 Germany's formation 29
+  stands 13.1 km east and 25.6 km north of the Polish 247 it is in contact with (contact reaches 1.5 cells, 29 km).
+  A formation's fight stayed at T3's limit (30 m/px), where 800 px hold 24 km: 22 of its 28 elements on the screen.
+  The claim kept is both blocks whole: `battleViewM` now takes a fight past T3, as a war's battle, only where the
+  blocks' middles stand further apart than the view at 30 m/px less 5 km (`FIGHT_T3_PAD_KM`), on either axis.
+  ADR-700's 18.8 km north and `warBattle.test.ts`'s 17 km across water stay at 30; east to west 1,400 px hold
+  37 km. The spec asks the camera's own zoom of each fight and figures where it is T3: Germany's war 20–50.8 m/px
+  (one fight past T3), every block whole; Japan's 20–30. A unit case holds the three points. Not a sim input.
 
 ### ADR-742 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, no rule) — PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet; ships sunk at sea by any means 0.98 ×
 

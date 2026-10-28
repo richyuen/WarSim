@@ -2,6 +2,9 @@ import { expect, test } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
+import { battleViewM } from '../../src/app/battleView';
+import { T3_MAX_M } from '../../src/render/units/individuals';
+import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
 import { Domain } from '../../src/sim/world';
 import { settle } from './settle';
@@ -51,6 +54,8 @@ interface Seen {
   foeOn: number;
   figures: number;
   km: number;
+  /** The m/px the camera takes for this fight (`battleViewM`): past T3 only for a pair T3 cannot hold (ADR-743). */
+  want: number;
 }
 
 for (const war of WARS) test(`PLAN 3.11 on a seed not used: every formation in contact of ${war.name} is seen with its enemy at T3, and a day of a fight leaves its marks`, async ({ page }, info) => {
@@ -82,12 +87,12 @@ for (const war of WARS) test(`PLAN 3.11 on a seed not used: every formation in c
   const contacts = () => page.evaluate(async ({ nations, land }) => {
     const { sim, view } = window.__warsim!;
     const templates = sim.mapLayers!.templates;
-    const out: { id: number; nation: number; enemy: number; armour: boolean; km: number; fight: boolean; at: [number, number] | null }[] = [];
+    const out: { id: number; nation: number; enemy: number; armour: boolean; km: number; fight: boolean; at: [number, number] | null; span: [number, number] }[] = [];
     for (const n of nations) {
       for (const id of view!.formationsOf(n)) {
         const d = await sim.formation(id);
         if (!d?.engaged || templates[d.template]?.domain !== land) continue;
-        out.push({ id, nation: n, enemy: d.fight?.enemy ?? 0, armour: templates[d.template]?.symbol === 'armour', km: d.fight ? (Math.hypot(...d.fight.span) * view!.metresPerPx * view!.controller.cam.scale) / 1000 : -1, fight: d.fight !== null, at: d.fight ? [d.fight.x, d.fight.y] : null });
+        out.push({ id, nation: n, enemy: d.fight?.enemy ?? 0, armour: templates[d.template]?.symbol === 'armour', km: d.fight ? (Math.hypot(...d.fight.span) * view!.metresPerPx * view!.controller.cam.scale) / 1000 : -1, fight: d.fight !== null, at: d.fight ? [d.fight.x, d.fight.y] : null, span: d.fight ? [d.fight.span[0], d.fight.span[1]] : [0, 0] });
       }
     }
     return out;
@@ -172,17 +177,19 @@ for (const war of WARS) test(`PLAN 3.11 on a seed not used: every formation in c
     const own = await count(e.id);
     const foe = await count(e.enemy);
     const at = await page.evaluate(() => ({ m: window.__warsim!.view!.metresPerPx, figures: window.__warsim!.view!.individualCount }));
-    seen.push({ id: e.id, enemy: e.enemy, nation: e.nation, armour: e.armour, before, m: at.m, own: own.all, ownOn: own.on, foe: foe.all, foeOn: foe.on, figures: at.figures, km: e.km });
+    const want = battleViewM(VIEW.width, VIEW.height, SCENARIO_GEOMETRY['1938'].kmPerCell, e.span, true);
+    seen.push({ id: e.id, enemy: e.enemy, nation: e.nation, armour: e.armour, before, m: at.m, own: own.all, ownOn: own.on, foe: foe.all, foeOn: foe.on, figures: at.figures, km: e.km, want });
   }
   const blind = seen.filter((s) => s.before === 0);
   info.annotations.push({ type: 'fights', description: `seed ${SEED}, day ${day}: ${seen.length} formations in contact of ${new Set(seen.map((s) => s.nation)).size} nations of ${war.name}, ${seen.filter((s) => s.armour).length} of them armour; ${blind.length} with none of their enemy's elements on the screen at 6 m/px on their own block; after the way to the fight: ${Math.min(...seen.map((s) => s.m)).toFixed(1)} to ${Math.max(...seen.map((s) => s.m)).toFixed(1)} m/px, the blocks ${Math.min(...seen.map((s) => s.km)).toFixed(1)} to ${Math.max(...seen.map((s) => s.km)).toFixed(1)} km apart, own elements on the screen ${Math.min(...seen.map((s) => s.ownOn / s.own)).toFixed(2)} of them at least, the enemy's ${Math.min(...seen.map((s) => s.foeOn / s.foe)).toFixed(2)}` });
   console.log(info.annotations.at(-1)!.description);
   for (const s of seen) {
     const what = `formation ${s.id}${s.armour ? ' (armour)' : ''} against ${s.enemy}, ${s.km.toFixed(1)} km off`;
-    // T3: figures are drawn. No closer than the battle's own zoom.
-    expect(s.m, `${what}: metres a pixel`).toBeLessThanOrEqual(30);
+    // T3: figures are drawn, no closer than the battle's own zoom; a pair T3 cannot hold (ADR-743:
+    // since PLAN 7.139–7.146 one stands 25.6 km north of its enemy) further out, both whole.
     expect(s.m, `${what}: metres a pixel`).toBeGreaterThanOrEqual(19.99);
-    expect(s.figures, `${what}: figures`).toBeGreaterThan(0);
+    expect(Math.abs(s.m / s.want - 1), `${what}: metres a pixel (${s.m.toFixed(1)}), the camera's for this fight (${s.want.toFixed(1)})`).toBeLessThan(0.01);
+    if (s.want <= T3_MAX_M) expect(s.figures, `${what}: figures`).toBeGreaterThan(0);
     expect(s.own, `${what}: its elements in the section`).toBeGreaterThan(0);
     expect(s.foe, `${what}: the enemy's elements in the section`).toBeGreaterThan(0);
     // Both blocks, whole: every element of the two on the screen.

@@ -37,6 +37,15 @@ export const SEA_PAIR_MARGIN = 0.6;
 export const FIGHT_PAD_KM = 6;
 export const FIGHT_VIEW_CLEAR = 0.7;
 export const FIGHT_VIEW_MAX_M = T3_MAX_M;
+/**
+ * A fight T3 cannot hold (ADR-743, ADR-700 extended): two blocks whose middles stand further apart
+ * than the whole view at FIGHT_VIEW_MAX_M less this much (half a block on each side, its tag
+ * aside) go out past T3 as a war's battle does, so that both are whole. Two in contact may stand
+ * 1.5 cells apart (CONTACT_CELLS, 29 km); a block 25.6 km north of its enemy's (seed 5381, day 21)
+ * was cut at 30 m/px in 800 px. The 18.8 km of ADR-700 and the 17 km across water of
+ * `warBattle.test.ts` stay at T3.
+ */
+export const FIGHT_T3_PAD_KM = 5;
 
 /**
  * Metres a CSS pixel of the view the camera takes for a battle, in a view `viewW` × `viewH`
@@ -48,7 +57,8 @@ export const FIGHT_VIEW_MAX_M = T3_MAX_M;
  *   as far out as holds both with FIGHT_PAD_KM around them, in the FIGHT_VIEW_CLEAR of the
  *   view's height.
  *   - `fight` (a formation's fight, PLAN 3.11b): to FIGHT_VIEW_MAX_M at most where the view is
- *     large enough for the battle's own zoom to be under it, so that figures are drawn still.
+ *     large enough for the battle's own zoom to be under it, so that figures are drawn still;
+ *     further out, as a war's battle, where T3 cannot hold both blocks (FIGHT_T3_PAD_KM).
  *   - Not `fight` (a war's largest battle, PLAN 4.1d1): to BATTLE_VIEW_MAX_M. Two formations
  *     in contact with water between them keep their blocks on their shores, up to the reach of
  *     a contact apart: the view of a battle held one block and a part of the other.
@@ -57,5 +67,6 @@ export const FIGHT_VIEW_MAX_M = T3_MAX_M;
 export function battleViewM(viewW: number, viewH: number, kmPerCell: number, span?: readonly [number, number], fight = false, maxM = BATTLE_VIEW_MAX_M): number {
   const base = Math.max(BATTLE_VIEW_M, (BATTLE_VIEW_KM * 1000) / Math.max(1, viewW), (BATTLE_VIEW_KM * 500) / Math.max(1, viewH));
   const both = span ? Math.max(((span[0] * kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, viewW), ((span[1] * kmPerCell + FIGHT_PAD_KM) * 1000) / Math.max(1, viewH * FIGHT_VIEW_CLEAR)) : 0;
-  return Math.min(maxM, Math.max(base, Math.min(both, fight && base <= FIGHT_VIEW_MAX_M ? FIGHT_VIEW_MAX_M : maxM)));
+  const t3Holds = !span || (span[0] * kmPerCell + FIGHT_T3_PAD_KM <= (viewW * FIGHT_VIEW_MAX_M) / 1000 && span[1] * kmPerCell + FIGHT_T3_PAD_KM <= (viewH * FIGHT_VIEW_MAX_M) / 1000);
+  return Math.min(maxM, Math.max(base, Math.min(both, fight && base <= FIGHT_VIEW_MAX_M && t3Holds ? FIGHT_VIEW_MAX_M : maxM)));
 }
