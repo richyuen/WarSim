@@ -24451,3 +24451,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   shares moving. ADR-732's 12-year bars on the order and on the five strongest struck. The sweep's §10 stasis
   criterion not changed. No code; pin unchanged.
 - **Next:** PLAN 7.154 (naval 6).
+
+## 2026-10-28 — ADR-750's follow-up: the sweep's stasis reported, not judged (the user's decision)
+
+- `tools/sweep/criteria.ts`: `stasis` and `pass.stasis` still computed and shown; no longer in a seed's `ok` or the
+  sweep's quorum. `run.ts`'s report text says so; `sweepCriteria.test.ts` expects a stable top to pass. SPEC §10.
+- **Next:** PLAN 7.154 (naval 6).

@@ -182,8 +182,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **SPEC** §7 "The long run's shape" rewritten to say so. Under `CRITIC_PROMPT.md`'s rules a behaviour SPEC specifies
   as the user's decision is judged by its execution; an objection to it goes under "Design objections" and lowers no
   score.
-- **Not changed:** the sweep's own stasis criterion (SPEC §10, ADR-428: the set the same in 20 yearly samples of a
-  50-year run fails a seed, within the 80 % quorum); the DONE condition's "borders still moving at the end".
+- **The sweep** (the user's, 2026-10-28, a follow-up): its stasis criterion (SPEC §10, ADR-428: the set the same in
+  20 yearly samples of a 50-year run failed a seed) is reported, not judged (`tools/sweep/criteria.ts`; its test
+  says so). Not changed: the DONE condition's "borders still moving at the end".
 
 ### ADR-749 · 2026-10-28 · accepted (the user's decision, 2026-10-28: option a, no rule; 7.153 closed not done) — PLAN 7.153: HEAD is at the AT's floor on both clauses; no rule
 

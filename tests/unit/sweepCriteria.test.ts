@@ -115,7 +115,7 @@ describe('sweep criteria (PLAN 1.40, ADR-54)', () => {
 });
 
 describe('stasis and break-up (PLAN 7.3a, ADR-428)', () => {
-  it('stasis: the same five largest nations, as a set, in 20 yearly samples running fails', () => {
+  it('stasis: the longest run of the same five largest, as a set, reported and not judged (ADR-750)', () => {
     const v = judge(run(lively()));
     expect(v.stasis).toBe(10);
     expect(v.pass.stasis).toBe(true);
@@ -124,7 +124,8 @@ describe('stasis and break-up (PLAN 7.3a, ADR-428)', () => {
     expect(shuffled.stasis).toBe(50);
     expect(shuffled.pass.stasis).toBe(false);
     expect(shuffled.limits).toBe(true);
-    expect(shuffled.ok).toBe(false);
+    // A stable top is a valid world (ADR-750): the seed passes.
+    expect(shuffled.ok).toBe(true);
     // 19 years of one five pass; 20 fail.
     const five = (from: number, to: number) => lively().map((y, i) => (i >= from && i < to ? { ...y, top10: [1, 2, 3, 4, 9, 10] } : y));
     expect(judge(run(five(10, 29))).stasis).toBe(19);
@@ -158,7 +159,8 @@ describe('sweep verdict (ADR-54)', () => {
   const good = judge(run(lively()));
   const noRiser: Verdict = { ...good, pass: { ...good.pass, riser: false }, ok: false };
   const noFaller: Verdict = { ...good, pass: { ...good.pass, faller: false }, ok: false };
-  const stuck: Verdict = { ...good, pass: { ...good.pass, stasis: false }, ok: false };
+  // A stable top (ADR-750): reported, the seed still passes.
+  const stuck: Verdict = { ...good, pass: { ...good.pass, stasis: false } };
   const shattered: Verdict = { ...good, pass: { ...good.pass, breakup: false }, ok: false };
   const broken: Verdict = { ...good, pass: { ...good.pass, land: false }, limits: false, ok: false };
   const of = (...parts: [Verdict, number][]): Verdict[] => parts.flatMap(([v, n]) => Array.from({ length: n }, () => v));
@@ -169,7 +171,8 @@ describe('sweep verdict (ADR-54)', () => {
     expect(judgeSweep(of([good, 7], [noRiser, 3]), 50).ok).toBe(false);
     expect(judgeSweep(of([good, 7], [noFaller, 3]), 50).ok).toBe(false);
     expect(judgeSweep(of([good, 8], [stuck, 1], [shattered, 1]), 50).ok).toBe(true);
-    expect(judgeSweep(of([good, 7], [stuck, 3]), 50).ok).toBe(false);
+    expect(judgeSweep(of([good, 7], [stuck, 3]), 50).ok).toBe(true); // stasis reported, not judged (ADR-750)
+    expect(judgeSweep(of([good, 7], [stuck, 3]), 50).changing).toBe(7);
     expect(judgeSweep(of([good, 7], [shattered, 3]), 50).ok).toBe(false);
     expect(judgeSweep(of([good, 3]), 50).needed).toBe(3); // 80% of 3, rounded up
     expect(judgeSweep(of([good, 5]), 50).needed).toBe(4);

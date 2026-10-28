@@ -3331,13 +3331,14 @@ on screen.
     ends with ≥ 1% of the owned land and ≥ 1.5 × the land it held after year 1; a realm
     that did not exist then does not count) and a faller (one of the ten largest realms
     after year 1 that ends with ≤ 2/3 of its land of then; dead or a puppet counts). Since
-    2026-10-16 [ADR-428], the critic's two asks, on nations: no stasis (the five largest by
-    land, as a set, the same in 20 yearly samples running) and no break-up (the living never
+    2026-10-16 [ADR-428], the critic's ask, on nations: no break-up (the living never
     more than 1.1 × the most they were in any year 20 or more years before). Only runs of
-    ≥ 50 years are judged by these four. `npm run sweep -- --from <report.json>` judges a
+    ≥ 50 years are judged by these three. `npm run sweep -- --from <report.json>` judges a
     written report again.
   - *Reported, not judged:* new nations in the top ten and the leader's share range (the
-    two criteria of critic B1 that riser and faller replace).
+    two criteria of critic B1 that riser and faller replace); stasis, the longest run of the
+    same five largest by land as a set (judged from ADR-428 to ADR-750, the user's decision:
+    a stable top is a valid world, §7).
   - *Suspended until phases 2–6 are complete* [ADR-58]: no sweep after a rule change, since
     every feature still to come moves the balance. One quick sweep at each phase review is a
     smoke test (its five limits are reported; nothing is tuned for it). The criteria judge
