@@ -5,6 +5,15 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.154b: the sea battles' fall has no cause of the kind the task asks for (ADR-751, waits on the user)
+- **The bar:** on 1431–1440 × 20 against HEAD, sea battles in years 2–20 at least 1.25 × HEAD's, ships sunk at sea by
+  any means and transports at year 20 not below; a rule only with a cause the read names.
+- **What moved** (`docs/evidence/7.154/read-b.md`): nothing was changed. On 1411–1416 × 20, HEAD against `7b883084`:
+  battles late 0.88 ×, war-weeks of two navies 0.77 ×, battles per such week 1.15 ×; the year-1 fall in steps at four
+  kept rules (ADR-736, 737, 739, 745) and one world's history. Back at `7b883084` would be 1.13 × HEAD: under the bar.
+- **Left:** ADR-751: (a) close 7.154 not done, no rule (recommended); (b) a pooled-navy rule for the `strong` bucket,
+  AT as filed; (c) re-scope to battles per war-week of two navies.
+
 ### RESOLVED 2026-10-28 (option a, the user's decision: no rule, 7.153 closed not done) · PLAN 7.153: HEAD at the AT's floor on both clauses, no cause found (ADR-749, waits on the user)
 - **The bar:** on 1421–1430 × 30 years against HEAD, checkpoints at years 10 and 20 (7 days) with nobody in contact
   at most half HEAD's count and at least one fewer; no world with the same five largest in the same order over 12

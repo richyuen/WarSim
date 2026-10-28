@@ -85,6 +85,14 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   - [ ] 7.154b The sea battles: in years 2–20 at least 1.25 × HEAD's on 1431–1440 × 20, ships sunk at sea by any
     means and transports at year 20 not below HEAD's. Read first, on HEAD saves, where the fleets at war that meet no
     enemy are (ADR-742 stands: the lever is not the wings); a rule only with a cause that read names.
+    Read 2026-10-28 (`docs/evidence/7.154/read-b.md`): no such cause; the fall is four kept rules and history, and HEAD
+    fights more per war of two navies. ADR-751 waits on the user (BLOCKERS).
+
+- [ ] 7.155 The transports' sailings refused for no sea way, 3 × since `7b883084` (7.154b's read: on 1411–1416 × 20
+  years 2–20 10,202 → 30,082, year 1 49 → 708; on 1415 year 1 all 384 transport groups from `sailToArmy`, 352 of them
+  Canada's, two fleets asking day after day; `tools/diag/noSeaWay.ts`). AT: on 1441–1446 × 20 against HEAD, refusals
+  for no sea way at most 0.5 × HEAD's, transports at year 20 and landings not below HEAD's; a unit test of the case,
+  red without; the gate green. Read first which port and which water each refused sail is for.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.

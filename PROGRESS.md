@@ -24475,3 +24475,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   before); the rest green.
 - **Pin:** b22bcdd1 unchanged (events only).
 - **Next:** PLAN 7.154b (the sea battles).
+
+## 2026-10-28 — PLAN 7.154b read: the sea battles' fall is four kept rules and history; ADR-751 waits on the user
+
+- **Start:** gate green on `87c93a6b`; critic not due.
+- **Read** (`docs/evidence/7.154/read-b.md`): `seaWars.ts` on 1411–1416 × 20 at HEAD and at critic run 16's
+  `7b883084` (a worktree). Battles year 1 229 → 153, years 2–20 986 → 870 (0.88 ×), ships sunk in them 0.99 ×;
+  war-weeks with navies on both sides 0.77 ×, battles per such week 0.76 → 0.88. 90 % of armed fleet-weeks at war are
+  against an enemy with no navy, on blockade. A year-1 bisect over the nine sim commits since: steps at ADR-736, 737,
+  739 and 745 (5–14 % each) and one world's history (1414 69 → 14). Restored to `7b883084` HEAD would read 1.13 ×,
+  under the 1.25 × bar.
+- **Cause:** none of the kind the task asks for (a fleet that could meet the enemy and does not). ADR-751: (a) close
+  not done (recommended), (b) a pooled-navy rule, (c) re-scope to battles per war-week of two navies. BLOCKERS entry.
+- **Found beside:** transports' sailings refused for no sea way 3 × (all `sailToArmy`; 1415 year 1 Canada's two
+  fleets daily): PLAN 7.155. Tool `tools/diag/noSeaWay.ts` (caller by stack frame).
+- No sim code; pin unchanged (b22bcdd1). Seeds 1431–1440 unspent.
+- **Next:** PLAN 7.155 (the refused sailings) while ADR-751 waits.

@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-751 · 2026-10-28 · proposed (the user's decision) — PLAN 7.154b: the sea battles' fall is four kept rules and the worlds' history; no fleet that could meet the enemy and does not
+
+- **Context.** PLAN 7.154b: sea battles in years 2–20 at least 1.25 × HEAD's on 1431–1440 × 20; "read first, on HEAD
+  saves, where the fleets at war that meet no enemy are; a rule only with a cause that read names" (ADR-742 stands).
+- **Read** (`docs/evidence/7.154/read-b.md`; `tools/diag/seaWars.ts` paired, HEAD `87c93a6b` against `7b883084` on
+  spent seeds 1411–1416 × 20; new `tools/diag/noSeaWay.ts`): battles year 1 229 → 153, years 2–20 986 → 870 (0.88 ×),
+  ships sunk in them 0.99 ×. War-weeks with a navy on both sides 1,290 → 992 (0.77 ×); per such war-week HEAD fights
+  more late (0.76 → 0.88). 90 % of armed fleet-weeks at war are against an enemy with no navy, on blockade. Of those
+  at war with a navy and on station, the buckets that grew are an enemy fleet in other waters (three worlds' history)
+  and one whose zone is over the navy (460 → 960); one with a bloc port in reach of it fell (700 → 403). A year-1
+  bisect over the nine sim commits since `7b883084`: steps at ADR-736 (−32), ADR-737 (−11), ADR-739 (−21) and
+  ADR-745 (−26), and one world's history (1414, 69 → 14). Back at `7b883084`'s figures HEAD would read 1.13 × on these
+  seeds: under the bar.
+- **Options:**
+  - **(a)** PLAN 7.154 closed not done (7.154a done), no rule: the fall is spread over rules the user kept and the
+    worlds' history, and HEAD fights more per war of two navies. (Recommended: no cause of the kind the task asks for
+    was found; a rule for 1.25 × would push battles above `7b883084`'s world with nothing behind it.)
+  - **(b)** A rule beyond the read: a navy pools its warfleets of one waters to fight a zone over any one of them (the
+    `strong` bucket, 960 fleet-weeks), sortie and chase together. AT as filed, on 1431–1440.
+  - **(c)** The AT re-scoped to what the read measures: battles per war-week of two navies, years 2–20, not below
+    HEAD's, ships sunk at sea by any means not below; met on HEAD, ticked on a run on 1431–1440.
+- Beside it, filed as PLAN 7.155: the transports' sailings refused for no sea way, 3 × (all `sailToArmy`).
+- No sim code changed; the pin unchanged (b22bcdd1). Seeds 1431–1440 unspent.
+
 ### ADR-750 · 2026-10-28 · accepted (the user's decision, 2026-10-28) — A stable top is a valid world: the same five by area, order or power may stand
 
 - **Context.** ADR-732 let the set of the five largest by area stand for decades, but kept a bar on their order and on
