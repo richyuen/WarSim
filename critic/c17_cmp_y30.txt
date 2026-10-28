@@ -1,0 +1,102 @@
+{"stasis": {"n": 72, "over12": 5, "max": 19, "worst": [[19, 5521], [18, 7019], [17, 7901], [16, 5653], [13, 3847]]}, "stasisOrdered": {"n": 72, "over12": 2, "max": 18, "worst": [[18, 5521], [14, 7901], [12, 2671], [11, 8693], [10, 6737]]}, "stasisStrong": {"n": 72, "over12": 0, "max": 12, "worst": [[12, 1259], [11, 3847], [11, 2213], [10, 3467], [10, 1061]]}, "largest30Over33": [[33.8, 2081], [34.1, 8167], [34.9, 2953], [35.0, 7901], [35.1, 9781], [35.4, 5683], [36.8, 1187], [37.7, 2789], [38.6, 4673], [38.9, 1307]]}
+== same n=64
+  eng1                         40.372 ->     39.016  d=   -1.356 se=  0.879  lower 38 higher 26
+  engLate                       4.112 ->      5.107  d=    0.995 se=   0.12  lower 8 higher 56
+  engPerAtWarLatePct            1.059 ->      1.097  d=    0.038 se=  0.034  lower 27 higher 37
+  engPerWarLate                 0.596 ->      0.777  d=    0.181 se=  0.028  lower 13 higher 51
+  sea1                         41.875 ->     35.453  d=   -6.422 se=   1.86  lower 45 higher 16
+  seaLate                       8.157 ->       5.32  d=   -2.837 se=  0.206  lower 61 higher 3
+  seaZeroLatePct                2.603 ->      2.609  d=    0.006 se=    0.4  lower 34 higher 30
+  sunkLate                     80.772 ->     59.673  d=  -21.098 se=   1.95  lower 58 higher 6
+  air1                       2377.844 ->   2556.547  d=  178.703 se=103.735  lower 27 higher 37
+  airLate                     236.959 ->    671.078  d=  434.119 se=  14.72  lower 0 higher 64
+  aloft1                         54.5 ->     66.656  d=   12.156 se=  0.981  lower 3 higher 61
+  aloftLate                    18.193 ->     39.541  d=   21.347 se=  0.497  lower 0 higher 64
+  wingsY20                       64.5 ->    104.375  d=   39.875 se=  3.166  lower 3 higher 59
+  wingsLate                    68.686 ->    102.752  d=   34.066 se=  1.742  lower 0 higher 64
+  warsLate                      7.719 ->      7.392  d=   -0.327 se=  0.209  lower 36 higher 28
+  stasis                        9.312 ->      8.047  d=   -1.266 se=  0.753  lower 32 higher 26
+  stasisOrdered                 5.281 ->      5.297  d=    0.016 se=  0.491  lower 31 higher 25
+  largestPct30                   26.3 ->     25.208  d=   -1.092 se=  1.118  lower 37 higher 26
+  flipLatePctMin                 4.01 ->      3.603  d=   -0.407 se=  0.196  lower 39 higher 25
+  flipLast5Pct                 51.274 ->     51.786  d=    0.512 se=  3.139  lower 31 higher 33
+  bursts                       22.203 ->     24.188  d=    1.984 se=  2.629  lower 34 higher 26
+  burstsCivOver1M               0.188 ->      0.297  d=    0.109 se=  0.126  lower 8 higher 10
+  burstsCiv10x                  2.188 ->      2.375  d=    0.188 se=  0.424  lower 29 higher 23
+  ev_WarDeclared              479.578 ->    450.891  d=  -28.688 se= 11.066  lower 45 higher 19
+  ev_RevoltSpawned            192.953 ->    191.938  d=   -1.016 se=  9.383  lower 34 higher 30
+  ev_PuppetCreated             79.594 ->     82.344  d=     2.75 se=  2.424  lower 24 higher 38
+  ev_NationAnnexed             69.734 ->     68.109  d=   -1.625 se=  3.484  lower 36 higher 28
+  ev_CapitalCaptured          499.922 ->    495.375  d=   -4.547 se= 12.447  lower 37 higher 27
+  ev_CapitalMoved             650.922 ->    632.453  d=  -18.469 se= 20.463  lower 36 higher 28
+  ev_ConvoyRaided             342.969 ->    340.375  d=   -2.594 se=  2.055  lower 35 higher 27
+  ev_FormationEmbarked       2480.328 ->   2615.531  d=  135.203 se=  72.64  lower 28 higher 35
+  ev_FormationLanded         2461.109 ->   2593.844  d=  132.734 se= 72.665  lower 28 higher 36
+  ev_LandingRepulsed            6.234 ->      4.531  d=   -1.703 se=  0.665  lower 41 higher 19
+  ev_MajorBattleStarted       108.594 ->    143.062  d=   34.469 se=  6.079  lower 15 higher 49
+  ev_PeaceSigned              460.859 ->    430.562  d=  -30.297 se= 10.549  lower 45 higher 19
+  ev_FleetsLaidUp               3.328 ->      4.859  d=    1.531 se=   0.61  lower 24 higher 35
+  ev_AirStrike              486542.75 -> 1064047.25  d= 577504.5 se=14507.587  lower 0 higher 64
+  ev_StrikeHit               978852.5 -> 2573462.297  d=1594609.797 se=114952.214  lower 1 higher 63
+  tickMeanLate                  2.829 ->        3.0  d=     0.17 se=  0.051  lower 22 higher 42
+  tickMax                       4.432 ->      4.736  d=    0.303 se=  0.124  lower 22 higher 42
+  living30                     95.219 ->     97.484  d=    2.266 se=  2.159  lower 25 higher 35
+  stasisOver12 (14, 5) stasisMax (23, 19) ordered (1, 2) (15, 18) strong None None
+== new n=8
+  eng1                         37.679 ->      36.88  d=   -0.799 se=  2.502  lower 4 higher 4
+  engLate                       3.944 ->      5.489  d=    1.545 se=  0.382  lower 1 higher 7
+  engPerAtWarLatePct            0.955 ->      1.166  d=     0.21 se=  0.108  lower 1 higher 7
+  engPerWarLate                  0.58 ->       0.88  d=      0.3 se=  0.068  lower 1 higher 7
+  sea1                           55.5 ->         39  d=    -16.5 se=   8.89  lower 7 higher 1
+  seaLate                       8.134 ->      5.509  d=   -2.625 se=  0.434  lower 8 higher 0
+  seaZeroLatePct                2.311 ->      4.937  d=    2.626 se=  1.814  lower 2 higher 6
+  sunkLate                     78.591 ->     58.134  d=  -20.457 se=  6.121  lower 7 higher 1
+  air1                           2861 ->     3004.5  d=    143.5 se= 399.31  lower 3 higher 5
+  airLate                      205.97 ->    687.233  d=  481.263 se= 33.055  lower 0 higher 8
+  aloft1                       53.562 ->      69.35  d=   15.788 se=  1.586  lower 0 higher 8
+  aloftLate                     17.42 ->     40.852  d=   23.432 se=  1.972  lower 0 higher 8
+  wingsY20                      69.75 ->     120.25  d=     50.5 se=  9.526  lower 0 higher 8
+  wingsLate                    67.935 ->    109.534  d=   41.599 se=  4.538  lower 0 higher 8
+  warsLate                      7.418 ->      7.177  d=   -0.241 se=  0.526  lower 3 higher 5
+  stasis                       10.125 ->      7.125  d=       -3 se=  2.542  lower 4 higher 2
+  stasisOrdered                  5.75 ->       4.25  d=     -1.5 se=  1.973  lower 4 higher 3
+  stasisStrong                   3.75 ->       6.25  d=      2.5 se=  1.069  lower 1 higher 6
+  navy10_transports            423.25 ->      346.5  d=   -76.75 se=  68.43  lower 5 higher 3
+  navy10_carriers               4.375 ->          5  d=    0.625 se=  1.224  lower 2 higher 4
+  navy10_manned                 4.375 ->      3.125  d=    -1.25 se=  0.977  lower 4 higher 1
+  navy10_warships             391.125 ->    335.375  d=   -55.75 se= 61.015  lower 5 higher 3
+  navy20_transports               614 ->      456.5  d=   -157.5 se= 83.949  lower 6 higher 2
+  navy20_carriers               3.375 ->       2.75  d=   -0.625 se=  0.981  lower 4 higher 2
+  navy20_manned                 3.375 ->       0.75  d=   -2.625 se=  1.117  lower 5 higher 1
+  navy20_warships                 370 ->     291.25  d=   -78.75 se= 42.742  lower 6 higher 2
+  navy30_transports           538.625 ->      503.5  d=  -35.125 se= 40.763  lower 6 higher 2
+  navy30_carriers                 2.5 ->      3.625  d=    1.125 se=  0.953  lower 1 higher 4
+  navy30_manned                   2.5 ->       0.25  d=    -2.25 se=  1.278  lower 3 higher 0
+  navy30_warships             309.375 ->     283.75  d=  -25.625 se= 51.805  lower 5 higher 3
+  cvAirLate                     5.095 ->    857.453  d=  852.358 se= 94.003  lower 0 higher 8
+  cvStrikeLate                  5.095 ->      7.164  d=    2.069 se=  3.118  lower 3 higher 5
+  largestPct30                 29.087 ->     23.688  d=     -5.4 se=  4.047  lower 5 higher 3
+  flipLatePctMin                4.074 ->      3.765  d=   -0.308 se=  0.606  lower 5 higher 3
+  flipLast5Pct                 55.418 ->     56.661  d=    1.243 se= 12.441  lower 4 higher 4
+  bursts                       14.625 ->       13.5  d=   -1.125 se=  5.617  lower 4 higher 4
+  burstsCivOver1M               0.125 ->      0.125  d=        0 se=  0.189  lower 1 higher 1
+  burstsCiv10x                  1.875 ->      1.125  d=    -0.75 se=   0.75  lower 4 higher 1
+  ev_WarDeclared               441.75 ->    442.375  d=    0.625 se= 30.481  lower 4 higher 4
+  ev_RevoltSpawned             165.75 ->    197.375  d=   31.625 se=  23.59  lower 2 higher 6
+  ev_PuppetCreated             83.125 ->         87  d=    3.875 se=  5.101  lower 4 higher 3
+  ev_NationAnnexed              62.25 ->      69.75  d=      7.5 se=  8.604  lower 3 higher 5
+  ev_CapitalCaptured              484 ->    483.375  d=   -0.625 se= 27.341  lower 4 higher 4
+  ev_CapitalMoved             613.875 ->    622.375  d=      8.5 se= 32.889  lower 4 higher 4
+  ev_ConvoyRaided             337.875 ->      336.5  d=   -1.375 se=  2.104  lower 4 higher 4
+  ev_FormationEmbarked       2492.125 ->    2561.25  d=   69.125 se= 98.207  lower 3 higher 5
+  ev_FormationLanded         2476.125 ->   2543.125  d=       67 se=100.377  lower 3 higher 5
+  ev_LandingRepulsed              4.5 ->      3.375  d=   -1.125 se=  0.693  lower 6 higher 2
+  ev_MajorBattleStarted        112.75 ->    151.875  d=   39.125 se= 11.846  lower 1 higher 7
+  ev_PeaceSigned                  425 ->    418.875  d=   -6.125 se= 28.593  lower 4 higher 4
+  ev_FleetsLaidUp               1.625 ->      3.625  d=        2 se=  1.626  lower 2 higher 6
+  ev_AirStrike                 475118 -> 1147040.25  d=671922.25 se=57502.181  lower 0 higher 8
+  ev_StrikeHit             964348.625 ->    2625703  d=1661354.375 se=257490.975  lower 0 higher 8
+  tickMeanLate                  3.157 ->      3.495  d=    0.339 se=  0.149  lower 2 higher 6
+  tickMax                       4.964 ->      5.232  d=    0.268 se=  0.341  lower 4 higher 4
+  living30                      85.75 ->     99.375  d=   13.625 se=  6.059  lower 2 higher 6
+  stasisOver12 (3, 0) stasisMax (21, 11) ordered (1, 0) (16, 9) strong (0, 0) (6, 11)

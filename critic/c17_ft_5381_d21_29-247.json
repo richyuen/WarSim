@@ -1,0 +1,34 @@
+{
+ "seed": 5381,
+ "day": 21,
+ "found": [
+  {
+   "id": 29,
+   "nation": 1,
+   "x": 1069.5,
+   "y": 285.19219748287736,
+   "button": 1,
+   "after": {
+    "mpp": 45.1,
+    "selfOn": false,
+    "enemiesOn": 3
+   },
+   "shot": "critic/shots/c17ft_5381_d21_29.png"
+  },
+  {
+   "id": 247,
+   "nation": 19,
+   "x": 1070.1684445783771,
+   "y": 286.5,
+   "button": 1,
+   "after": {
+    "mpp": 20,
+    "selfOn": false,
+    "enemiesOn": 3
+   },
+   "shot": "critic/shots/c17ft_5381_d21_247.png"
+  }
+ ],
+ "engaged": 137,
+ "errors": []
+}

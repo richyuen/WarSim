@@ -1,0 +1,91 @@
+{
+ "bin": "critic/c10_seed4219_y10.bin",
+ "seed": 4219,
+ "steps": [
+  {
+   "s": "title",
+   "text": "WarSim\n\nWorld war simulator\n\nLanguage\nEnglish\nSaved game\nWorld, 1938\n26 December 1962\nSaved 10/27/2026, 2:33:08 AM\nContinue\nScenarios\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nScenario file\n\nStart from a .warsim-scenario file, as the editor exports them.\n\nWorld, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNew game options\nMap size\nSmall, 1024 × 512\nMedium, 2048 × 1024\nLarge, 4096 × 2048\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting go",
+   "shot": "critic/shots/c17oos_00_title.png"
+  },
+  {
+   "s": "after continue 20s",
+   "url": "http://127.0.0.1:5337/?scenario=1938&seed=4219&paused=1&continue=1",
+   "text": "WarSim\nWorld war simulator\nLanguage\nEnglish\nResume\n−\nSpeed ×5\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n30 December 1947 · Paused\n1 December 1947 Austria and Ireland fought in the air this month: Austria lost 3 aircraft, Ireland 3\n1 December 1947 Netherlands's air force struck Germany this month: 7,768 men, guns and vehicles lost\nGermany\n+13\n⚔\nFrance\n+16\nSoviet Union\n+5\n⚔\nAfghanistan\n+1\nJapan\n+14\n⚔\nDenmark\n+1\nRanking\nLand\nArmy\nIncome\nTreasury\nManpower\nEnemies at war\nPuppets\nAircraft\nWarheads\nAge, years\nWars fought\nRevolts suffered\nCharts\n1.\nUnited States\n12,967,307\n2.\nSoviet Union\n12,571,633\n3.\nGermany\n11,859,767\n4.\nJapan\n10,450,272\n5.\nItaly\n9,963,249\n6.\nFrance\n9,292,038\n7.\nBrazil\n8,717,506\n8.\nAustralia\n8,139,148\n9.\nCanada\n6,301,100\n10.\nUnited Kingdom\n4,756,664\n11.\nArgen",
+   "tick": 87600,
+   "shot": "critic/shots/c17oos_01_after_continue.png"
+  },
+  {
+   "s": "resumed 30s",
+   "text": "WarSim\nWorld war simulator\nLanguage\nEnglish\nPause\n−\nSpeed ×5\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n29 January 1948\n1 January 1948 Netherlands's air force struck Germany this month: 8,975 men, guns and vehicles lost\n2 January 1948 Australia declared war on Soviet Union\nGermany\n+13\n⚔\nFrance\n+16\nSoviet Union\n+5\n⚔\nAfghanistan\n+1\nJapan\n+14\n⚔\nDenmark\n+1\nAustralia\n⚔\nSoviet Union\n+6",
+   "tick": 88320,
+   "shot": "critic/shots/c17oos_02_resumed30s.png"
+  },
+  {
+   "s": "title again",
+   "text": "WarSim\n\nWorld war simulator\n\nLanguage\nEnglish\nSaved game\nWorld, 1938\n26 December 1962\nSaved 10/27/2026, 2:33:08 AM\nContinue\nScenarios\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nScenario fi"
+  }
+ ],
+ "inspect": {
+  "tick": 87600,
+  "formations": 636,
+  "sample": [
+   {
+    "id": 2,
+    "nation": 75,
+    "x": 1819,
+    "y": 385,
+    "t": {
+     "name": "Infantry division 2",
+     "kind": "Infantry division",
+     "nation": 75
+    }
+   },
+   {
+    "id": 7,
+    "nation": 82,
+    "x": 431,
+    "y": 424,
+    "t": {
+     "name": "Infantry division 7",
+     "kind": "Infantry division",
+     "nation": 82
+    }
+   },
+   {
+    "id": 8,
+    "nation": 75,
+    "x": 1696,
+    "y": 365,
+    "t": {
+     "name": "Transport group 8",
+     "kind": "Transport group",
+     "nation": 75
+    }
+   },
+   {
+    "id": 9,
+    "nation": 20,
+    "x": 986,
+    "y": 259,
+    "t": {
+     "name": "Infantry division 9",
+     "kind": "Infantry division",
+     "nation": 20
+    }
+   },
+   {
+    "id": 11,
+    "nation": 82,
+    "x": 409,
+    "y": 415,
+    "t": {
+     "name": "Infantry division 11",
+     "kind": "Infantry division",
+     "nation": 82
+    }
+   }
+  ],
+  "wars": 3
+ },
+ "errors": []
+}

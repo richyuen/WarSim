@@ -1,0 +1,125 @@
+{
+ "seed": 1607,
+ "bin": "critic/c17_seed1607_y20.bin",
+ "fronts": [
+  {
+   "id": 61,
+   "n": 27,
+   "x": 1135.5016240392217,
+   "y": 657.5,
+   "views": [
+    {
+     "el": 0,
+     "ind": 0,
+     "sorties": 0,
+     "contact": 0,
+     "mpp": 3000
+    },
+    {
+     "el": 150,
+     "ind": 0,
+     "sorties": 0,
+     "contact": 1,
+     "mpp": 250
+    },
+    {
+     "el": 94,
+     "ind": 1674,
+     "sorties": 0,
+     "contact": 1,
+     "mpp": 25
+    }
+   ]
+  },
+  {
+   "id": 86,
+   "n": 28,
+   "x": 650.0309799204972,
+   "y": 574.5,
+   "views": [
+    {
+     "el": 0,
+     "ind": 1463,
+     "sorties": 3,
+     "contact": 0,
+     "mpp": 3000
+    },
+    {
+     "el": 431,
+     "ind": 1463,
+     "sorties": 0,
+     "contact": 2,
+     "mpp": 250
+    },
+    {
+     "el": 56,
+     "ind": 1685,
+     "sorties": 0,
+     "contact": 1,
+     "mpp": 25
+    }
+   ]
+  },
+  {
+   "id": 87,
+   "n": 82,
+   "x": 1092.2382880548162,
+   "y": 618.5,
+   "views": [
+    {
+     "el": 0,
+     "ind": 1683,
+     "sorties": 0,
+     "contact": 0,
+     "mpp": 3000
+    },
+    {
+     "el": 513,
+     "ind": 1683,
+     "sorties": 0,
+     "contact": 3,
+     "mpp": 250
+    },
+    {
+     "el": 42,
+     "ind": 649,
+     "sorties": 0,
+     "contact": 1,
+     "mpp": 25
+    }
+   ]
+  },
+  {
+   "id": 138,
+   "n": 82,
+   "x": 988.5,
+   "y": 409.5,
+   "views": [
+    {
+     "el": 0,
+     "ind": 649,
+     "sorties": 9,
+     "contact": 0,
+     "mpp": 3000
+    },
+    {
+     "el": 470,
+     "ind": 649,
+     "sorties": 0,
+     "contact": 1,
+     "mpp": 250
+    },
+    {
+     "el": 84,
+     "ind": 3968,
+     "sorties": 0,
+     "contact": 1,
+     "mpp": 25
+    }
+   ]
+  }
+ ],
+ "engaged": 28,
+ "aloftWorld": 27,
+ "errors": []
+}

@@ -1,0 +1,91 @@
+{
+ "bin": "critic/c16_seed3847_y26.bin",
+ "seed": 3847,
+ "steps": [
+  {
+   "s": "title",
+   "text": "WarSim\n\nWorld war simulator\n\nLanguage\nEnglish\nSaved game\nWorld, 1938\n26 December 1962\nSaved 10/26/2026, 11:48:58 PM\nContinue\nScenarios\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nScenario file\n\nStart from a .warsim-scenario file, as the editor exports them.\n\nWorld, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNew game options\nMap size\nSmall, 1024 × 512\nMedium, 2048 × 1024\nLarge, 4096 × 2048\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting g",
+   "shot": "critic/shots/c17os_00_title.png"
+  },
+  {
+   "s": "after continue 20s",
+   "url": "http://127.0.0.1:5336/?scenario=1938&seed=3847&paused=1&continue=1",
+   "text": "WarSim\nWorld war simulator\nLanguage\nEnglish\nResume\n−\nSpeed ×5\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n26 December 1963 · Paused\nNationalist Spain\n⚔\n?\nJapan\n+2\n⚔\nChina\n+1\nRanking\nLand\nArmy\nIncome\nTreasury\nManpower\nEnemies at war\nPuppets\nAircraft\nWarheads\nAge, years\nWars fought\nRevolts suffered\nCharts\n1.\nUnited States\n36,069,612\n2.\nSoviet Union\n10,966,867\n3.\nUnited Kingdom\n9,454,750\n4.\nAustralia\n9,256,829\n5.\nFrance\n8,655,077\n6.\nCanada\n5,299,160\n7.\nJapan\n4,863,141\n8.\nBrazil\n4,038,280\n9.\nBritish India\n3,936,377\n10.\nAnglo-Egyptian Sudan\n2,208,570\n11.\nArgentina\n2,125,875\n12.\nFree Razavi Khorasan II\n2,068,440\n13.\nBelgium\n2,000,137\n14.\nMongolia\n1,846,678\n15.\nDenmark\n1,741,956\nPolitical\nNations in their colours\nHatched: occupied land",
+   "tick": 227760,
+   "shot": "critic/shots/c17os_01_after_continue.png"
+  },
+  {
+   "s": "resumed 30s",
+   "text": "WarSim\nWorld war simulator\nLanguage\nEnglish\nPause\n−\nSpeed ×5\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n25 January 1964\n1 January 1964 United States's air force struck Free Trabzon this month: 13,387 men, guns and vehicles lost\n6 January 1964 Japan declared war on United Kingdom\n8 January 1964 Soviet Union declared war on United Kingdom\n14 January 1964 Turkey declared war on Unit",
+   "tick": 228480,
+   "shot": "critic/shots/c17os_02_resumed30s.png"
+  },
+  {
+   "s": "title again",
+   "text": "WarSim\n\nWorld war simulator\n\nLanguage\nEnglish\nSaved game\nWorld, 1938\n26 December 1962\nSaved 10/26/2026, 11:48:58 PM\nContinue\nScenarios\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nScenario f"
+  }
+ ],
+ "inspect": {
+  "tick": 227760,
+  "formations": 1467,
+  "sample": [
+   {
+    "id": 1,
+    "nation": 1,
+    "x": 1100,
+    "y": 267,
+    "t": {
+     "name": "Infantry division 1",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   },
+   {
+    "id": 2,
+    "nation": 1,
+    "x": 1101,
+    "y": 266,
+    "t": {
+     "name": "Infantry division 2",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   },
+   {
+    "id": 3,
+    "nation": 1,
+    "x": 1100,
+    "y": 270,
+    "t": {
+     "name": "Infantry division 3",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   },
+   {
+    "id": 4,
+    "nation": 1,
+    "x": 1099,
+    "y": 267,
+    "t": {
+     "name": "Infantry division 4",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   },
+   {
+    "id": 5,
+    "nation": 1,
+    "x": 1102,
+    "y": 267,
+    "t": {
+     "name": "Infantry division 5",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   }
+  ],
+  "wars": 2
+ },
+ "errors": []
+}

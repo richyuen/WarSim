@@ -1,0 +1,91 @@
+{
+ "bin": "critic/c10_seed4219_y10.bin",
+ "seed": 4219,
+ "steps": [
+  {
+   "s": "title",
+   "text": "WarSim\n\nWorld war simulator\n\nLanguage\nEnglish\nSaved game\nWorld, 1938\n26 December 1962\nSaved 10/27/2026, 2:34:08 AM\nContinue\nScenarios\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nScenario file\n\nStart from a .warsim-scenario file, as the editor exports them.\n\nWorld, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNew game options\nMap size\nSmall, 1024 × 512\nMedium, 2048 × 1024\nLarge, 4096 × 2048\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting go",
+   "shot": "critic/shots/c17os_00_title.png"
+  },
+  {
+   "s": "after continue 20s",
+   "url": "http://127.0.0.1:5336/?scenario=1938&seed=4219&paused=1&continue=1",
+   "text": "WarSim\nWorld war simulator\nLanguage\nEnglish\nResume\n−\nSpeed ×5\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n30 December 1947 · Paused\nNationalist Spain\n⚔\n?\nJapan\n+2\n⚔\nChina\n+1\nRanking\nLand\nArmy\nIncome\nTreasury\nManpower\nEnemies at war\nPuppets\nAircraft\nWarheads\nAge, years\nWars fought\nRevolts suffered\nCharts\n1.\nUnited States\n12,967,307\n2.\nSoviet Union\n12,571,633\n3.\nGermany\n11,859,767\n4.\nJapan\n10,450,272\n5.\nItaly\n9,963,249\n6.\nFrance\n9,292,038\n7.\nBrazil\n8,717,506\n8.\nAustralia\n8,139,148\n9.\nCanada\n6,301,100\n10.\nUnited Kingdom\n4,756,664\n11.\nArgentina\n3,100,959\n12.\nBritish India\n3,074,019\n13.\nXinjiang\n3,062,584\n14.\nPeru\n2,391,591\n15.\nBelgian Congo\n2,368,177\nPolitical\nNations in their colours\nHatched: occupied land",
+   "tick": 87600,
+   "shot": "critic/shots/c17os_01_after_continue.png"
+  },
+  {
+   "s": "resumed 30s",
+   "text": "WarSim\nWorld war simulator\nLanguage\nEnglish\nPause\n−\nSpeed ×5\n+\nMap: Political\nStatistics\nHistory\nSettings\nEditor\nGod Mode\n29 January 1948\n5 January 1948 Peru declared war on Chile\n11 January 1948 Turkey made peace with Germany\n12 January 1948 Japan declared war on Denmark\n19 January 1948 France declared war on Portugal\n28 January 1948 Soviet Union declared war on Turkey\nPeru\n+2\n⚔\nChile\nJapan\n+11\n⚔",
+   "tick": 88320,
+   "shot": "critic/shots/c17os_02_resumed30s.png"
+  },
+  {
+   "s": "title again",
+   "text": "WarSim\n\nWorld war simulator\n\nLanguage\nEnglish\nSaved game\nWorld, 1938\n26 December 1962\nSaved 10/27/2026, 2:34:08 AM\nContinue\nScenarios\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nScenario fi"
+  }
+ ],
+ "inspect": {
+  "tick": 87600,
+  "formations": 1467,
+  "sample": [
+   {
+    "id": 1,
+    "nation": 1,
+    "x": 1100,
+    "y": 267,
+    "t": {
+     "name": "Infantry division 1",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   },
+   {
+    "id": 2,
+    "nation": 1,
+    "x": 1101,
+    "y": 266,
+    "t": {
+     "name": "Infantry division 2",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   },
+   {
+    "id": 3,
+    "nation": 1,
+    "x": 1100,
+    "y": 270,
+    "t": {
+     "name": "Infantry division 3",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   },
+   {
+    "id": 4,
+    "nation": 1,
+    "x": 1099,
+    "y": 267,
+    "t": {
+     "name": "Infantry division 4",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   },
+   {
+    "id": 5,
+    "nation": 1,
+    "x": 1102,
+    "y": 267,
+    "t": {
+     "name": "Infantry division 5",
+     "kind": "Infantry division",
+     "nation": 1
+    }
+   }
+  ],
+  "wars": 2
+ },
+ "errors": []
+}

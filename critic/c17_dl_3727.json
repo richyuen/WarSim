@@ -1,0 +1,18 @@
+{
+ "seed": 3727,
+ "bin": "critic/c17_seed3727_y20.bin",
+ "count": "4600 of 4600 events",
+ "csv": {
+  "name": "warsim-history.csv",
+  "bytes": 541595,
+  "lines": 4602,
+  "head": "date,tick,type,a,aName,b,bName,text\r\n1938-01-01,0,AllianceJoined,83,Mexico,8,Coalition,Mexico founded a Coalition\r\n1938-01-01,0,AllianceJoined,90,Cuba,8,Coalition,Cuba joined the Coalition of Mexico\r\n1938-01-02,24,WarDeclared,20,United Kingdom,28,Netherlands,United Kingdom declared war on Netherlands\r\n1938-01-02,24,AllianceJoined,27,Belgium,2,Anglo-French Entente,Belgium joined the Anglo-French Entente\r\n1938-01-02,43,SeaBattle,131092,United Kingdom,458780,Netherlands,\"United Kingdom and Netherlands fought at sea: United Kingdom lost 2 ships, Netherlands 7\"\r\n1938-01-03,48,AllianceJoined,26,Swit"
+ },
+ "json": {
+  "name": "warsim-history.json",
+  "bytes": 1077352,
+  "lines": 46002,
+  "head": "[\n  {\n    \"date\": \"1938-01-01\",\n    \"tick\": 0,\n    \"type\": \"AllianceJoined\",\n    \"a\": 83,\n    \"aName\": \"Mexico\",\n    \"b\": 8,\n    \"bName\": \"Coalition\",\n    \"text\": \"Mexico founded a Coalition\"\n  },\n  {\n    \"date\": \"1938-01-01\",\n    \"tick\": 0,\n    \"type\": \"AllianceJoined\",\n    \"a\": 90,\n    \"aName\": \"Cuba\",\n    \"b\": 8,\n    \"bName\": \"Coalition\",\n    \"text\": \"Cuba joined the Coalition of Mexico\"\n  },\n  {\n    \"date\": \"1938-01-02\",\n    \"tick\": 24,\n    \"type\": \"WarDeclared\",\n    \"a\": 20,\n    \"aName\": \"United Kingdom\",\n    \"b\": 28,\n    \"bName\": \"Netherlands\",\n    \"text\": \"United Kingdom declared war on"
+ },
+ "errors": []
+}

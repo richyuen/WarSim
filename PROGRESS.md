@@ -24328,3 +24328,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Not done:** the second `check:review` (from the start, the code changed) was stopped by the host for low system
   memory in its unit stage, nothing red by then; not restarted. The critic waits on it.
 - **Next:** `npm run check:review`, then critic run 17 (PLAN 7.5).
+
+## 2026-10-28 — PLAN 7.5: critic run 17 on `cfedb50a` (blocking 3); PLAN 7.149–7.154 filed
+
+- **Start:** `check:review` green on `cfedb50a` (1 known red, `zoomDemo1938`; 0 not known), resumed from its unit stage.
+- **Scores:** map 7, diplomacy 7, emergent 6, God 7, editor 7, stats 7, UI 7, performance 7, stability **5** (7),
+  zoom 8, naval **6** (7), tanks 8, aircraft **8** (7), nukes 8. Blocking 3: R17-B1 (Continue opens a pre-ADR-737 save
+  half-loaded, silently), R17-B2 (late contact 4.11 → 5.11, 13 % of year 1), R17-B3 (carriers with a wing aboard at
+  year 20 3.08 → 1.30). R16-B2 (5.5 ms) no longer blocking: 9781 y24 5.85 ms, once.
+- **Filed:** 7.149–7.151 for the three, 7.152 stability, 7.153 emergent, 7.154 naval. Unseen seeds from 1401.
+- **Next:** PLAN 7.149 (the old save).

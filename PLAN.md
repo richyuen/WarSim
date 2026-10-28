@@ -64,6 +64,56 @@ Run 16's (report of 2026-10-27 on `7b883084`, `critic/CRITIC_REPORT.md`; R15-B2'
 R16-B1 and R16-B2 are PLAN 7.138 and 7.139; the dimensions under the bar, beyond them, are 7.140–7.142. A task each,
 split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed the critic has run (1207, 1213, 1259):
 
+Run 17's (report of 2026-10-28 on `cfedb50a`, `critic/CRITIC_REPORT.md`; R16-B1 improved a quarter, R16-B2 no longer
+blocking; aircraft 7 → 8, stability 7 → 5, naval 7 → 6): R17-B1, R17-B2 and R17-B3 are PLAN 7.149–7.151; the dimensions
+under the bar, beyond them, are 7.152 (stability 5), 7.153 (emergent 6) and 7.154 (naval 6). A task each, split when
+taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic has run (1471, 1523):
+
+- [ ] 7.149 R17-B1: Continue opens an older autosave as a corrupted world, silently. A save from before ADR-737 throws
+  `missing section formations.struck` after the map, date and tick are replaced; the 1938 start's 1,467 formations and
+  its wars stay and Resume runs it on; the same save loads whole on `7b883084` (`critic/c17_os_c10.json`,
+  `critic/shots/c17os_01_after_continue.png`, `critic/c17o_os.json`, `critic/scripts/c17_oldsave.mjs`). AT: a HEAD
+  save with one section removed, pressed through the title's Continue in the page, gives a message on the title that it
+  cannot be loaded and starts nothing; the world held before the load hashes the same after the refusal (no section of
+  it replaced); a unit test loading such a save asserts the refusal and the unchanged world, red without; a browser
+  spec through Continue; the gate green.
+- [ ] 7.150 R17-B2: the late world is still mostly still. Same 64 seeds `7b88308` → HEAD, engaged land formations a
+  day in years 2–30 4.11 → 5.11 (+24 %), 13 % of year 1's 39.0; in the page 7019 y20 engaged 0, 0, 0, 0, 2, 2, 0 of
+  ~620 at war, 5419 y20 none on 4 of 7 samples (`critic/c17_cmp_y30.json`, `critic/c17_y2_7019_y20.json`,
+  `critic/c17_y2_5419_y20.json`). AT (the critic's bar): on seeds 1401–1410 × 30 years, engaged land formations a day
+  in years 2–30 at least 0.2 × the same runs' year 1, year 1 not below 0.95 × HEAD's on the same seeds; from those
+  runs' year-20 saves, no world with a war on land showing nobody in contact on more than two of seven 10-day samples;
+  a unit test, red without; the gate green.
+- [ ] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 →
+  1.30 a world, year 10 4.55 → 2.08; 12 of 15 carrier groups at war hold no wing in five HEAD y20 saves; the panel
+  shows neither the wings nor their mission (`critic/c17_navycmp.json`, `critic/c17_cvread_y20.txt`,
+  `critic/c17cv_6301_save.json`, `critic/c17_cv_99.json`). AT: on seeds 1411–1420 × 20 years against HEAD on the same
+  seeds, carriers with a wing aboard at year 20 at least 2 × HEAD's and at least 2.5 a world, carrier strike-hours in
+  years 2–20 not below 0.9 × HEAD's; a carrier group's panel lists the wings aboard and their mission; a unit test, red
+  without; the gate green.
+- [ ] 7.152 Stability 5: beyond 7.149, every new state column will break the older saves again, and one browser run
+  of 1307 hashed apart from headless from year 1 (4c6b44a9 against a6febaa8, 1 of 4 runs, not reproduced in 3)
+  (`critic/c17_h_misc_1307_3.log`, `critic/c17_det2_1307_*.json`, CRITIC_REPORT "Stability"). AT: a save carries a
+  format version that the title reads before it offers Continue, and an older one is shown as from an older version,
+  not as a game to continue; a unit test that fails when a state section is added without raising the version; the
+  critic's 1307 probe run 10 times in the page with each year's hash equal to headless every time, or the mismatch's
+  cause found and fixed with a test red without; the gate green.
+- [ ] 7.153 Emergent 6: beyond 7.150's contact, checkpoints with nobody in contact 13 → 17 of 128 (y10 and y20, 7
+  days each), and ADR-732's ordered-five bar fails in 2 of 64 worlds (5521 18 years, 7901 14)
+  (`critic/c17_engaged_w*.json`, `critic/c17_cmp_y30.txt`, `critic/c17_headless_5521.json`). AT: on seeds 1421–1430 ×
+  30 years against HEAD on the same seeds, checkpoints at years 10 and 20 (7 days each) with nobody in contact at most
+  half HEAD's count (and at least one fewer); no world with the same five largest by area in the same order for more
+  than 12 years; a unit test, red without; the gate green.
+- [ ] 7.154 Naval 6: beyond 7.151's decks, the sea war fell a third. Same 64 seeds, sea battles late 8.16 → 5.32 a
+  world-year (lower on 61), year 1 41.9 → 35.5, ships sunk in battles 80.8 → 59.7, transports at year 20 495 → 456,
+  with surface warships afloat 278 → 306; a carrier's strike ashore has no row and reads as land-based planes
+  (`critic/c17_cmp_y30.json`, `critic/c17_navycmp.json`, `critic/c17_cv_99.json`,
+  `critic/shots/c17cv_99_0_framed.png`). ADR-742 stands (carrier wings may sink fleets before they meet). AT: on seeds
+  1431–1440 × 20 years against HEAD on the same seeds, sea battles in years 2–20 at least 1.25 × HEAD's, ships sunk at
+  sea by any means and transports at year 20 not below HEAD's; a carrier strike out of a battle (ashore or at a fleet)
+  has a ticker row naming the carrier's nation and its target, and ships sunk by carrier wings are counted in the
+  headless report; a unit test, red without; the gate green.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

@@ -1,5 +1,5 @@
 {
-  "commit": "7b883084ca5b5bb43d8fc5c868dc0a2bb35410f6",
+  "commit": "cfedb50a062a70dc6c8731ff7ca31c16bb25c253",
   "scores": {
     "mapVisuals": 7,
     "diplomacyWarDepth": 7,
@@ -9,41 +9,52 @@
     "statsHistory": 7,
     "uiUxPolish": 7,
     "performance": 7,
-    "stability": 7,
+    "stability": 5,
     "semanticZoom": 8,
-    "naval": 7,
+    "naval": 6,
     "tanks": 8,
-    "aircraft": 7,
+    "aircraft": 8,
     "aiNukes": 8
   },
   "blocking": [
     {
-      "id": "R16-B1",
-      "title": "The late world stays still (R15-B1's late half, not fixed; ADR-717 a and ADR-721 a sent it here to judge): same 56 seeds 7739a78 -> HEAD, engaged land formations a day in years 2-30 4.36 -> 4.13 (se 0.105, lower on 34), per war 0.638 -> 0.602, 10.1 % of year 1's; new seeds on both commits 4.42 -> 4.02. The same five largest nations for more than 12 years in 13 of 56 worlds (8 on 7739a78), longest 19 -> 23 (4877, years 8-30). In the page 7019 y20: 559 land formations at war, engaged 4, 5, 0, 3, 0, 0, 0 over 60 days. Year 1 is level (39.72 -> 40.67); its run-15 fall is the fold's cost by ADR-718 a.",
+      "id": "R17-B1",
+      "title": "Continue opens an older autosave as a corrupted world, silently: a save from before ADR-737 throws 'missing section formations.struck' after the map, date and tick are replaced; the 1938 start's 1,467 formations and its wars ('Nationalist Spain ⚔ ?') remain and the game runs on with no message. The same save (8f6732e3's 4219 y10) loads whole on 7b883084 (636 formations, its own wars). Every autosave from before ADR-737 (52f71a5a) on Pages now opens this way.",
       "evidence": [
-        "critic/c16_cmp_y30.json",
-        "critic/c16_cmp_checkpoints.json",
-        "critic/c16_y2_7019_y20.json",
-        "critic/c16_y2_4877_y20.json",
-        "critic/shots/c16y2_7019_y20_d20_3000m.png",
-        "critic/c16_headless_4877.json"
+        "critic/c17_os_c10.json",
+        "critic/shots/c17os_01_after_continue.png",
+        "critic/c17o_os.json",
+        "critic/shots/c17oos_01_after_continue.png",
+        "critic/c17_os.json",
+        "critic/scripts/c17_oldsave.mjs",
+        "critic/scripts/c17_loadtest.ts"
       ],
-      "fix": "A late contact rule judged on unseen seeds against HEAD over years 2-30, with a stasis bar (top five unchanged at most 12 years) in the same AT; start from the two causes already found: ADR-717 b's long thin fronts and ADR-721 c's alliance members that cannot reach their enemy."
+      "fix": "Load into a scratch world and swap only on success (or check a stored save format version on the record before offering Continue); on failure tell the player on the title and start nothing half-loaded; a test that loads a save lacking a column asserts a refusal, not a mixed state."
     },
     {
-      "id": "R16-B2",
-      "title": "The 5.5 ms budget (ADR-709, any year) still fails pinned on two late years (R15-B2's cases fixed: 6421 y28 7.9 -> 5.2 ms, 1129 y21 6.5 -> 4.3 ms): pinned and alone from HEAD's own saves, 3847 year 27 6.14 / 6.19 ms, 5683 year 26 6.02 / 5.82 ms; 2633 y26 5.44 / 5.56 and 9203 y29 5.42 / 5.44 at the line. 3847's year 27 is 60.4 s at Max in the page. PLAN 7.129 is ticked on 10 seeds; on 64 seeds x 30 years 2 of 1,920 world-years break it.",
+      "id": "R17-B2",
+      "title": "The late world is still mostly still (R16-B1 carried, improved a quarter): same 64 seeds 7b883084 -> HEAD, engaged land formations a day in years 2-30 4.11 -> 5.11 (+24 %, se 0.12, higher on 56), 13 % of year 1's 39.0 and 3.8 at year 20; HEAD's 7019 y20 in the page 0, 0, 0, 0, 2, 2, 0 of ~620 at war, 5419 y20 none on 4 of 7 samples; checkpoints with nobody in contact 13 -> 17 of 128.",
       "evidence": [
-        "critic/c16_perf_3847_y27_read1.log",
-        "critic/c16_perf_3847_y27_read2.log",
-        "critic/c16_perf_5683_y26_read1.log",
-        "critic/c16_perf_5683_y26_read2.log",
-        "critic/c16_l_3847.json",
-        "critic/c16_seed3847_y26.bin",
-        "critic/c16_seed5683_y25.bin"
+        "critic/c17_cmp_y30.json",
+        "critic/c17_y2_7019_y20.json",
+        "critic/c17_y2_5419_y20.json",
+        "critic/c17_engaged_w1.json",
+        "critic/shots/c17y2_7019_y20_d00_3000m.png"
       ],
-      "fix": "Profile 3847's year 27 (from critic/c16_seed3847_y26.bin) and 5683's year 26 (from critic/c16_seed5683_y25.bin), operational AI 3.0-3.2 ms of each, and cut both under 5.5 ms; read the budget on more than ten seeds to 30 years."
+      "fix": "Bar I would accept: on unseen seeds x 30 years, engaged a day in years 2-30 at least a fifth of year 1's, and no late world with a land war showing nobody in contact on more than two of seven 10-day page samples."
+    },
+    {
+      "id": "R17-B3",
+      "title": "AI carriers sail with empty decks (run 16's manned carriers and ADR-738's 'the carriers now fight' undone by year 20): carriers with a wing aboard at year 20 3.08 -> 1.30 a world on the same 64 seeds (y10 4.55 -> 2.08); in five HEAD y20 saves 12 of 15 carrier groups at war hold no wing. Inferred: ADR-738's missions spend the wings and nothing re-mans them (carrier air hours 5,004 -> 708 a world-year, y1 -> y20); the carrier's panel shows neither its wings nor their mission.",
+      "evidence": [
+        "critic/c17_navycmp.json",
+        "critic/c17_navy_w1.json",
+        "critic/c17cv_6301_save.json",
+        "critic/c17_cvread_y20.txt",
+        "critic/c17_cv_99.json"
+      ],
+      "fix": "Rebuild or reassign wings to carriers at war (count deck wings in ADR-736's rebuild), and show a carrier's wings and mission on its panel."
     }
   ],
-  "timestamp": "2026-10-27T07:21:48Z"
+  "timestamp": "2026-10-28T07:40:00Z"
 }

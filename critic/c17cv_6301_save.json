@@ -1,0 +1,38 @@
+{
+ "seed": 6301,
+ "bin": "critic/c17_seed6301_y20.bin",
+ "steps": [],
+ "carriers": [
+  {
+   "id": 404,
+   "nation": 82,
+   "x": 52.5,
+   "y": 678.5,
+   "t": {
+    "name": "Carrier group 404",
+    "kind": "Carrier group",
+    "nation": 82
+   },
+   "elements": 10,
+   "panel": "Carrier group 404\n×\nKind\nCarrier group\nNation\nUnited States\nMen\n7,900 of 7,900\nSupply\n100%\nOrg\n100%\nFuel on the march\n56 an hour\nStatus\nHolding\nElements\n6×\tDestroyer\t6 of 6\n2×\tHeavy cruiser\t2 of 2\n2×\tAircraft carrier\t2 of 2",
+   "shot60": "critic/shots/c17cv_6301_save_fleet404_60m.png",
+   "shot15": "critic/shots/c17cv_6301_save_fleet404_15m.png"
+  },
+  {
+   "id": 1096,
+   "nation": 82,
+   "x": 52.5,
+   "y": 678.5,
+   "t": {
+    "name": "Carrier group 1096",
+    "kind": "Carrier group",
+    "nation": 82
+   },
+   "elements": 7,
+   "panel": "Carrier group 1096\n×\nKind\nCarrier group\nNation\nUnited States\nMen\n7,150 of 7,900\nSupply\n100%\nOrg\n100%\nFuel on the march\n56 an hour\nStatus\nHolding\nElements\n2×\tAircraft carrier\t2 of 2\n2×\tHeavy cruiser\t2 of 2\n3×\tDestroyer\t3 of 3",
+   "shot60": "critic/shots/c17cv_6301_save_fleet1096_60m.png",
+   "shot15": "critic/shots/c17cv_6301_save_fleet1096_15m.png"
+  }
+ ],
+ "errors": []
+}
