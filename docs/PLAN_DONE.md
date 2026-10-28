@@ -16110,3 +16110,29 @@ Of 7.152 (open in PLAN.md):
   - [x] 7.152a The state format: the autosave carries it, the title reads it before it offers Continue and shows an […]
   - [x] 7.152b The critic's 1307 probe run 10 times in the page, each year's hash equal to headless every time, or the
     mismatch's cause found and fixed with a test red without.
+
+<!-- moved 2026-10-28 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.153 (closed not done, ADR-749 a, the user's decision) Emergent 6: beyond 7.150's contact, checkpoints with nobody in contact 13 → 17 of 128 (y10 and y20, 7
+  days each), and ADR-732's ordered-five bar fails in 2 of 64 worlds (5521 18 years, 7901 14)
+  (`critic/c17_engaged_w*.json`, `critic/c17_cmp_y30.txt`, `critic/c17_headless_5521.json`). AT: on seeds 1421–1430 ×
+  30 years against HEAD on the same seeds, checkpoints at years 10 and 20 (7 days each) with nobody in contact at most
+  half HEAD's count (and at least one fewer); no world with the same five largest by area in the same order for more
+  than 12 years; a unit test, red without; the gate green.
+  From 7.150 (ADR-745 a, the user's decision): with the levy, year-20 worlds of 1401–1410 with nobody in contact on
+  more than two of seven samples 2 of 10 (1406: armed sides quiet for a month; 1408: the United States against
+  nations with no men left to levy, and a war days old), HEAD 4 (`docs/evidence/7.150/at.md`).
+  Read on HEAD (ADR-749, waits on the user): on 1421–1430 empty checkpoints 1 of 20, the ordered five at most 10
+  years (met), the ten-day measure 1 world of 10 (`docs/evidence/7.153/read.md`).

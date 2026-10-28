@@ -2412,11 +2412,15 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   coalitions form against nations above X% of world industry, puppets drift toward
   independence, revival brings back dead nations, and collapse on bankruptcy or capital loss.
   Tuned by sweep (§10).
-- **The long run's shape** (ADR-732, the user's decision): the largest nations by area include empty
-  lands far from any war (the Canadian north, Greenland, Siberia, Australia), which change hands
-  seldom; the set of the five largest by area may stand for decades. The world's change at the top
-  is the order of those five and the five strongest by `strengths`, each the same for at most 12
-  years. The largest nation's share of the land has no bar (ADR-740, the user's decision).
+- **The long run's shape** (ADR-732, ADR-750, the user's decisions): a stable top is a valid state
+  of the world. The five largest nations by area, as a set and in their order, and the five
+  strongest by `strengths` may stay the same for decades: the largest include empty lands far
+  from any war (the Canadian north, Greenland, Siberia, Australia), which change hands seldom,
+  and great powers that hold their own are as plausible as ones that fall. Turnover at the top
+  is not the measure of a living world and its absence is no defect. The world's change is read
+  by what moves: borders still changing, wars declared and ended, armies in contact, nations
+  rising, falling, revolting and revived, and the shares at the top moving. The largest
+  nation's share of the land has no bar (ADR-740, the user's decision).
 
 ---
 

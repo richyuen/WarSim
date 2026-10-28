@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.153: HEAD at the AT's floor on both clauses, no cause found (ADR-749, waits on the user)
+### RESOLVED 2026-10-28 (option a, the user's decision: no rule, 7.153 closed not done) · PLAN 7.153: HEAD at the AT's floor on both clauses, no cause found (ADR-749, waits on the user)
 - **The bar:** on 1421–1430 × 30 years against HEAD, checkpoints at years 10 and 20 (7 days) with nobody in contact
   at most half HEAD's count and at least one fewer; no world with the same five largest in the same order over 12
   years.

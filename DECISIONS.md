@@ -167,7 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-749 · 2026-10-28 · proposed (the user's decision) — PLAN 7.153: HEAD is at the AT's floor on both clauses; no rule
+### ADR-750 · 2026-10-28 · accepted (the user's decision, 2026-10-28) — A stable top is a valid world: the same five by area, order or power may stand
+
+- **Context.** ADR-732 let the set of the five largest by area stand for decades, but kept a bar on their order and on
+  the five strongest (`strengths`), each the same for at most 12 years, and the critic reads all three as stasis
+  (run 17: emergent 6, "ADR-732's own ordered-five bar fails in 2 of 64"). On HEAD the order holds 10 years at most on
+  1421–1430 (ADR-749); where it holds longer (critic 5521, 18 years) the five's shares move (the United States 12 →
+  17 %) and the gaps between them are too wide for the order to turn.
+- **Decision** (the user's, 2026-10-28). The world may settle at the top: the five largest by area, as a set and in
+  their order, and the five strongest may stay the same for long spans. Great powers that hold their own, and empty
+  lands that change hands seldom, are a valid state of the world, not a defect. The world's dynamism is read by what
+  moves: borders still changing, wars declared and ended, armies in contact, nations rising, falling, revolting and
+  revived, the shares at the top moving. ADR-732's 12-year bars on the order and on the five strongest are struck.
+- **SPEC** §7 "The long run's shape" rewritten to say so. Under `CRITIC_PROMPT.md`'s rules a behaviour SPEC specifies
+  as the user's decision is judged by its execution; an objection to it goes under "Design objections" and lowers no
+  score.
+- **Not changed:** the sweep's own stasis criterion (SPEC §10, ADR-428: the set the same in 20 yearly samples of a
+  50-year run fails a seed, within the 80 % quorum); the DONE condition's "borders still moving at the end".
+
+### ADR-749 · 2026-10-28 · accepted (the user's decision, 2026-10-28: option a, no rule; 7.153 closed not done) — PLAN 7.153: HEAD is at the AT's floor on both clauses; no rule
 
 - **Context.** PLAN 7.153 (critic run 17, emergent 6): checkpoints with nobody in contact 13 → 17 of 128 on
   `cfedb50a`, and ADR-732's ordered five over 12 years in 2 of 64 worlds. AT: on 1421–1430 × 30 against HEAD, empty
@@ -668,7 +686,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   long-front wars late), its AT as drafted (seeds from 1274), after 7.145. (d) and (e) not taken.
 - **Meanwhile** the loop takes PLAN 7.141 (naval). No sim change.
 
-### ADR-732 · 2026-10-27 · accepted (the user's decision, 2026-10-27; its "no nation over a third" struck by ADR-740) — The design: the largest by area may stay; change at the top is read by power and order (answers ADR-730, PLAN 7.140)
+### ADR-732 · 2026-10-27 · accepted (the user's decision, 2026-10-27; its "no nation over a third" struck by ADR-740, its 12-year bars on the order and the five strongest by ADR-750) — The design: the largest by area may stay; change at the top is read by power and order (answers ADR-730, PLAN 7.140)
 
 - **Context.** Critic run 16 scores emergent dynamics 6, in part on "the same five giants for 13–23 years in a fifth
   of worlds" (R16-B1's second half; PLAN 7.140). The read (ADR-730, `docs/evidence/7.140/measure.md`): the set is

@@ -24442,3 +24442,12 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Decision waiting:** ADR-749 (a) close not done, no rule (recommended); (b) a rule for 0 of 20; (c) re-scope to
   the ten-day measure on 1441–1450. BLOCKERS entry. No sim code; pin unchanged.
 - **Next:** PLAN 7.154 (naval 6) while ADR-749 waits.
+
+## 2026-10-28 — The user's decisions: ADR-749 (a), ADR-750
+
+- ADR-749 (a): no rule; PLAN 7.153 closed not done; BLOCKERS' entry resolved.
+- ADR-750: a stable top is a valid world. SPEC §7 "The long run's shape": the five largest by area (set and order)
+  and the five strongest may stand for decades; dynamism is read by borders, wars, contact, rises, falls and the
+  shares moving. ADR-732's 12-year bars on the order and on the five strongest struck. The sweep's §10 stasis
+  criterion not changed. No code; pin unchanged.
+- **Next:** PLAN 7.154 (naval 6).

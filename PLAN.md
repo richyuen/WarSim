@@ -69,17 +69,6 @@ blocking; aircraft 7 → 8, stability 7 → 5, naval 7 → 6): R17-B1, R17-B2 an
 under the bar, beyond them, are 7.152 (stability 5), 7.153 (emergent 6) and 7.154 (naval 6). A task each, split when
 taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic has run (1471, 1523):
 
-- [ ] 7.153 Emergent 6: beyond 7.150's contact, checkpoints with nobody in contact 13 → 17 of 128 (y10 and y20, 7
-  days each), and ADR-732's ordered-five bar fails in 2 of 64 worlds (5521 18 years, 7901 14)
-  (`critic/c17_engaged_w*.json`, `critic/c17_cmp_y30.txt`, `critic/c17_headless_5521.json`). AT: on seeds 1421–1430 ×
-  30 years against HEAD on the same seeds, checkpoints at years 10 and 20 (7 days each) with nobody in contact at most
-  half HEAD's count (and at least one fewer); no world with the same five largest by area in the same order for more
-  than 12 years; a unit test, red without; the gate green.
-  From 7.150 (ADR-745 a, the user's decision): with the levy, year-20 worlds of 1401–1410 with nobody in contact on
-  more than two of seven samples 2 of 10 (1406: armed sides quiet for a month; 1408: the United States against
-  nations with no men left to levy, and a war days old), HEAD 4 (`docs/evidence/7.150/at.md`).
-  Read on HEAD (ADR-749, waits on the user): on 1421–1430 empty checkpoints 1 of 20, the ordered five at most 10
-  years (met), the ten-day measure 1 world of 10 (`docs/evidence/7.153/read.md`).
 - [ ] 7.154 Naval 6: beyond 7.151's decks, the sea war fell a third. Same 64 seeds, sea battles late 8.16 → 5.32 a
   world-year (lower on 61), year 1 41.9 → 35.5, ships sunk in battles 80.8 → 59.7, transports at year 20 495 → 456,
   with surface warships afloat 278 → 306; a carrier's strike ashore has no row and reads as land-based planes
@@ -463,3 +452,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.150 (closed not done, ADR-745 a, the user's decision) R17-B2: the late world is still mostly still. Same 64 seeds `7b88308` → HEAD, engaged land formations a […]
 - [x] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 → […]
 - [x] 7.152 Stability 5: beyond 7.149, every new state column will break the older saves again, and one browser run […]
+- [x] 7.153 (closed not done, ADR-749 a, the user's decision) Emergent 6: beyond 7.150's contact, checkpoints with nobody in contact 13 → 17 of 128 (y10 and y20, 7 […]
