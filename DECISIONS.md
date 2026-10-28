@@ -185,6 +185,11 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   day 22, in contact all of it; `tools/diag/contactPick.ts`), as at each earlier re-pick. The case unchanged.
 - **tankBattle1938 (3.6e4):** the demo's seed is 2 again (seed 1 has no such four hours from day 14 to 120 now, nor
   seeds 3–6; seed 2 has them on day 24, in Spain). The search's rule unchanged, as at ADR-534's move.
+- **seaClose1938 (7.132):** the five rows picked again by the same scan (`tools/diag/seaPairs.ts 3613 70
+  GER:POL,GER:ENG`) on HEAD: the critic's row (British transports against a Nationalist cruiser squadron, hour
+  1268) and those of hours 1424 and 1477 no longer happen in that game. A British transport group against Japanese
+  destroyers (hour 979) stands for the critic's. The bars unchanged; all five met (nearest 11–32 % of the width,
+  least hull 13 px).
 
 ### ADR-742 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, no rule) — PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet; ships sunk at sea by any means 0.98 ×
 

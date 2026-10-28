@@ -11,16 +11,18 @@ import { NATIONS_1938 } from '../../src/sim/scenario1938';
 // GER:POL,GER:ENG`): from each row's press, ship elements of both sides on the screen, the nearest two
 // of the two sides within a third of the view's width, and every ship on the screen at least 12 px
 // from stern to bow (`MapView.shipHullPx`, the shader's rule of the layer that draws it).
+// Picked again since the rules of PLAN 7.139–7.146 (ADR-743): the critic's battle and two others no
+// longer happen in this game. The same scan on HEAD; a transport group's row stands for the critic's.
 
 const id = (tag: string): number => NATIONS_1938.findIndex((n) => n.tag === tag) + 1;
 
 /** The game's rows: about the hour the row has stood two hours running (`seaPairs`), its two sides, and what fights. */
 const CASES = [
-  { hour: 45, a: 'ENG', b: 'GER', what: 'destroyers against destroyers, 12 km' },
-  { hour: 172, a: 'ENG', b: 'ITA', what: 'a battle fleet against submarines, 6 km' },
-  { hour: 1268, a: 'ENG', b: 'NSP', what: "the critic's: transports against a cruiser squadron, 20 km" },
-  { hour: 1424, a: 'ENG', b: 'JAP', what: 'a battle fleet against destroyers, 12 km' },
-  { hour: 1477, a: 'NSP', b: 'POR', what: 'a cruiser squadron against destroyers, 18 km' },
+  { hour: 45, a: 'ENG', b: 'GER', what: 'destroyers against a battle fleet, 32 km' },
+  { hour: 164, a: 'ENG', b: 'ITA', what: 'a carrier group against submarines, 12 km' },
+  { hour: 979, a: 'ENG', b: 'JAP', what: 'transports against destroyers, 12 km' },
+  { hour: 1100, a: 'ENG', b: 'JAP', what: 'a battle fleet against a cruiser squadron, 18 km' },
+  { hour: 1664, a: 'FRA', b: 'SOV', what: 'a cruiser squadron against a cruiser squadron, 20 km' },
 ] as const;
 
 /** After a flight of the camera: until it is over, and a snapshot of the new view. */
