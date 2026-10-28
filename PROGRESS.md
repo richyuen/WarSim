@@ -24307,3 +24307,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   (0.977 × on HEAD's windows); the carriers keep striking fleets at range. Seeds 1314–1323 unspent.
 - BLOCKERS' two entries resolved. No code changed; the pin unchanged.
 - **Next:** PLAN 7.5, the critic (run 17): `npm run check:review` first (PROMPT step 2a).
+
+## 2026-10-27 — PLAN 7.5: `check:review` before critic run 17 found six browser specs red; all six fixed (ADR-743)
+
+- **Start:** gate green on `4c0cb833`; critic not due by `critic:due`, but every task of run 16 is closed, so 7.5 (run
+  17) is next. `check:review`: red, 6 not known (zoomDemo1938 known red). Green at `7b883084`; no drawing code
+  changed between; the AI rules of PLAN 7.139–7.146 moved the seeded histories the specs find their cases in.
+- **Fixed, one commit each** (each run alone by hand, then the gate):
+  - `bae53b0a` shipMarks1938: a British bow over a French hull measured a destroyer 16 px; only uncrowded ships
+    measured (18 px, bar 17).
+  - `d5dfd425` tankHulls1938: no German armoured division meets France's in 90 days on seed 3929; Poland's count
+    too (armoured division 40, day 4, a hull alight at 11 s).
+  - `3ff3f247` fallen1938: Polish division 569 (contactPick).
+  - `0a745dd2` tankBattle1938: seed 2 (seed 1 and 3–6 have no such four hours in days 14–120; Node probe).
+  - `c05448f2` seaClose1938: five rows re-picked by `seaPairs.ts`; the critic's transport row gone, a transport
+    group against destroyers stands for it.
+  - `bfbd79a6` fightSeen1938: a **camera change** (ADR-700 extended): a pair in contact 25.6 km north–south cannot
+    be whole at T3 in 800 px; `battleViewM` takes such a fight past T3 (`FIGHT_T3_PAD_KM` 5), the rest stay at 30.
+- **Dynamics note:** seed 1 has no tank fight in the demo's sense from day 14 to 120, nor seeds 3–6.
+- **Not done:** the second `check:review` (from the start, the code changed) was stopped by the host for low system
+  memory in its unit stage, nothing red by then; not restarted. The critic waits on it.
+- **Next:** `npm run check:review`, then critic run 17 (PLAN 7.5).
