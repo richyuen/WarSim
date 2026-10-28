@@ -36,7 +36,9 @@ const { w: W } = SIZE_1938;
 // fire in the view of one lost under fire (PLAN 3.7o). The search's rule is as it was.
 // Seed 1 since PLAN 7.34a's check (ADR-534): a sim change moved seed 2's game, which then had no
 // such four hours from day 14 to 120 (nor seed 3's); seed 1 has them on day 35, in China.
-const SEED = 1;
+// Seed 2 again since the rules of PLAN 7.139–7.146 (ADR-743): seed 1 then had none from day 14 to
+// 120, nor seeds 3–6; seed 2 has them on day 24.
+const SEED = 2;
 const FIRST_DAY = 14;
 const LAST_DAY = 120;
 /** Elements of tanks that fire in the view of the first stepped stop. */

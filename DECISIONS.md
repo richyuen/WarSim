@@ -183,6 +183,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   first flame at 11 s.
 - **fallen1938 (3.11d):** the Polish division watched is 569 (540 no longer in contact on day 21; 569 loses 1,518 on
   day 22, in contact all of it; `tools/diag/contactPick.ts`), as at each earlier re-pick. The case unchanged.
+- **tankBattle1938 (3.6e4):** the demo's seed is 2 again (seed 1 has no such four hours from day 14 to 120 now, nor
+  seeds 3–6; seed 2 has them on day 24, in Spain). The search's rule unchanged, as at ADR-534's move.
 
 ### ADR-742 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, no rule) — PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet; ships sunk at sea by any means 0.98 ×
 
