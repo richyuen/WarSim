@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### seaRow1938's Speed x1 test (critic run 18's review): red on this machine, the code not its cause; on `tools/gate/knownRed.json`
+- **The bar:** from the row of Germany's and Britain's sea battle (seed 5591, hour 45), at Speed x1 for 6 s, a frame
+  with both sides' ships' tracers on the screen (`seaRow1938.spec.ts`, PLAN 7.22a).
+- **What was read** (2026-10-28): red in `npm run check:review` on `7819d86e` and again alone, alone by hand on
+  `0488d64a`, and alone at `cfedb50a`, the commit whose review was green the day before: 4 of 4. Each read: hour 45, 26–27
+  frames in 6 s (SwiftShader, the renderer the config gives the page), 6 ticks; at most 1 German tracer and 3–4
+  British at once, never both in one frame. The machine idle (no process over 10 %), the High performance plan, the
+  same Playwright and Chromium (1243, of 2026-09-29). Thin before: PLAN 7.31 ("thin margins on this machine"), PLAN
+  7.35c (missed in a parallel run, green alone).
+- **Left:** the test leaves the list when it passes here. The test is not changed. Nothing waits on the user.
+
 ### PLAN 7.155: the lake ports' refusals gone, the AT missed on fleets standing on the Panama canal (ADR-752)
 - **The bar:** on 1441–1450 × 20 against HEAD, refusals for no sea way at most 0.5 × HEAD's, transports at year 20 and
   landings not below HEAD's; a unit test red without; the gate green.

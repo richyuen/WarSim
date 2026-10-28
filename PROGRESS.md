@@ -24536,4 +24536,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   (Japan on China, hour 1) stood 15 px over the panel. Sea and order rows one line beside a panel; the panel's room
   9.7 → 12.6 rem (measured: the fullest ticker 7.14–7.35 rem). The test puts an order row in too. Specs by hand:
   ticker1938, carrierRaidRow1938, seaClosingRow1938, carrierStrikeRow1938, orderNews1938, formationPanel1938 (12 of 12).
-- **Next:** seaRow1938's Speed x1 test; then `check:review` again from the start, then the critic.
+- **seaRow1938** Speed x1: red 4 of 4, at `cfedb50a` too (green in run 17's review): 26–27 frames in 6 s under
+  SwiftShader, at most 1 German tracer, never both sides in one frame; the machine idle, no browser changed. The code
+  is not its cause: on `tools/gate/knownRed.json` with a BLOCKERS entry; the test unchanged.
+- **Next:** `check:review` again from the start, then the critic.
