@@ -179,6 +179,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   met on HEAD in every world. 7.150's ten-day measure: 1 world of 10 (1428) over two empty samples of seven. The
   long quiet wars read (1428, 1406) are China fighting to the death at score ±100, which the stance and the
   five-year cap (MAX_WAR_DAYS) govern as specified.
+  The one empty checkpoint (1426 year 10): no war with a land front of 100 cells; a 1,918-cell nation fighting to
+  the death on fronts of 16–26 cells, and the Netherlands' wars with no land front.
 - **Options:**
   - **(a)** PLAN 7.153 closed not done, no rule: both clauses at the floor on HEAD; the next critic report judges.
     (Recommended: the first clause asks 0 of 20, one checkpoint inside ten seeds' noise, with no cause found.)

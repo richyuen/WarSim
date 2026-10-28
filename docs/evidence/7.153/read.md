@@ -31,3 +31,8 @@ measure).
   fighting to the death (the stance, PROMPT's baseline; MAX_WAR_DAYS ends it at five years); the others won wars
   (score 64–82) against beaten sides with 7–10 formations. 1406's China–France the same (fight to the death, score
   100). No defect found: the stance and the five-year cap work as specified.
+- **1426's empty checkpoint (year 10):** five wars, none with a land front of 100 cells (`phantomWars`, 14 days;
+  `warContact`, 7 days: 2 a day apart on separate landmasses, 2.6 far, 0.4 near). A nation of 1,918 cells fighting
+  to the death against Australia, the Soviet Union and Canada (fronts 0, 16 and 26 cells), and the Netherlands
+  (986 cells, 4 formations) at war with Portugal and France with no land front. No defect: small fronts and wars
+  over the sea.
