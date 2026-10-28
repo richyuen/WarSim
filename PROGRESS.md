@@ -24526,3 +24526,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   (three worlds took another course; not in this AT).
 - Gate: six unit files red in the related run by timeouts, each green alone (the gate's rerun).
 - **Next:** PLAN 7.155 stays open on its BLOCKERS entry (its AT's transports clause); then PLAN 7.5.
+
+## 2026-10-28 — PLAN 7.5: `check:review` before critic run 18: two red; the ticker's room fixed (ADR-754)
+
+- **Start:** gate green on `7819d86e`; every task of run 17 closed or on BLOCKERS, so 7.5 (run 18) is next.
+  `check:review`: unit 1960 of 1960, ten-year 18 of 18; browser red, 2 not known (zoomDemo1938 known red):
+  `ticker1938` "keeps its room" and `seaRow1938` "Speed x1" (the latter red alone at 7.154a too).
+- **ticker1938:** beside a panel the ticker had room for its two events alone; PLAN 7.154a's carrier strike row
+  (Japan on China, hour 1) stood 15 px over the panel. Sea and order rows one line beside a panel; the panel's room
+  9.7 → 12.6 rem (measured: the fullest ticker 7.14–7.35 rem). The test puts an order row in too. Specs by hand:
+  ticker1938, carrierRaidRow1938, seaClosingRow1938, carrierStrikeRow1938, orderNews1938, formationPanel1938 (12 of 12).
+- **Next:** seaRow1938's Speed x1 test; then `check:review` again from the start, then the critic.

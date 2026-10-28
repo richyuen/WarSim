@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-754 · 2026-10-28 · accepted — PLAN 7.5: beside a panel the ticker has room for a sea battle's row and an order's
+
+- **Context.** `npm run check:review` before critic run 18 had `ticker1938` "the ticker keeps its room…" red twice:
+  the ticker's top 15 px over the panel's foot at UI size 100 %. Beside a panel the ticker shows the last two events
+  (two lines each, PLAN 3.12Rh), the first sea battle's row and the last order's (PLAN 4.9c, 4.10b), but the panel's
+  room (9.7 rem below it) held the two events alone. A sea row was rare by hour 1 until PLAN 7.154a gave a carrier's
+  strike out of a battle its row: on seed 1938 Japan's carriers strike China from hour 1.
+- **Decision.** Beside a panel the sea row and the order's row are one line each (ellipsis; the tooltip and a click
+  as before), and the panel's room is 12.6 rem: the fullest ticker measured 7.14, 7.35 and 7.32 rem high at UI sizes
+  100, 115 and 130 %, which with the panel's top, padding and the ticker's gap needs 12.07–12.26 rem.
+- **Cost.** The panel is 2.9 rem shorter at full height; it scrolls as before.
+- **Test:** `ticker1938` now puts an order's row beside the panel too and asks for a sea row, so it checks the fullest
+  ticker; its mirrored room 9.7 → 12.6 rem. Red before the change (461.5 against 476.7 at 100 %).
+
 ### ADR-753 · 2026-10-28 · accepted — PLAN 7.156: a fleet inside a passage's jump keeps its way through a sea battle's closing
 
 - **Context.** 7.155's AT found fleets standing on the Panama canal's cells, no sea zone under them, every order

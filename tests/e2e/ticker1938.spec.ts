@@ -136,6 +136,12 @@ test('the ticker keeps its room beside a panel at its full height and the war ba
     }, testid);
   const ev = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/3.12') : info.outputPath();
   mkdirSync(ev, { recursive: true });
+  // The fullest ticker beside a panel (ADR-754): besides the two events, a sea battle's row (the
+  // carrier's strike of Japan on China, from hour 1) and an order's, here one put in by hand.
+  await page.evaluate((GER) => {
+    const hud = window.__warsim!.hud as unknown as { orderNews: { value: unknown[] } };
+    hud.orderNews.value = [{ kind: 'refused', id: 1, nation: GER, reason: 1, x: 500, y: 300, tick: 1, seq: 9999 }];
+  }, GER);
 
   for (const scale of [1, 1.15, 1.3]) {
     await page.evaluate((v) => window.__warsim!.settings.setUiScale(v), scale);
@@ -145,13 +151,16 @@ test('the ticker keeps its room beside a panel at its full height and the war ba
     await expect(row).toHaveCount(2);
     await expect(row.nth(0)).toHaveText(/The United Provinces of Central Europe declared war on The Commonwealth of Vistula and Baltic$/);
     await expect(row.nth(1)).toHaveText(/The Kingdoms of the Northern Mountains declared war on The Free Towns of the Western Fjords$/);
+    await expect(page.getByTestId('carrier-raid-row').or(page.getByTestId('sea-battle-row')), `a sea row beside the panel at ${scale}`).toHaveCount(1);
+    await expect(page.getByTestId('order-news'), `an order's row beside the panel at ${scale}`).toHaveCount(1);
     // The panel is at its full height, and the ticker below it. Its room is the view's less the
     // bar's (PLAN 7.25d): 12.5 rem with the bar of one row it had when this was written, and God
-    // Mode's tools give the bar a second (PLAN 7.16b; the panel ran into the ticker's rows).
+    // Mode's tools give the bar a second (PLAN 7.16b; the panel ran into the ticker's rows); since
+    // ADR-754 2.9 rem more, for the sea battle's and the order's rows.
     const panel = await box('nation-panel');
     const barTop = await page.evaluate(() => parseFloat(document.documentElement.style.getPropertyValue('--bar-top')));
     expect(barTop, `the bar's top is known at ${scale}`).toBeGreaterThan(2.8 * rem);
-    expect(panel.bottom - panel.top, `panel at ${scale}`).toBeGreaterThan(640 - 9.7 * rem - barTop);
+    expect(panel.bottom - panel.top, `panel at ${scale}`).toBeGreaterThan(640 - 12.6 * rem - barTop);
     const short = await box('ticker');
     expect(short.top, `ticker below the panel at ${scale}`).toBeGreaterThanOrEqual(panel.bottom - 0.5);
     // The banners fill their width and begin right of the ticker.

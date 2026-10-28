@@ -224,9 +224,11 @@ body {
   top: 3.4rem;
   left: 0.5rem;
   width: 17rem;
-  /* Above the ticker's two rows of two lines (PLAN 3.12c, 3.12Rh), which stand on the bar's top:
-     God Mode's tools make the bar two rows high (PLAN 7.16b, 7.25d). 12.5 rem with the bar's one row. */
-  max-height: calc(100% - 9.7rem - var(--bar-top, 2.8rem));
+  /* Above the ticker's two rows of two lines (PLAN 3.12c, 3.12Rh), a sea battle's row and an order's
+     of one line each (ADR-754: 9.7 rem held the two events alone, and a carrier's strike row of
+     PLAN 7.154a stood 15 px over the panel's foot), which stand on the bar's top: God Mode's tools
+     make the bar two rows high (PLAN 7.16b, 7.25d). */
+  max-height: calc(100% - 12.6rem - var(--bar-top, 2.8rem));
   overflow-y: auto;
   padding: 0.5rem 0.7rem;
   background: rgba(20, 24, 32, 0.88);
@@ -457,13 +459,22 @@ body {
 .ticker-row[data-kind-name='NationRevived'] {
   border-left-color: #8ab17d;
 }
-/* Beside a panel a row is two lines at most (PLAN 3.12Rh): the panel leaves room for no more. */
+/* Beside a panel an event's row is two lines at most (PLAN 3.12Rh): the panel leaves room for no more. */
 .ticker.short .ticker-line {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   overflow: hidden;
+}
+/* Beside a panel a sea battle's row and an order's are one line each (ADR-754): the panel's room
+   holds two events of two lines and these two of one. */
+.ticker.short .sea-battle .ticker-line,
+.ticker.short .order-news .ticker-line {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .ticker-row:hover {
   background: rgba(40, 46, 60, 0.92);
