@@ -167,6 +167,34 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-746 · 2026-10-28 · accepted — A carrier's deck re-manned: a fleet a deck a month, at the carrier wing's price (PLAN 7.151)
+
+- **Context.** R17-B3: AI carriers sail with empty decks, carriers with a wing aboard at year 20 3.08 → 1.30 a world on
+  the critic's 64 seeds; 12 of 15 carrier groups at war in five year-20 saves hold none. A deck wing was made only with
+  its carrier (`manDecks`, PLAN 7.137); one lost was never replaced. The wing rebuild of ADR-689/ADR-736 counts deck
+  wings in a nation's start, so a lost deck wing came back as a land wing at an airfield.
+- **Read** (`tools/diag/deckLoss.ts`, critic run 17's year-10 saves): deck wings go in the air and with their carrier
+  sunk, and none comes back.
+- **Decision.** `economicAi` step 3c0, monthly, before the other wings: an AI nation whose fleet has a carrier afloat with
+  no wing based on it (`freeDecks`) puts one aboard (`manDecks(world, fleet, 1)`, `rules.carrierWing`): a deck a fleet a
+  month, its fleets by ascending id, at the wing's gold and men, while its balance stays above its need with the wing's
+  upkeep and its gold covers the price and the reserve (at war WAR_RESERVE_MONTHS, else RESERVE_MONTHS; ADR-736's
+  bounds); none while 2b saves for a means of delivery. The wing is aboard at once, wherever the fleet is: no production
+  row, so no new state column (PLAN 7.152), and no training days (the group flies out to the carrier; the start's and a
+  delivered carrier's come the same way, PLAN 7.137). The new wings count in 3c's rebuild with those in training.
+- **Panel.** `FormationDetail.deck`: a fleet with carriers afloat lists the wings based on them, their aircraft, their
+  mission (or "with its fleet": none of its own, it strikes in its fleet's sea battle) and whether in the air
+  (`FormationPanel`, "Air groups aboard (n of carriers)").
+- **AT** (`docs/evidence/7.151/at.md`, 1411–1420 × 20, HEAD against the rule): carriers with a wing aboard at year 20
+  0.60 → 3.70 a world (6.2 ×), carrier strike-hours in years 2–20 2.24 ×: **met**. Beside it: sea battles 0.99 ×, ships
+  sunk in them 1.01 ×; transports at year 20 0.82 × and armed ships afloat 0.77 × (each lower on 6 of 10): the wings'
+  gold comes from the navy's and the army's months. Left to PLAN 7.154, whose AT reads transports against its HEAD.
+- **AoC.** AoC has no carriers. No deviation.
+- **Tests.** `tests/unit/deckRefit1938.test.ts` (the United States, two deck wings of a carrier group lost: one back at
+  the month, paid, the other a month on; with no gold past the reserve, none; red without). `tests/e2e/carrierDeck1938.spec.ts`
+  (seed 99, a Japanese carrier group's panel: a row a wing aboard, the strike's "striking").
+- **Pin** unchanged (b22bcdd1): in seed 99's first year no deck is both empty and affordable.
+
 ### ADR-745 · 2026-10-28 · accepted (the user's decision, 2026-10-28: option a, kept; 7.150 closed not done) — The levy: outnumbered on a land front, an AI nation raises two cadre divisions a month from its manpower, for no gold (PLAN 7.150)
 
 - **Context.** R17-B2: late, land contact is 13 % of year 1's, and half the late worlds show nobody in

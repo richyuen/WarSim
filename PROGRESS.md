@@ -24381,3 +24381,22 @@ No rule changed and nothing on screen changed. One task came out of it.
 - The levy kept; PLAN 7.150 closed not done; its two quiet worlds of ten (1406, 1408; HEAD 4) noted under PLAN 7.153.
   BLOCKERS' entry resolved. No code changed; the pin unchanged.
 - **Next:** PLAN 7.151 (carriers' decks).
+
+## 2026-10-28 — PLAN 7.151: a carrier's lost wing is re-manned; the panel lists the wings aboard (ADR-746)
+
+- **Start:** gate green on `d45da86b`; critic not due.
+- **Cause** (`tools/diag/deckLoss.ts` on critic run 17's year-10 saves): deck wings are lost in the air and with their
+  carrier, and nothing put one back: `manDecks` ran only when a carrier was delivered (PLAN 7.137).
+- **Rule** (`economicAi` 3c0): monthly, a carrier afloat with no wing aboard gets one, a deck a fleet a month, at the
+  carrier wing's gold and men under the wing rebuild's reserve; aboard at once (no production row, no new state
+  column). Pin unchanged (b22bcdd1).
+- **Panel:** `FormationDetail.deck`; a carrier group's panel shows "Air groups aboard (n of carriers)", a row a wing
+  with its aircraft, its mission (or "with its fleet") and "in the air".
+- **Tests:** `deckRefit1938.test.ts` new (red without); `carrierDeck1938.spec.ts` new (seed 99, Japan's carrier group,
+  green by hand, screenshots in `docs/evidence/7.151/`).
+- **AT** (`docs/evidence/7.151/at.md`, 1411–1420 × 20): carriers with a wing aboard at year 20 0.60 → 3.70 a world,
+  carrier strike-hours years 2–20 2.24 ×: met. Beside it: transports at year 20 0.82 ×, armed ships 0.77 ×, battles
+  0.99 × (noted under PLAN 7.154).
+- **Gotcha:** a formation id freed by a destroy is given to the next wing made: a test counts the wings aboard, it does
+  not compare ids.
+- **Next:** PLAN 7.152 (stability: the save's format version).

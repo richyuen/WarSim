@@ -16044,3 +16044,25 @@ Of 7.116 (open in PLAN.md):
   year 1, year 1 1.27 × HEAD's, met; worlds with nobody in contact on more than two of seven samples at year 20 2 of 10
   (HEAD 4), missed. Seeds 1401–1410 spent. Closed not done 2026-10-28 (ADR-745 a, the user's decision): the levy
   kept, the quiet worlds to PLAN 7.153.
+
+<!-- moved 2026-10-28 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 →
+  1.30 a world, year 10 4.55 → 2.08; 12 of 15 carrier groups at war hold no wing in five HEAD y20 saves; the panel
+  shows neither the wings nor their mission (`critic/c17_navycmp.json`, `critic/c17_cvread_y20.txt`,
+  `critic/c17cv_6301_save.json`, `critic/c17_cv_99.json`). AT: on seeds 1411–1420 × 20 years against HEAD on the same
+  seeds, carriers with a wing aboard at year 20 at least 2 × HEAD's and at least 2.5 a world, carrier strike-hours in
+  years 2–20 not below 0.9 × HEAD's; a carrier group's panel lists the wings aboard and their mission; a unit test, red
+  without; the gate green.

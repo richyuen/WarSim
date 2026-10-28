@@ -69,13 +69,6 @@ blocking; aircraft 7 → 8, stability 7 → 5, naval 7 → 6): R17-B1, R17-B2 an
 under the bar, beyond them, are 7.152 (stability 5), 7.153 (emergent 6) and 7.154 (naval 6). A task each, split when
 taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic has run (1471, 1523):
 
-- [ ] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 →
-  1.30 a world, year 10 4.55 → 2.08; 12 of 15 carrier groups at war hold no wing in five HEAD y20 saves; the panel
-  shows neither the wings nor their mission (`critic/c17_navycmp.json`, `critic/c17_cvread_y20.txt`,
-  `critic/c17cv_6301_save.json`, `critic/c17_cv_99.json`). AT: on seeds 1411–1420 × 20 years against HEAD on the same
-  seeds, carriers with a wing aboard at year 20 at least 2 × HEAD's and at least 2.5 a world, carrier strike-hours in
-  years 2–20 not below 0.9 × HEAD's; a carrier group's panel lists the wings aboard and their mission; a unit test, red
-  without; the gate green.
 - [ ] 7.152 Stability 5: beyond 7.149, every new state column will break the older saves again, and one browser run
   of 1307 hashed apart from headless from year 1 (4c6b44a9 against a6febaa8, 1 of 4 runs, not reproduced in 3)
   (`critic/c17_h_misc_1307_3.log`, `critic/c17_det2_1307_*.json`, CRITIC_REPORT "Stability"). AT: a save carries a
@@ -101,6 +94,9 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   sea by any means and transports at year 20 not below HEAD's; a carrier strike out of a battle (ashore or at a fleet)
   has a ticker row naming the carrier's nation and its target, and ships sunk by carrier wings are counted in the
   headless report; a unit test, red without; the gate green.
+  From 7.151 (ADR-746): with the decks re-manned, on 1411–1420 × 20 transports at year 20 0.82 × and armed ships afloat
+  0.77 × HEAD's (each lower on 6 of 10), sea battles 0.99 ×; the wings' gold came from the navy's months
+  (`docs/evidence/7.151/at.md`).
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -470,3 +466,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.148 (closed not done, ADR-742 a, the user's decision) The sea battles under ADR-738 (found by 7.145's AT; ADR-738 a, the user's decision): on […]
 - [x] 7.149 R17-B1: Continue opens an older autosave as a corrupted world, silently. A save from before ADR-737 throws […]
 - [x] 7.150 (closed not done, ADR-745 a, the user's decision) R17-B2: the late world is still mostly still. Same 64 seeds `7b88308` → HEAD, engaged land formations a […]
+- [x] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 → […]

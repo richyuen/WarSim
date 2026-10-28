@@ -142,17 +142,24 @@ export function liveCarriers(world: World, fleet: number): number {
   return n;
 }
 
+/** Fleet `fleet`'s carriers afloat with no wing based on them (PLAN 7.151). */
+export function freeDecks(world: World, fleet: number): number {
+  let free = liveCarriers(world, fleet);
+  if (free === 0) return 0;
+  for (const [, b] of world.wingBase) if (b === -fleet) free--;
+  return Math.max(0, free);
+}
+
 /**
  * Puts a wing of the scenario's carrier wing (`rules.carrierWing`) aboard each carrier afloat of fleet `fleet` that
  * has none (PLAN 7.137): a fleet delivered with carriers carries their air groups, as the start's do
  * (`addWings`), their price in its own. Whole, in supply, at the fleet's place; each told as a formation
- * spawned. The wings made, by ascending id; none with no such template.
+ * spawned. The wings made, by ascending id; none with no such template. At most `max` (a deck re-manned, PLAN 7.151).
  */
-export function manDecks(world: World, fleet: number): number[] {
+export function manDecks(world: World, fleet: number, max = Infinity): number[] {
   const t = world.rules?.carrierWing;
   if (t === undefined || !world.formations.has(fleet)) return [];
-  let free = liveCarriers(world, fleet);
-  for (const [, b] of world.wingBase) if (b === -fleet) free--;
+  let free = Math.min(max, freeDecks(world, fleet));
   const out: number[] = [];
   for (; free > 0; free--) {
     const id = world.formations.create();

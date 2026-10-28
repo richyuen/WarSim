@@ -655,6 +655,12 @@ export interface FormationDetail {
   fight: { x: number; y: number; enemy: number; span: [number, number]; sea: boolean } | null;
   /** Its elements by unit type, in the template's order: how many elements, their units now and when whole. */
   units: { nameKey: string; cls: string; elements: number; strength: number; size: number }[];
+  /**
+   * A fleet with carriers afloat (PLAN 7.151): how many, and the wings based on them by ascending id, each with its
+   * aircraft's unit name, aircraft now, its mission's kind (null: none of its own, it strikes for its fleet in a sea
+   * battle) and whether it is in the air. Null for any other formation.
+   */
+  deck: { carriers: number; wings: { id: number; nameKey: string; aircraft: number; mission: 'patrol' | 'strike' | 'supply' | null; flying: boolean }[] } | null;
 }
 
 /**

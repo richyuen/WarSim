@@ -29,7 +29,7 @@ import { AT_PORT_CELLS, carrierStrikes, inShipReach, strikeTarget } from '../sim
 import { isLand } from '../shared/terrain';
 import { chartRows } from '../sim/stats';
 import { aircraftOf } from '../sim/systems/airCombat';
-import { isTransport, wingAircraft } from '../sim/systems/air';
+import { isTransport, liveCarriers, wingAircraft } from '../sim/systems/air';
 import { airbaseRoom } from '../sim/data/airbases';
 import { nearestWingBase } from '../sim/placeForces';
 import { Refusal } from '../shared/commands';
@@ -999,7 +999,32 @@ export class SimServer {
       ...place,
       fight,
       units: [...units.values()],
+      deck: fleet ? this.deckOf(world, id) : null,
     };
+  }
+
+  /** A fleet's carriers afloat and the wings based on them (PLAN 7.151; `FormationDetail.deck`), null with none. */
+  private deckOf(world: World, fleet: number): FormationDetail['deck'] {
+    const carriers = liveCarriers(world, fleet);
+    if (carriers === 0) return null;
+    const ec = world.elements.cols;
+    const els = elementIndex(world);
+    const wings = [...world.wingBase]
+      .filter(([w, b]) => b === -fleet && world.formations.has(w))
+      .map(([w]) => w)
+      .sort((a, b) => a - b)
+      .map((w) => {
+        const mine = els.get(w) ?? [];
+        const first = mine.find((e) => ec.strength[e]! > 0) ?? mine[0];
+        return {
+          id: w,
+          nameKey: `unit.${(first === undefined ? undefined : UNIT_IDS_1938[ec.unit[first]!]) ?? 'unknown'}`,
+          aircraft: mine.reduce((t, e) => t + ec.strength[e]!, 0),
+          mission: world.wingMission.get(w)?.kind ?? null,
+          flying: world.sorties.has(w),
+        };
+      });
+    return { carriers, wings };
   }
 
   /** JSON summary of the world for tests and the critic (PLAN 1.32). */

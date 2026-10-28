@@ -78,6 +78,8 @@
  *    (`world.airStart`, PLAN 7.113a, ADR-689) it rebuilds: as many in training as its army's order
  *    slots while its air force costs under AIR_REBUILD_SHARE of its income; at war keeping
  *    WAR_RESERVE_MONTHS past a wing's price, not RESERVE_MONTHS (PLAN 7.142, ADR-736).
+ *    Before them, its decks (PLAN 7.151, ADR-746): a carrier afloat with no wing aboard gets one,
+ *    a fleet a deck a month, at the wing's price under the same reserve and balance.
  * 2b. A means of delivery (PLAN 7.6b, `deliveryWing`), before research takes the month's surplus:
  *    a nation with warheads and no means of delivery (`canDeliver`: no missiles, no strategic
  *    bomber with a base) and no wing in training orders a strategic bomber group, whatever its air
@@ -130,7 +132,7 @@ import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
 import { airfield, levyFormation, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
-import { liveCarriers } from '../systems/air';
+import { freeDecks, liveCarriers, manDecks } from '../systems/air';
 import { foldHollow } from './hollow';
 import { transportRoom } from '../systems/amphibious';
 import { passageOf } from '../systems/movement';
@@ -635,6 +637,30 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           balance -= u;
         }
       }
+      // 3c0. Decks (PLAN 7.151, ADR-746), before the other wings: a carrier afloat with no wing aboard gets one
+      // (`rules.carrierWing`), a fleet a deck a month, its fleets by ascending id, at the wing's price and men and
+      // under the rebuild's bounds (the balance above the need with its upkeep; the reserve past the price, at war
+      // the war's). Aboard at once, wherever the fleet is: the group flies out to it. Before, a deck wing was made
+      // only with its carrier (PLAN 7.137), and one lost was never replaced: on critic run 17's year-20 saves,
+      // 12 of 15 carrier groups at war held none.
+      let decked = 0;
+      let deckUpkeep = 0;
+      const deckRule = rules.carrierWing === undefined ? undefined : rules.templates[rules.carrierWing];
+      if (deckRule && !carried && knowsTechs(world, n, deckRule.techs)) {
+        const u = upkeepOfTemplate(rules.carrierWing!);
+        const reserve = (atWar ? WAR_RESERVE_MONTHS : RESERVE_MONTHS) * income;
+        for (const fl of fleets.get(n) ?? []) {
+          if (freeDecks(world, fl) === 0) continue;
+          if (!(balance - u > need && nc.gold[n]! >= deckRule.gold + reserve && nc.manpower[n]! >= deckRule.manpower)) break;
+          if (manDecks(world, fl, 1).length === 0) break;
+          nc.gold[n] = nc.gold[n]! - deckRule.gold;
+          nc.manpower[n] = nc.manpower[n]! - deckRule.manpower;
+          nc.builds[n] = nc.builds[n]! + 1;
+          balance -= u;
+          decked++;
+          deckUpkeep += u;
+        }
+      }
       // 3c. Wings (PLAN 5.8s2), with what is left. Under its start's wings (PLAN 7.113a, ADR-689: its
       // wings with those in training under `world.airStart`'s), a nation rebuilds: while its air
       // force's upkeep, with its wings in training, is under AIR_REBUILD_SHARE of its income, as many
@@ -642,8 +668,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       // force is under AIR_SHARE of the army's upkeep (the orders in training with it).
       if (mix.wings && !carried && income >= POOR_INCOME) {
         const start = world.airStart.get(n) ?? 0;
-        let count = (wings.get(n)?.length ?? 0) + (wingsPending.get(n) ?? 0);
-        let airUpkeep = (air.get(n) ?? 0) + (wingsTraining.get(n) ?? 0);
+        let count = (wings.get(n)?.length ?? 0) + (wingsPending.get(n) ?? 0) + decked;
+        let airUpkeep = (air.get(n) ?? 0) + (wingsTraining.get(n) ?? 0) + deckUpkeep;
         let left = balance - (wingsTraining.get(n) ?? 0);
         const kinds = [...(wings.get(n) ?? []).map((id) => f.template[id]!), ...(wingTemplates.get(n) ?? [])];
         for (let k = wingsPending.get(n) ?? 0; ; k++) {

@@ -1942,6 +1942,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
   fleet is in a sea battle, an AI's carrier wing ends its mission in that hour (`airSystem`; one
   aloft flies its sortie out) and strikes for the fleet. Until then they struck only in a sea
   battle, and the carriers at war stood by ports of enemies with no fleet afloat (PLAN 7.141).
+  A deck whose wing is lost is re-manned (PLAN 7.151, ADR-746; `economicAi` 3c0): monthly, an AI
+  nation puts a carrier wing aboard a carrier afloat with none, a deck a fleet a month, at the
+  wing's gold and men under the wing rebuild's reserve; aboard at once, wherever the fleet is.
+  The formation panel of a fleet with carriers lists the wings aboard and their missions.
 - *As built (PLAN 5.5a, ADR-320; `bombIndustry`, `repairSystem`):* a strike on land drops its
   aircraft's bombs (`bomb_t`) on the enemy's industry within a cell of its target: each cell
   there out of work by tons × 2 $M over their industry together (at most 0.9); the monthly income

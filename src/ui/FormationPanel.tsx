@@ -12,7 +12,8 @@ const hex = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
  * formations. Its name and kind, whose it is, its men against a whole one's, its supply and its
  * org, the fuel it burns on the march (PLAN 3.2d: it has no fuel level of its own, the supply is
  * what it burns), whether it is in contact or on the march, the way to where it fights (PLAN
- * 3.11b: a block behind its side's front has no enemy in a close view), and its elements by unit type. The
+ * 3.11b: a block behind its side's front has no enemy in a close view), and its elements by unit type; a fleet
+ * with carriers, the wings aboard and their missions (PLAN 7.151). The
  * numbers are the sim's
  * (`FormationDetail`), asked for again as the game goes on. It stands where the nation panel
  * stands; the nation's chip leads back to that one.
@@ -111,6 +112,28 @@ export function FormationPanel({
             </tbody>
           </table>
           {info.units.length === 0 ? <div class="panel-row">{t('formation.noElements')}</div> : null}
+          {info.deck ? (
+            <>
+              <div class="panel-sub" data-testid="formation-deck-head">
+                {t('formation.deck', { n: info.deck.wings.length, carriers: info.deck.carriers })}
+              </div>
+              <table class="formation-units" data-testid="formation-deck">
+                <tbody>
+                  {info.deck.wings.map((w) => (
+                    <tr key={w.id} data-wing={w.id} data-mission={w.mission ?? 'fleet'}>
+                      <td class="formation-unit-count">{num(w.aircraft)}×</td>
+                      <td>{t(w.nameKey as MessageKey)}</td>
+                      <td class="formation-unit-strength">
+                        {t(w.mission ? (`act.mission.${w.mission}` as MessageKey) : 'formation.deck.withFleet')}
+                        {w.flying ? `, ${t('act.wingFlying')}` : ''}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {info.deck.wings.length === 0 ? <div class="panel-row">{t('formation.deck.empty')}</div> : null}
+            </>
+          ) : null}
         </>
       ) : (
         <div class="panel-row">…</div>
