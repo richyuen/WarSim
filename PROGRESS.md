@@ -24415,3 +24415,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** the world's optional `world.*` sections come only with play and load when absent: a schema read from one
   world misses them, and they need no format change. The pin is of the start's sections.
 - **Next:** PLAN 7.152b (the 1307 probe).
+
+## 2026-10-28 — PLAN 7.152b: the 1307 probe 20 of 20 equal to headless in the page; 7.152 done (ADR-748)
+
+- **Start:** gate green on `caf919a9`; critic not due.
+- **Runs** (`docs/evidence/7.152/at.md`): critic run 17's 1307 sequence (`c17_h_misc.mjs`'s inputs) in the page by
+  `tools/diag/pageHash.ts` (new), on a production build: 1 year × 10 (3 browsers at once) and 3 years × 10 (4 at once),
+  **20 of 20** equal to headless each year (08088a32 2aaffcd2 32760912). `tools/diag/workerDeterminism.ts` (new): the
+  world in the worker's `SimServer` with every page query between weekly steps hashes as `Sim` alone all year.
+- **Cause:** none found; nothing in the sim reads a clock, a year's step is one message. The AT's first clause met.
+- **Test:** `tests/unit/workerQueries1938.test.ts` new (four days of 1307, every query each day; 16 s). Not red
+  without: no defect was found to take out.
+- **7.152:** both parts done; AT met (the format with its pin, the page equal to headless, the gate green).
+- **Next:** PLAN 7.153 (emergent 6).

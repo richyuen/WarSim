@@ -69,16 +69,6 @@ blocking; aircraft 7 → 8, stability 7 → 5, naval 7 → 6): R17-B1, R17-B2 an
 under the bar, beyond them, are 7.152 (stability 5), 7.153 (emergent 6) and 7.154 (naval 6). A task each, split when
 taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic has run (1471, 1523):
 
-- [ ] 7.152 Stability 5: beyond 7.149, every new state column will break the older saves again, and one browser run
-  of 1307 hashed apart from headless from year 1 (4c6b44a9 against a6febaa8, 1 of 4 runs, not reproduced in 3)
-  (`critic/c17_h_misc_1307_3.log`, `critic/c17_det2_1307_*.json`, CRITIC_REPORT "Stability"). AT: a save carries a
-  format version that the title reads before it offers Continue, and an older one is shown as from an older version,
-  not as a game to continue; a unit test that fails when a state section is added without raising the version; the
-  critic's 1307 probe run 10 times in the page with each year's hash equal to headless every time, or the mismatch's
-  cause found and fixed with a test red without; the gate green.
-  - [x] 7.152a The state format: the autosave carries it, the title reads it before it offers Continue and shows an […]
-  - [ ] 7.152b The critic's 1307 probe run 10 times in the page, each year's hash equal to headless every time, or the
-    mismatch's cause found and fixed with a test red without.
 - [ ] 7.153 Emergent 6: beyond 7.150's contact, checkpoints with nobody in contact 13 → 17 of 128 (y10 and y20, 7
   days each), and ADR-732's ordered-five bar fails in 2 of 64 worlds (5521 18 years, 7901 14)
   (`critic/c17_engaged_w*.json`, `critic/c17_cmp_y30.txt`, `critic/c17_headless_5521.json`). AT: on seeds 1421–1430 ×
@@ -470,3 +460,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.149 R17-B1: Continue opens an older autosave as a corrupted world, silently. A save from before ADR-737 throws […]
 - [x] 7.150 (closed not done, ADR-745 a, the user's decision) R17-B2: the late world is still mostly still. Same 64 seeds `7b88308` → HEAD, engaged land formations a […]
 - [x] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 → […]
+- [x] 7.152 Stability 5: beyond 7.149, every new state column will break the older saves again, and one browser run […]

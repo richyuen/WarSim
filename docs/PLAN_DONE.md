@@ -16085,3 +16085,28 @@ Of 7.152 (open in PLAN.md):
 
   - [x] 7.152a The state format: the autosave carries it, the title reads it before it offers Continue and shows an
     older one as from an older version; `saveFormat.test.ts` pins each format's sections (ADR-747).
+
+<!-- moved 2026-10-28 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.152 Stability 5: beyond 7.149, every new state column will break the older saves again, and one browser run
+  of 1307 hashed apart from headless from year 1 (4c6b44a9 against a6febaa8, 1 of 4 runs, not reproduced in 3)
+  (`critic/c17_h_misc_1307_3.log`, `critic/c17_det2_1307_*.json`, CRITIC_REPORT "Stability"). AT: a save carries a
+  format version that the title reads before it offers Continue, and an older one is shown as from an older version,
+  not as a game to continue; a unit test that fails when a state section is added without raising the version; the
+  critic's 1307 probe run 10 times in the page with each year's hash equal to headless every time, or the mismatch's
+  cause found and fixed with a test red without; the gate green.
+  - [x] 7.152a The state format: the autosave carries it, the title reads it before it offers Continue and shows an […]
+  - [x] 7.152b The critic's 1307 probe run 10 times in the page, each year's hash equal to headless every time, or the
+    mismatch's cause found and fixed with a test red without.

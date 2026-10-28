@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-748 · 2026-10-28 · accepted — The 1307 browser mismatch not reproduced: 20 of 20 page runs equal to headless; a guard on the worker's queries (PLAN 7.152b)
+
+- **Context.** Critic run 17 (Stability 5): one of four runs of its 1307 probe in the page hashed apart from headless
+  from year 1 (4c6b44a9 against a6febaa8 on `cfedb50a`), not reproduced in three.
+- **Read** (`docs/evidence/7.152/at.md`). The probe's inputs, in the page on a production build, 1 year × 10 and
+  3 years × 10, three and four browsers at once beside a year-long Node run: 20 of 20 equal to headless every year. The
+  worker's host in Node with every page query between weekly steps (snapshots at each tier, labels, stats, inspect,
+  panels, economy, war battles, charts, history): the same hash every week. Nothing in `src/sim` reads a clock, random
+  source or shared memory; the map assets are checked by sha256; a year's `step` is one message.
+- **Decision.** No rule or code changed. 7.152b is done on its AT's first clause. `tests/unit/workerQueries1938.test.ts`
+  guards the host's half (four days of 1307, queried each day, hash as the world stepped alone); the two tools stay in
+  `tools/diag/` for the next report that sees a mismatch.
+- **Left.** The critic's one run is unexplained. If it comes back, `pageHash.ts` with its run's inputs and machine load
+  is the place to start.
+- **Pin** unchanged (b22bcdd1).
+
 ### ADR-747 · 2026-10-28 · accepted — A save's state format: the autosave carries it, the title reads it before Continue (PLAN 7.152a)
 
 - **Context.** Critic run 17, Stability 5: ADR-737's column `formations.struck` broke every save made before it, and
