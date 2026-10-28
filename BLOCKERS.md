@@ -5,6 +5,18 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.155: the lake ports' refusals gone, the AT missed on fleets standing on the Panama canal (ADR-752)
+- **The bar:** on 1441–1450 × 20 against HEAD, refusals for no sea way at most 0.5 × HEAD's, transports at year 20 and
+  landings not below HEAD's; a unit test red without; the gate green.
+- **What moved** (`docs/evidence/7.155/`): the read found every refusal a sail to a lake port (`sailToArmy`); the rule
+  takes only ports in the transports' waters. Year 1 refusals 74.3 → 0 a world, lower on 8 of 10 (to 0 on five);
+  landings 1.02 ×; transports at year 20 0.99 × (missed by a hair, ten-seed spread). Refusals overall 1.43 ×: 1448
+  201 → 37,650 and 1442 1,198 → 4,353, fleets standing on the Panama canal's cells (one on Suez's) with no sea zone
+  under them, every order refused. Not the rule's path (`closeOn`, `awayOrder`, `sailHome`, `raid`); HEAD's 1448 has
+  no such fleet: the worlds' course.
+- **Left:** PLAN 7.156 (the fleet on a canal). The rule is kept (a defect fixed, red-without test, pin unchanged).
+  Nothing waits on the user.
+
 ### PLAN 7.154b: the sea battles' fall has no cause of the kind the task asks for (ADR-751, waits on the user)
 - **The bar:** on 1431–1440 × 20 against HEAD, sea battles in years 2–20 at least 1.25 × HEAD's, ships sunk at sea by
   any means and transports at year 20 not below; a rule only with a cause the read names.

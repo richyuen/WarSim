@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-752 · 2026-10-28 · accepted — PLAN 7.155: the transports sail to their army only for a port in the waters they sail
+
+- **Context.** PLAN 7.154b's read found fleet sailings refused for no sea way 3 × since `7b883084`, all from the
+  invasion AI's `sailToArmy`. 7.155's read (`docs/evidence/7.155/read.md`, a tap at the refusal on 1415 × 1, 1411 × 3,
+  1413 × 3): every one a sail to a port on a lake. `sailToArmy` takes, for each formation of the army, the
+  `SAIL_TRIES` ports of its nation nearest it on its land with water, whatever that water: Canada's army in Ontario
+  has Toronto, Hamilton, Detroit and Sault Ste. Marie nearest (Great Lakes; Montréal has no water), so each try was
+  refused, no sea port was asked, and the transports stood asking every planning day. Britain's Mzuzu: Lake Malawi.
+- **Decision.** `sailToArmy` takes only ports whose water is in the transports' waters: a zone of a basin (not ice)
+  with the fleet's key (`waterKeys`/`keyAt`, as `nearestOwnPort` reads them; a lake and a sea behind a passage shut
+  to the nation are other waters). Once a call, as the port list was.
+- **Result** (`docs/evidence/7.155/at.md`, 1441–1450 × 20 against `babbff71`): year-1 refusals 74.3 → 0 a world,
+  landings 1.02 ×, transports at year 20 0.99 ×; refusals overall 1.43 × for fleets standing on the Panama canal's
+  cells in two worlds (PLAN 7.156). The AT missed (BLOCKERS); the rule kept.
+- **Test:** `tests/unit/ferryLakePorts1938.test.ts` (Canada's transports at Iqaluit, its army at Toronto; red
+  without: 64 refusals in 30 days, no sail).
+- **Pin** unchanged (b22bcdd1): seed 99 makes no lake-port sail in year 1.
+
 ### ADR-751 · 2026-10-28 · proposed (the user's decision) — PLAN 7.154b: the sea battles' fall is four kept rules and the worlds' history; no fleet that could meet the enemy and does not
 
 - **Context.** PLAN 7.154b: sea battles in years 2–20 at least 1.25 × HEAD's on 1431–1440 × 20; "read first, on HEAD

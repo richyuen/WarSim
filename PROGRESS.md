@@ -24491,3 +24491,19 @@ No rule changed and nothing on screen changed. One task came out of it.
   fleets daily): PLAN 7.155. Tool `tools/diag/noSeaWay.ts` (caller by stack frame).
 - No sim code; pin unchanged (b22bcdd1). Seeds 1431–1440 unspent.
 - **Next:** PLAN 7.155 (the refused sailings) while ADR-751 waits.
+
+## 2026-10-28 — PLAN 7.155: the transports sail for no port on a lake (ADR-752); the AT missed, the canal to 7.156
+
+- **Start:** gate green on `babbff71`; critic not due.
+- **Read** (`docs/evidence/7.155/read.md`, a tap at the refusal, not committed): on 1415 × 1, 1411 × 3, 1413 × 3 every
+  refusal for no sea way is `sailToArmy` sending transports for a lake port (Canada's Toronto, Hamilton, Detroit,
+  Sault Ste. Marie; Britain's Mzuzu): the four nearest the army, all refused, no sea port tried.
+- **Rule:** `sailToArmy` takes only ports in the transports' waters (`waterKeys`/`keyAt`, as `nearestOwnPort`). Pin
+  unchanged (b22bcdd1).
+- **Test:** `tests/unit/ferryLakePorts1938.test.ts` new (red without: 64 refusals in 30 days).
+- **Tool:** `tools/diag/seaWayAt.ts` (refusals, landings, transports a year).
+- **AT** (`docs/evidence/7.155/at.md`, 1441–1450 × 20 against HEAD): year-1 refusals 74.3 → 0, landings 1.02 ×,
+  transports 0.99 × (missed by a hair); refusals 1.43 × (missed): fleets standing on the Panama canal's cells on 1448
+  and 1442 (no sea zone under them), every order refused, from `closeOn`, `awayOrder`, `sailHome`. HEAD's 1448 has no
+  such fleet. BLOCKERS; filed as PLAN 7.156 (seeds 1451–1460).
+- **Next:** PLAN 7.156 (the fleet on a canal) while ADR-751 waits.

@@ -57,7 +57,7 @@ import { capitalCell } from '../systems/capitals';
 import { orderSail } from '../systems/sail';
 import { seaHolder } from '../systems/seaControl';
 import { beachReach } from '../systems/seaSupply';
-import { navOf, portSeaOf, seaOf, type World } from '../world';
+import { basinOf, navOf, portSeaOf, seaOf, type World } from '../world';
 import { DEPLOY_RANGE_CELLS, groundReader, reachOnLand, reachesOnLand } from './operational';
 import { STAGGER } from './strategic';
 
@@ -1133,12 +1133,22 @@ function sailToArmy(world: World, fleet: number, from: number, ids: readonly num
   const comp = navOf(world).grid.component;
   const start = CORRIDOR_REFUSAL.searches;
   let open = 0;
-  // The ports of the transports' nation (the formations') with water, by land (PLAN 7.83b: once a
-  // call, not once a formation).
+  // The ports of the transports' nation (the formations') with water in the waters they sail, by
+  // land (PLAN 7.83b: once a call, not once a formation). A port on a lake or behind a passage shut
+  // to them (`waterKeys`, as `nearestOwnPort` reads it) is none (PLAN 7.155, ADR-752): before, the
+  // army's nearest ports were tried whatever their water, and on 1415 year 1 Canada's transports
+  // at Iqaluit asked for Toronto, Hamilton, Sault Ste. Marie and Detroit, on the Great Lakes, every
+  // day, refused each time, and never tried Montreal or Quebec.
   const n = c.nation[fleet]!;
+  const z = seaOf(world);
+  const { basin } = basinOf(world);
+  const keys = waterKeys(world, n);
+  const mine = keyAt(world, keys, c.x[fleet]!, c.y[fleet]!);
   const byLand = new Map<number, number[]>();
   world.ports.forEach((p, k) => {
     if (k === from || water[k]! < 0 || ctl[p.cell] !== n) return;
+    const zone = z.zoneOf[water[k]!]!;
+    if (basin[zone] === 0 || keys[zone] !== mine) return;
     const l = comp[p.cell]!;
     (byLand.get(l) ?? byLand.set(l, []).get(l)!).push(k);
   });

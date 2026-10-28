@@ -93,6 +93,18 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   Canada's, two fleets asking day after day; `tools/diag/noSeaWay.ts`). AT: on 1441–1450 × 20 against HEAD, refusals
   for no sea way at most 0.5 × HEAD's, transports at year 20 and landings not below HEAD's; a unit test of the case,
   red without; the gate green. Read first which port and which water each refused sail is for.
+  Read and run 2026-10-28 (`docs/evidence/7.155/`, ADR-752): every refusal was a sail to a port on a lake (Canada's
+  Great Lakes ports, Britain's Mzuzu); `sailToArmy` now takes only ports in the transports' waters, year 1 74.3 → 0 a
+  world. The AT missed: refusals 1.43 × (fleets on the Panama canal's cells on 1442 and 1448), transports 0.99 ×,
+  landings 1.02 ×. BLOCKERS; the canal to PLAN 7.156.
+
+- [ ] 7.156 A fleet standing on a canal's crossing cells (no sea zone under it) has every order refused for no sea
+  way: on 1448 with 7.155's rule years 1–9 8,366 refusals (Japan's fleet at Balboa, 8,255 from the sea battle's
+  closing step `closeOn`; a Dutch fleet at Suez), on 1442 years 1–20 4,353 (the USA's and Britain's at Balboa, from
+  `awayOrder`, `closeOn`, `sailHome`, `raid`; `docs/evidence/7.155/at.md`). Read first how it comes to stand there
+  (`closeOn` sails a step and clears the way: a step that ends on a passage's land leaves it there?). AT: on
+  1451–1460 × 20 against HEAD, fleet-hours standing (not under way) on a cell of no sea zone 0, refusals for no sea
+  way at most 0.5 × HEAD's; a unit test of the case, red without; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
