@@ -181,6 +181,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   mechanised division does, on day 1; the kind check refuses it, as before). The case is a live armour fight at
   Speed x1 and a hull alight within 45 s; its enemy was the critic's seed's. Found: armoured division 40 on day 4,
   first flame at 11 s.
+- **fallen1938 (3.11d):** the Polish division watched is 569 (540 no longer in contact on day 21; 569 loses 1,518 on
+  day 22, in contact all of it; `tools/diag/contactPick.ts`), as at each earlier re-pick. The case unchanged.
 
 ### ADR-742 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, no rule) — PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet; ships sunk at sea by any means 0.98 ×
 
