@@ -16,7 +16,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
   7.35c (missed in a parallel run, green alone).
 - **Left:** the test leaves the list when it passes here. The test is not changed. Nothing waits on the user.
 
-### PLAN 7.155: the lake ports' refusals gone, the AT missed on fleets standing on the Panama canal (ADR-752)
+### RESOLVED 2026-10-28 (the user's decision: 7.155 closed not done, ADR-755) · PLAN 7.155: the lake ports' refusals gone, the AT missed on fleets standing on the Panama canal (ADR-752)
 - **The bar:** on 1441–1450 × 20 against HEAD, refusals for no sea way at most 0.5 × HEAD's, transports at year 20 and
   landings not below HEAD's; a unit test red without; the gate green.
 - **What moved** (`docs/evidence/7.155/`): the read found every refusal a sail to a lake port (`sailToArmy`); the rule

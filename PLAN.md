@@ -30,54 +30,8 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 
 ## Phase 7 — Balance, polish, soak
 
-Run 11's (report of 2026-10-21 on `dd3b730`, `critic/CRITIC_REPORT.md`; run 10's R10-B2 fixed,
-R10-B1 and R10-B3 mostly; naval 6 → 7, aircraft 6 → 7): R11-B1 and R11-B2 are PLAN 7.49 and 7.50.
-The dimensions under the bar: emergent 6 is 7.49's (ADR-583; 7.40 closed), naval 7 is 7.41 (moved
-here, ADR-577), aircraft 7 is 7.51, AI nuclear use 7 beyond R11-B2 is 7.52. A task each, split
-when taken up:
-
-Run 12's (report of 2026-10-22 on `896ff779`, `critic/CRITIC_REPORT.md`; R11-B2 closed; map visuals
-and performance 7 → 6): R12-B1 and R12-B2 are PLAN 7.79 and 7.80; the dimensions under the bar, beyond
-them, are 7.81–7.86. A task each, split when taken up:
-
-Found by `npm run check:review` before critic run 13 (2026-10-24; ADR-675, ADR-676): two browser tests
-green here at `896ff779` and red at `9ffb0274` on what they claim, taken off `tools/gate/knownRed.json`
-(BLOCKERS). The critic waits on them (PROMPT step 2a):
-
-Run 13's (report of 2026-10-24 on `0c80db1e`, `critic/CRITIC_REPORT.md`; R12-B2 no longer blocking by
-ADR-639; map visuals 6 → 7, performance 6 → 5): R13-B1 is PLAN 7.104; the dimensions under the bar,
-beyond it, are 7.105–7.109. A task each, split when taken up. Unseen seeds: 901 on, ten a task, none
-reused:
-
-Run 14's (report of 2026-10-25 on `311988d7`, `critic/CRITIC_REPORT.md`; R13-B1 improved, not fixed;
-aiNukes 7 → 8): R14-B1 and R14-B2 are PLAN 7.116 and 7.117; the dimensions under the bar, beyond them,
-are 7.118–7.121. A task each, split when taken up. Unseen seeds: 991 on, ten a task, none reused:
-
-Found by `npm run check:review` before critic run 15 (2026-10-26; ADR-711, ADR-712):
-
-Run 15's (report of 2026-10-26 on `7739a78f`, `critic/CRITIC_REPORT.md`; R14-B1's hollow divisions fixed, 72.4 → 0.4 a
-world; performance 5 → 6): R15-B1 and R15-B2 are PLAN 7.128 and 7.129; the dimensions under the bar, beyond them, are
-7.130–7.133 (naval's panel is 7.126). A task each, split when taken up. Unseen seeds: 1101 on, ten a task, none reused,
-none a seed the critic has run (`critic/c*_seed*`):
-
-Run 16's (report of 2026-10-27 on `7b883084`, `critic/CRITIC_REPORT.md`; R15-B2's two cases fixed; performance 6 → 7):
-R16-B1 and R16-B2 are PLAN 7.138 and 7.139; the dimensions under the bar, beyond them, are 7.140–7.142. A task each,
-split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed the critic has run (1207, 1213, 1259):
-
-Run 17's (report of 2026-10-28 on `cfedb50a`, `critic/CRITIC_REPORT.md`; R16-B1 improved a quarter, R16-B2 no longer
-blocking; aircraft 7 → 8, stability 7 → 5, naval 7 → 6): R17-B1, R17-B2 and R17-B3 are PLAN 7.149–7.151; the dimensions
-under the bar, beyond them, are 7.152 (stability 5), 7.153 (emergent 6) and 7.154 (naval 6). A task each, split when
-taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic has run (1471, 1523):
-
-- [ ] 7.155 The transports' sailings refused for no sea way, 3 × since `7b883084` (7.154b's read: on 1411–1416 × 20
-  years 2–20 10,202 → 30,082, year 1 49 → 708; on 1415 year 1 all 384 transport groups from `sailToArmy`, 352 of them
-  Canada's, two fleets asking day after day; `tools/diag/noSeaWay.ts`). AT: on 1441–1450 × 20 against HEAD, refusals
-  for no sea way at most 0.5 × HEAD's, transports at year 20 and landings not below HEAD's; a unit test of the case,
-  red without; the gate green. Read first which port and which water each refused sail is for.
-  Read and run 2026-10-28 (`docs/evidence/7.155/`, ADR-752): every refusal was a sail to a port on a lake (Canada's
-  Great Lakes ports, Britain's Mzuzu); `sailToArmy` now takes only ports in the transports' waters, year 1 74.3 → 0 a
-  world. The AT missed: refusals 1.43 × (fleets on the Panama canal's cells on 1442 and 1448), transports 0.99 ×,
-  landings 1.02 ×. BLOCKERS; the canal to PLAN 7.156.
+Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
+of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -452,3 +406,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.153 (closed not done, ADR-749 a, the user's decision) Emergent 6: beyond 7.150's contact, checkpoints with nobody in contact 13 → 17 of 128 (y10 and y20, 7 […]
 - [x] 7.154 (closed not done, ADR-751 a, the user's decision) Naval 6: beyond 7.151's decks, the sea war fell a third. Same 64 seeds, sea battles late 8.16 → 5.32 a […]
 - [x] 7.156 A fleet standing on a canal's crossing cells (no sea zone under it) has every order refused for no sea […]
+- [x] 7.155 (closed not done, ADR-755, the user's decision) The transports' sailings refused for no sea way, 3 × since `7b883084` (7.154b's read: on 1411–1416 × 20 […]

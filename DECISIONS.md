@@ -167,6 +167,17 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-755 · 2026-10-28 · accepted (the user's decision) — PLAN 7.155 closed not done; the critic runs' notes leave PLAN.md
+
+- **Context.** PLAN 7.155's AT (1441–1450 × 20 against HEAD) missed on two clauses (ADR-752): refusals for no sea way
+  1.43 × from fleets standing on the Panama canal's cells, and transports at year 20 0.99 ×. PLAN 7.156 (ADR-753) took
+  the canal's refusals to 0.015 × on 1451–1460; the transports' clause missed by a hair, within ten seeds' spread.
+  PLAN.md's Phase 7 opened with the notes of critic runs 11–17, whose tasks are all closed.
+- **Decision** (the user's, 2026-10-28). 7.155 closed not done, as 7.153 and 7.154 were (ADR-749, ADR-751): the
+  lake-port rule (ADR-752) kept, no further rule. The runs' notes move to `docs/PLAN_DONE.md` ("Phase 7: the critic
+  runs' notes"); PLAN.md keeps one line, the next unseen seeds (1461 on).
+- **Consequences.** BLOCKERS' 7.155 entry resolved. PLAN 7.5 (critic run 18) is next. No code changed; pin unchanged.
+
 ### ADR-754 · 2026-10-28 · accepted — PLAN 7.5: beside a panel the ticker has room for a sea battle's row and an order's
 
 - **Context.** `npm run check:review` before critic run 18 had `ticker1938` "the ticker keeps its room…" red twice:

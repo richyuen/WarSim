@@ -24540,3 +24540,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   SwiftShader, at most 1 German tracer, never both sides in one frame; the machine idle, no browser changed. The code
   is not its cause: on `tools/gate/knownRed.json` with a BLOCKERS entry; the test unchanged.
 - **Next:** `check:review` again from the start, then the critic.
+
+## 2026-10-28 — PLAN 7.155 closed not done; the critic runs' notes out of PLAN.md (ADR-755, the user's decision)
+
+- **The user's decision:** close 7.155 not done (its AT's transports clause missed by 0.99 ×; the canal's refusals
+  fixed by 7.156) and drop the historical critic notes from PLAN.md.
+- PLAN.md: the notes of critic runs 11–17 moved to `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes"), one line
+  left on unseen seeds (1461 on). BLOCKERS' 7.155 entry resolved. No code changed.
+- **Next:** PLAN 7.5: `check:review` again from the start, then critic run 18.
