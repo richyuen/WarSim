@@ -227,6 +227,15 @@ test('T3: at 20 m/px every class of ship is drawn long and broad enough to read 
       };
       const apart = (a: number[], b: number[]): number => Math.abs(a[0]! - b[0]!) + Math.abs(a[1]! - b[1]!) + Math.abs(a[2]! - b[2]!);
       const out: { cls: string; len: number; beam: number }[] = [];
+      // Every figure's place on the screen, of any nation: a ship with another's middle within
+      // 24 px is not measured. Since PLAN 7.139–7.146 the first battle is a melee of British and French
+      // ships, and a British bow over a French hull (read as the sea, above) measured short.
+      const screen: [number, number][] = [];
+      for (let j = 0; j < v.individualCount; j++) {
+        screen.push([(v.individualX[j]! - cam.cx) * cam.scale + vw / 2, (v.individualY[j]! - cam.cy) * cam.scale + vh / 2]);
+      }
+      const crowded = (j: number): boolean =>
+        screen.some(([x, y], k) => k !== j && Math.hypot(x - screen[j]![0], y - screen[j]![1]) < 24);
       for (let j = 0; j < v.individualCount; j++) {
         const e = index.get(v.individualOwner[j]!);
         if (e === undefined || !sides.has(v.elementFormation[e]!)) continue;
@@ -236,6 +245,7 @@ test('T3: at 20 m/px every class of ship is drawn long and broad enough to read 
         const sx = (v.individualX[j]! - cam.cx) * cam.scale + vw / 2;
         const sy = (v.individualY[j]! - cam.cy) * cam.scale + vh / 2;
         if (sx < 60 || sy < 100 || sx > vw - 60 || sy > vh - 160) continue;
+        if (crowded(j)) continue;
         const h = v.elementFacing(e);
         const [ux, uy, nx, ny] = [Math.cos(h), Math.sin(h), -Math.sin(h), Math.cos(h)];
         // The sea: 24 px ahead and 24 px abeam each side; the one least like the hull's middle.
