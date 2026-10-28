@@ -24297,3 +24297,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   carrier wings first, 67 % against 19 % of battles found both ways.
 - **Filed:** ADR-742 (proposed), BLOCKERS, a read line under PLAN 7.148. No code changed; seeds 1314–1323 unspent.
 - **Next:** PLAN 7.5 waits on 7.147 and 7.148 (ADR-741, ADR-742), both the user's.
+
+## 2026-10-27 — The user's decisions: ADR-741 (a), ADR-742 (a); 7.147 and 7.148 closed not done
+
+- **Start:** gate green on `ffc89eaf`; critic not due.
+- **ADR-741 (a):** PLAN 7.147 closed not done, no rule: year 1's contact is 0.96 × the world before ADR-737 on HEAD, the
+  falloff's deficit gone. Seeds 1304–1313 unspent.
+- **ADR-742 (a):** PLAN 7.148 closed not done, no rule: the battles' clauses read as ships sunk at sea by any means
+  (0.977 × on HEAD's windows); the carriers keep striking fleets at range. Seeds 1314–1323 unspent.
+- BLOCKERS' two entries resolved. No code changed; the pin unchanged.
+- **Next:** PLAN 7.5, the critic (run 17): `npm run check:review` first (PROMPT step 2a).

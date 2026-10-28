@@ -64,27 +64,6 @@ Run 16's (report of 2026-10-27 on `7b883084`, `critic/CRITIC_REPORT.md`; R15-B2'
 R16-B1 and R16-B2 are PLAN 7.138 and 7.139; the dimensions under the bar, beyond them, are 7.140–7.142. A task each,
 split when taken up. Unseen seeds: 1201 on, ten a task, none reused, none a seed the critic has run (1207, 1213, 1259):
 
-- [ ] 7.147 Year 1's land contact under ADR-737 (found by 7.144's AT; ADR-737 a, the user's decision): on
-  1294–1303 × 20 years engaged land formations a day in year 1 44.1 → 37.8 (0.86 ×, lower on nine), year 2 9.2 → 18.6, wars
-  and nations at war alike: the opening fights hold fewer formations at once and last longer. Read first, on the
-  year-1 days of a few of those seeds stepped both ways (HEAD and `strikeShare` at 1), which fights hold fewer
-  formations (the struck side's formations in contact, retreats, the attacker's orders). AT: on 10 unseen seeds from
-  1304 × 20 years against HEAD on the same seeds, engaged in year 1 at least 1.1 × HEAD's, in years 2–20 not below
-  0.95 ×, sorties aloft in years 1–20 not below 0.9 ×; a unit test, red without; the gate green.
-  **Read** (2026-10-27, `docs/evidence/7.147/read.md`): on HEAD year 1 is 0.96 × the world before ADR-737 and the
-  falloff switched off gives no more; the cause is gone. Waits on ADR-741 (the user's decision).
-
-- [ ] 7.148 The sea battles under ADR-738 (found by 7.145's AT; ADR-738 a, the user's decision): on
-  1284–1293 × 20 years sea battles in years 2–20 1,641 → 1,423 (0.867 ×, lower on 7) and ships sunk in them 16,043 →
-  14,811 (0.923 ×) since the carriers' wings fly their own missions. Read first, from saves stepped both ways (HEAD and
-  the carrier wings' missions off), whether the carrier fleets find fewer enemy fleets (a fleet sees only by its wings
-  at home, `carrierWings`) or the air sinks ships before a battle (count ships sunk from the air). AT: on 10 unseen
-  seeds from 1314 × 20 years against `57a00adb` on the same seeds, sea battles and ships sunk in them in years 2–20 not
-  below 0.95 ×, carrier strike-hours at least 2 ×; a unit test, red without; the gate green.
-  **Read** (2026-10-27, `docs/evidence/7.148/read.md`): in 60-day windows from HEAD saves the carriers' own missions
-  cost 0.944 × the battles; their wings sink the enemy's fleets before they meet (ships sunk at sea by any means
-  0.977 ×); not detection. Waits on ADR-742 (the user's decision).
-
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -449,3 +428,5 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.146 (closed not done, ADR-739 a, the user's decision) R16-B1: the land army of long-front wars late, both sides (ADR-733 a, the user's decision; from 7.138). […]
 - [x] 7.140 Emergent 6: the same five giants. The top five unchanged for more than 12 years in 13 of 56 worlds (8 on […]
 - [x] 7.143 (closed, no rule: ADR-740, the user's decision) The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of […]
+- [x] 7.147 (closed not done, ADR-741 a, the user's decision) Year 1's land contact under ADR-737 (found by 7.144's AT; ADR-737 a, the user's decision): on […]
+- [x] 7.148 (closed not done, ADR-742 a, the user's decision) The sea battles under ADR-738 (found by 7.145's AT; ADR-738 a, the user's decision): on […]

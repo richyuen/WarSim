@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet (ADR-742, waits on the user)
+### RESOLVED 2026-10-27 (option a, the user's decision: no rule, 7.148 closed not done) · PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet (ADR-742, waits on the user)
 - **The bar:** on 1314–1323 × 20 years against `57a00adb`, sea battles and ships sunk in them in years 2–20 not below
   0.95 ×, carrier strike-hours at least 2 ×.
 - **What moved** (`docs/evidence/7.148/read.md`): nothing was changed. In 60-day windows from 96 HEAD saves, the
@@ -15,7 +15,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **Left:** ADR-742: (a) close 7.148 not done, the clauses read as ships sunk by any means (recommended), (b) a rule
   keeping carrier wings' own missions off the enemy's fleets, (c) revert the missions. Seeds 1314–1323 unspent.
 
-### PLAN 7.147: year 1's contact is back on HEAD, the task's cause gone (ADR-741, waits on the user)
+### RESOLVED 2026-10-27 (option a, the user's decision: no rule, 7.147 closed not done) · PLAN 7.147: year 1's contact is back on HEAD, the task's cause gone (ADR-741, waits on the user)
 - **The bar:** on 1304–1313 × 20 years against HEAD, engaged land formations a day in year 1 at least 1.1 × HEAD's.
 - **What moved** (`docs/evidence/7.147/read.md`): nothing was changed. On HEAD year 1 reads 42.4 a day against 44.1
   before ADR-737 (0.96 ×, paired −1.8 ± 2.2) and 37.8 at ADR-737's commit; the falloff switched off on HEAD gives no

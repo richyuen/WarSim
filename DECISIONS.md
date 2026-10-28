@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-742 · 2026-10-27 · proposed (the user's decision) — PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet; ships sunk at sea by any means 0.98 ×
+### ADR-742 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, no rule) — PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet; ships sunk at sea by any means 0.98 ×
 
 - **Context.** PLAN 7.148 (ADR-738 a): with a carrier's wings on their own missions, sea battles in years 2–20 fell
   0.867 × and ships sunk in them 0.923 × on 1284–1293 (7.145's AT; paired −21.8 ± 10.0 battles a seed, 2.2 standard
@@ -191,7 +191,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     PLAN 7.141) returns.
 - No code changed; the pin unchanged. Seeds 1314–1323 unspent.
 
-### ADR-741 · 2026-10-27 · proposed (the user's decision) — PLAN 7.147: year 1's contact is back on HEAD; the task's cause is gone
+### ADR-741 · 2026-10-27 · accepted (the user's decision, 2026-10-27: option a, no rule) — PLAN 7.147: year 1's contact is back on HEAD; the task's cause is gone
 
 - **Context.** PLAN 7.147 (ADR-737 a): with the strike falloff, engaged land formations a day in year 1 fell 0.86 × on
   1294–1303 at `4da68474`. AT: on 1304–1313 × 20 against HEAD, year 1 at least 1.1 × HEAD's, years 2–20 not below
