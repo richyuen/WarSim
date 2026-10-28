@@ -53,9 +53,9 @@ export function stagedScenarioUrl(base: string): string {
   return `?${new URLSearchParams({ scenario: base, paused: '1', load: 'scenario' }).toString()}`;
 }
 
-/** The title screen, saying that the staged scenario file could not be loaded. */
-export function loadFailedUrl(): string {
-  return '?failed=scenario';
+/** The title screen, saying that the staged scenario file (or the autosave, PLAN 7.149) could not be loaded. */
+export function loadFailedUrl(what: 'scenario' | 'save' = 'scenario'): string {
+  return `?failed=${what}`;
 }
 
 /**

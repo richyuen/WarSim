@@ -4,7 +4,9 @@ import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import type { Inspection } from '../../src/shared/protocol';
 import { encodeScenarioFile, SCENARIO_FORMAT } from '../../src/shared/scenarioFile';
+import { packSave } from '../../src/shared/saveCodec';
 import { SCENARIO_INFO } from '../../src/shared/scenarios';
+import { decodeSections, encodeSections } from '../../src/sim/core/sections';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
@@ -437,5 +439,71 @@ test('the title screen starts a random world with the chosen number of nations, 
   await page.getByTestId('settings-btn').click();
   await expect(page.getByTestId('settings-new-game')).toBeVisible();
   await expect(page.getByTestId('settings-nations')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+// PLAN 7.149 AT (critic run 17, R17-B1): an autosave that does not fit (here a section taken out,
+// as a save from before ADR-737 lacks `formations.struck`) is refused through Continue: the title
+// screen says it cannot be loaded, no game starts, and the autosave is left as it was. Before,
+// the save's map, date and tick came in, the rest of the 1938 start stayed, and Resume ran it.
+test('Continue with a save that does not fit returns to the title, which says so; nothing starts', async ({ page }, info) => {
+  test.setTimeout(180_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.setViewportSize({ width: 1400, height: 800 });
+  const node = new Sim({ scenario: '1938', seed: 55, assets: assets1938(SIZE_1938.w) });
+  node.step(72);
+  const sections = decodeSections(node.save());
+  const at = sections.findIndex((s) => s.name === 'formations.struck');
+  expect(at).toBeGreaterThan(0);
+  sections.splice(at, 1);
+  const packed = await packSave(encodeSections(sections));
+  const b64 = Buffer.from(packed).toString('base64');
+  await page.goto('/');
+  await expect(page.getByTestId('title-screen')).toBeVisible();
+  await page.evaluate(
+    (b) =>
+      new Promise<void>((resolve, reject) => {
+        const bytes = Uint8Array.from(atob(b), (c) => c.charCodeAt(0));
+        const open = indexedDB.open('warsim', 1);
+        open.onupgradeneeded = () => open.result.createObjectStore('saves', { keyPath: 'slot' });
+        open.onerror = () => reject(open.error ?? new Error('indexedDB open failed'));
+        open.onsuccess = () => {
+          const put = open.result.transaction('saves', 'readwrite').objectStore('saves').put({ slot: 'autosave', scenario: '1938', tick: 72, savedAt: Date.now(), bytes, seed: 55, options: {} });
+          put.onerror = () => reject(put.error ?? new Error('indexedDB put failed'));
+          put.onsuccess = () => resolve();
+        };
+      }),
+    b64,
+  );
+  await page.reload();
+  await expect(page.getByTestId('title-save-date')).toHaveText('4 January 1938');
+  await Promise.all([page.waitForURL(/failed=save/, { timeout: 60_000 }), page.getByTestId('title-continue').click()]);
+  // The title again, saying the save cannot be loaded, and no Continue to press again.
+  await expect(page.getByTestId('title-screen')).toBeVisible();
+  await expect(page.getByTestId('title-save-error')).toContainText('could not be loaded');
+  await expect(page.getByTestId('title-continue')).toHaveCount(0);
+  // Nothing started: no map, no sim, no game in the URL.
+  expect(page.url()).not.toContain('scenario=');
+  await expect(page.locator('canvas#map')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__warsim?.sim === undefined)).toBe(true);
+  // The autosave is the one written, not a new game's.
+  const kept = await page.evaluate(
+    () =>
+      new Promise<{ tick: number; length: number } | null>((resolve, reject) => {
+        const open = indexedDB.open('warsim', 1);
+        open.onerror = () => reject(open.error ?? new Error('indexedDB open failed'));
+        open.onsuccess = () => {
+          const get = open.result.transaction('saves', 'readonly').objectStore('saves').get('autosave');
+          get.onerror = () => reject(get.error ?? new Error('indexedDB get failed'));
+          get.onsuccess = () => {
+            const r = get.result as { tick: number; bytes: Uint8Array } | undefined;
+            resolve(r ? { tick: r.tick, length: r.bytes.length } : null);
+          };
+        };
+      }),
+  );
+  expect(kept).toEqual({ tick: 72, length: packed.length });
+  await page.screenshot({ path: path.join(evidence(info), 'title-save-refused.png') });
   expect(errors).toEqual([]);
 });

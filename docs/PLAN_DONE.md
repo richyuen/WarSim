@@ -15993,3 +15993,26 @@ Of 7.116 (open in PLAN.md):
   **Read** (2026-10-27, `docs/evidence/7.148/read.md`): in 60-day windows from HEAD saves the carriers' own missions
   cost 0.944 × the battles; their wings sink the enemy's fleets before they meet (ships sunk at sea by any means
   0.977 ×); not detection. Closed not done (ADR-742 a, the user's decision, 2026-10-27): the battles' clauses read as ships sunk at sea by any means.
+
+<!-- moved 2026-10-28 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.149 R17-B1: Continue opens an older autosave as a corrupted world, silently. A save from before ADR-737 throws
+  `missing section formations.struck` after the map, date and tick are replaced; the 1938 start's 1,467 formations and
+  its wars stay and Resume runs it on; the same save loads whole on `7b883084` (`critic/c17_os_c10.json`,
+  `critic/shots/c17os_01_after_continue.png`, `critic/c17o_os.json`, `critic/scripts/c17_oldsave.mjs`). AT: a HEAD
+  save with one section removed, pressed through the title's Continue in the page, gives a message on the title that it
+  cannot be loaded and starts nothing; the world held before the load hashes the same after the refusal (no section of
+  it replaced); a unit test loading such a save asserts the refusal and the unchanged world, red without; a browser
+  spec through Continue; the gate green.

@@ -35,6 +35,8 @@ export interface TitleScreenProps {
   onScenarioFile: (file: File) => Promise<void>;
   /** A scenario file could not be loaded after this screen was left for its game. */
   loadFailed: boolean;
+  /** The saved game could not be loaded after Continue (PLAN 7.149): it is not offered again. */
+  saveFailed?: boolean;
 }
 
 /**
@@ -42,7 +44,7 @@ export interface TitleScreenProps {
  * the scenario file loader; on the right the chosen scenario (a map of its start, its facts) with
  * its new-game form. No world runs behind it.
  */
-export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContinue, checkScenarioFile, onScenarioFile, loadFailed }: TitleScreenProps) {
+export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContinue, checkScenarioFile, onScenarioFile, loadFailed, saveFailed = false }: TitleScreenProps) {
   const [chosen, setChosen] = useState<ScenarioId>(scenarios[0]!.id);
   // A new seed per visit, so two games started without touching the field differ.
   const [seed] = useState(randomSeed);
@@ -83,9 +85,15 @@ export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContin
               <div class="title-scenario-name">{t(save.info.nameKey as MessageKey)}</div>
               <div data-testid="title-save-date">{dateAt(save.info.startDay, save.tick)}</div>
               <div class="title-scenario-date">{t('title.savedAt', { time: new Date(save.savedAt).toLocaleString() })}</div>
-              <button type="button" class="start-btn" data-testid="title-continue" onClick={onContinue}>
-                {t('title.continue')}
-              </button>
+              {saveFailed ? (
+                <div class="panel-warn" data-testid="title-save-error">
+                  {t('title.saveFailed')}
+                </div>
+              ) : (
+                <button type="button" class="start-btn" data-testid="title-continue" onClick={onContinue}>
+                  {t('title.continue')}
+                </button>
+              )}
             </section>
           ) : null}
           <section class="title-card title-list">

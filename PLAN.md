@@ -69,14 +69,6 @@ blocking; aircraft 7 → 8, stability 7 → 5, naval 7 → 6): R17-B1, R17-B2 an
 under the bar, beyond them, are 7.152 (stability 5), 7.153 (emergent 6) and 7.154 (naval 6). A task each, split when
 taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic has run (1471, 1523):
 
-- [ ] 7.149 R17-B1: Continue opens an older autosave as a corrupted world, silently. A save from before ADR-737 throws
-  `missing section formations.struck` after the map, date and tick are replaced; the 1938 start's 1,467 formations and
-  its wars stay and Resume runs it on; the same save loads whole on `7b883084` (`critic/c17_os_c10.json`,
-  `critic/shots/c17os_01_after_continue.png`, `critic/c17o_os.json`, `critic/scripts/c17_oldsave.mjs`). AT: a HEAD
-  save with one section removed, pressed through the title's Continue in the page, gives a message on the title that it
-  cannot be loaded and starts nothing; the world held before the load hashes the same after the refusal (no section of
-  it replaced); a unit test loading such a save asserts the refusal and the unchanged world, red without; a browser
-  spec through Continue; the gate green.
 - [ ] 7.150 R17-B2: the late world is still mostly still. Same 64 seeds `7b88308` → HEAD, engaged land formations a
   day in years 2–30 4.11 → 5.11 (+24 %), 13 % of year 1's 39.0; in the page 7019 y20 engaged 0, 0, 0, 0, 2, 2, 0 of
   ~620 at war, 5419 y20 none on 4 of 7 samples (`critic/c17_cmp_y30.json`, `critic/c17_y2_7019_y20.json`,
@@ -480,3 +472,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.143 (closed, no rule: ADR-740, the user's decision) The late American runaway (found by 7.140's AT, ADR-732): on HEAD the United States holds over a third of […]
 - [x] 7.147 (closed not done, ADR-741 a, the user's decision) Year 1's land contact under ADR-737 (found by 7.144's AT; ADR-737 a, the user's decision): on […]
 - [x] 7.148 (closed not done, ADR-742 a, the user's decision) The sea battles under ADR-738 (found by 7.145's AT; ADR-738 a, the user's decision): on […]
+- [x] 7.149 R17-B1: Continue opens an older autosave as a corrupted world, silently. A save from before ADR-737 throws […]

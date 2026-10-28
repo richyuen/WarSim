@@ -198,7 +198,16 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       return;
     }
   } else if (params.get('continue') === '1') {
-    const tick = await autosave.restore().catch(() => null);
+    // A save that does not fit (from an older version) is refused whole by the sim and the
+    // title screen says so; nothing starts, and the autosave is not overwritten (PLAN 7.149).
+    let tick: number | null;
+    try {
+      tick = await autosave.restore();
+    } catch (err) {
+      console.warn(`WarSim: the autosave could not be loaded: ${err instanceof Error ? err.message : String(err)}`);
+      location.replace(loadFailedUrl('save'));
+      return;
+    }
     if (tick !== null) console.info(`WarSim: resumed autosave at tick ${tick}`);
     loaded = tick !== null;
   }

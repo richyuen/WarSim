@@ -167,6 +167,23 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-744 · 2026-10-28 · accepted — A save that does not fit is refused whole; Continue with one returns to the title (PLAN 7.149)
+
+- **Context.** Critic run 17, R17-B1: an autosave from before ADR-737 lacks `formations.struck`. `loadBytes` ran each
+  part's `deserialize` in turn, so the throw came after the world's meta (map, date, tick) and the parts before
+  `formations` had been replaced; the page caught the error as "no save" and ran the 1938 start on with the save's
+  date, and the next autosave would have written over the player's save.
+- **Decision.** `Sim.load` keeps the world's own save bytes and, when the load throws, loads them back (and the map's
+  caches) before throwing on: a refused save leaves the world as it was, section for section, and it steps on as a
+  world never offered the save (`tests/unit/saveRefused.test.ts`). The save is not judged by name beforehand: the
+  world's sections are not a fixed list (a month of 1938 play has 131, the start 121: the air's and the sea's come with
+  play), so a check against the live world would refuse whole saves. In the page a refused Continue goes back to the
+  title (`?failed=save`), which says the saved game could not be loaded, offers no Continue for it, and starts nothing;
+  the autosave is left as it was (`tests/e2e/title.spec.ts`, `docs/evidence/1.43/title-save-refused.png`).
+- **Consequences.** A load costs one save of the world more (a 1938 world: about 3 MB, milliseconds). Older saves are
+  still not loadable; telling them apart before Continue (a format version) is PLAN 7.152. A save of another scenario
+  is still not offered (unchanged). The pin is unchanged: no rule moved.
+
 ### ADR-743 · 2026-10-27 · accepted — Browser specs re-anchored after PLAN 7.139–7.146 moved their 1938 histories
 
 - **Context.** `npm run check:review` before critic run 17, on `4c0cb833`: six browser specs red twice, green at

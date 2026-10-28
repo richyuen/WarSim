@@ -191,9 +191,23 @@ export class Sim {
     }
   }
 
-  /** Replaces the state with a save produced by a Sim of the same scenario and map size. */
+  /**
+   * Replaces the state with a save produced by a Sim of the same scenario and map size. A save
+   * that does not fit (a section missing or of another type, as in a save from an older version)
+   * is refused whole: the error is thrown and the world is as it was before the call (PLAN 7.149,
+   * critic run 17: the map, date and tick came in before the throw, and the game ran on). The
+   * world's sections are not a fixed list (some come with play), so the save cannot be judged by
+   * them beforehand: the world is put back from its own bytes.
+   */
   load(bytes: Uint8Array): void {
-    loadBytes(this.world.parts(), bytes);
+    const before = saveBytes(this.world.parts());
+    try {
+      loadBytes(this.world.parts(), bytes);
+    } catch (err) {
+      loadBytes(this.world.parts(), before);
+      if (this.scenario !== 'toy') buildMapCaches(this.world);
+      throw err;
+    }
     // A new process's first load builds the map's caches here, not in the ticks after (PLAN 7.125).
     if (this.scenario !== 'toy') buildMapCaches(this.world);
   }

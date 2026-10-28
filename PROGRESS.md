@@ -24338,3 +24338,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   year 20 3.08 → 1.30). R16-B2 (5.5 ms) no longer blocking: 9781 y24 5.85 ms, once.
 - **Filed:** 7.149–7.151 for the three, 7.152 stability, 7.153 emergent, 7.154 naval. Unseen seeds from 1401.
 - **Next:** PLAN 7.149 (the old save).
+
+## 2026-10-28 — PLAN 7.149: a save that does not fit is refused whole; Continue with one returns to the title (ADR-744)
+
+- **Start:** gate green on `f6359e58`; critic not due.
+- **Cause:** `loadBytes` deserialized part by part; a save without `formations.struck` threw after the meta (map, date,
+  tick) and the earlier parts were in, and the page took the throw for "no save" and ran on.
+- **Fix:** `Sim.load` puts the world back from its own bytes when a load throws; a refused Continue goes to
+  `?failed=save`, where the title says the save cannot be loaded and offers no Continue; the autosave is kept.
+- **Tests:** `tests/unit/saveRefused.test.ts` (a month-on save less one section, and one with a section of another
+  type: refused, hash, sections and 48 more hours equal to an untouched twin; red without, 2 of 3), `title.spec.ts`
+  "Continue with a save that does not fit…" (red without: no `failed=save`); `title.spec.ts` (8) and
+  `autosave1938.spec.ts` green by hand.
+- **Gotcha:** a world's sections are not a fixed list (the start 121, a month on 131), so a save cannot be checked by
+  the names of the world it replaces.
+- **Next:** PLAN 7.150 (late contact).
