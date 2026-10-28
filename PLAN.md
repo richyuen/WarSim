@@ -76,6 +76,11 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   in years 2–30 at least 0.2 × the same runs' year 1, year 1 not below 0.95 × HEAD's on the same seeds; from those
   runs' year-20 saves, no world with a war on land showing nobody in contact on more than two of seven 10-day samples;
   a unit test, red without; the gate green.
+  Run 2026-10-28 (ADR-745, to the user; BLOCKERS; `docs/evidence/7.150/read.md`, `at.md`): the quiet wars' defenders
+  hold millions of men and a few formations, their orders held by gold. Rule (`02d1b1cd`): outnumbered on a land front,
+  an AI nation queues two cadre divisions a month from its manpower for no gold. AT on 1401–1410: years 2–30 0.309 ×
+  year 1, year 1 1.27 × HEAD's, met; worlds with nobody in contact on more than two of seven samples at year 20 2 of 10
+  (HEAD 4), missed. Waits on ADR-745; seeds 1401–1410 spent.
 - [ ] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 →
   1.30 a world, year 10 4.55 → 2.08; 12 of 15 carrier groups at war hold no wing in five HEAD y20 saves; the panel
   shows neither the wings nor their mission (`critic/c17_navycmp.json`, `critic/c17_cvread_y20.txt`,

@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-745 · 2026-10-28 · accepted — The levy: outnumbered on a land front, an AI nation raises two cadre divisions a month from its manpower, for no gold (PLAN 7.150)
+### ADR-745 · 2026-10-28 · accepted; its AT's outcome proposed (the user's decision) — The levy: outnumbered on a land front, an AI nation raises two cadre divisions a month from its manpower, for no gold (PLAN 7.150)
 
 - **Context.** R17-B2: late, land contact is 13 % of year 1's, and half the late worlds show nobody in
   contact on more than two of seven 10-day samples. Six operational rules read flat (ADR-733); the one
@@ -201,6 +201,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   desperation stands near 1 with the levy's men; the first day within 30 of the fall that it is 1 or
   more, France is extreme).
 - **Pin** 2283b28a → b22bcdd1.
+- **The AT** (`docs/evidence/7.150/at.md`, seeds 1401–1410 × 30): years 2–30 0.309 × year 1, every seed over 0.2,
+  year 1 1.27 × HEAD's: met. From the year-20 saves, worlds with nobody in contact on more than two of seven samples 2
+  of 10 (1406, 1408) against HEAD's 4: missed. Run time on 1408 × 30 1.065 ×, the worst year 4.75 ms.
+- **Proposed, the user's decision:** (a) the levy kept, 7.150 closed not done, the quiet worlds left to PLAN 7.153
+  (recommended: half of HEAD's quiet worlds, the contact late nearly doubled, and 7.153 already counts the
+  checkpoints with nobody in contact); (b) kept and 7.150 ticked on its first clause; (c) reverted.
 
 ### ADR-744 · 2026-10-28 · accepted — A save that does not fit is refused whole; Continue with one returns to the title (PLAN 7.149)
 

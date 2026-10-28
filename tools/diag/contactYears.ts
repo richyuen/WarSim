@@ -7,7 +7,7 @@
  *   days, engaged read at hour 0 and after each day (8 reads); "nobody in contact" when their mean
  *   is 0. Under 500 men: land formations with strength under 500 at the checkpoint.
  *
- * Usage: npx tsx tools/diag/contactYears.ts <seed> <years> <out.json>
+ * Usage: [SAVE_DIR=<dir>] npx tsx tools/diag/contactYears.ts <seed> <years> <out.json>
  */
 import { writeFileSync } from 'node:fs';
 import { size1938 } from '../../src/sim/scenario1938';
@@ -51,7 +51,10 @@ for (let y = 1; y <= years; y++) {
   process.stderr.write(`${seed} year ${y}: engaged ${(eng / 365).toFixed(2)}, wars ${(wars / 365).toFixed(2)}\n`);
   if (y === 10 || y === 20) {
     const copy = new Sim({ scenario: '1938', seed, assets });
-    copy.load(sim.save());
+    const bytes = sim.save();
+    // `SAVE_DIR`: the checkpoint written there as `<seed>_y<year>.bin` (PLAN 7.150's AT reads them again).
+    if (process.env.SAVE_DIR) writeFileSync(`${process.env.SAVE_DIR}/${seed}_y${y}.bin`, bytes);
+    copy.load(bytes);
     const cw = copy.world;
     let land = 0;
     let under500 = 0;

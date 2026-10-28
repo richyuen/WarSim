@@ -5,6 +5,19 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.150's AT missed on its second clause: two late worlds of ten with nobody in contact on more than two of seven samples (ADR-745, waits on the user)
+- **The bar:** on 1401–1410 × 30 years, engaged land formations a day in years 2–30 at least 0.2 × the same runs' year 1,
+  year 1 not below 0.95 × HEAD's; from the year-20 saves, no world with a war on land showing nobody in contact on more
+  than two of seven 10-day samples.
+- **What moved** (`docs/evidence/7.150/at.md`; the levy, ADR-745, `02d1b1cd`): years 2–30 0.309 × year 1 (every seed
+  over 0.2, the lowest 0.227; HEAD × 20 years 0.179), year 1 1.27 × HEAD's: met. Worlds over two empty samples 2 of 10
+  (1406: 3, 1408: 5) against HEAD's 4 on the same seeds; empty samples 8 against 20: missed. Mean tick on 1408 × 30
+  1.065 ×, its worst year 4.75 ms (HEAD 3.88).
+- **Left:** 1408's late wars are the United States against nations with no men left to levy, and a war days old;
+  1406's are armed on both sides and quiet for a month. The user's (ADR-745): (a) the levy kept, 7.150 closed not
+  done, the quiet worlds left to PLAN 7.153, which counts them (recommended); (b) kept and ticked on its first clause;
+  (c) reverted. Seeds 1401–1410 spent.
+
 ### RESOLVED 2026-10-27 (option a, the user's decision: no rule, 7.148 closed not done) · PLAN 7.148: the carriers' wings sink the enemy's fleets before they meet (ADR-742, waits on the user)
 - **The bar:** on 1314–1323 × 20 years against `57a00adb`, sea battles and ships sunk in them in years 2–20 not below
   0.95 ×, carrier strike-hours at least 2 ×.

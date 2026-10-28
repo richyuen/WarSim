@@ -24353,3 +24353,25 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a world's sections are not a fixed list (the start 121, a month on 131), so a save cannot be checked by
   the names of the world it replaces.
 - **Next:** PLAN 7.150 (late contact).
+
+## 2026-10-28 — PLAN 7.150: the levy; the AT met on contact, missed on two quiet worlds of ten (ADR-745, to the user)
+
+- **Start:** gate green on `d457d0fe`; critic not due.
+- **Read** (`docs/evidence/7.150/read.md`; new `tools/diag/phantomWars.ts`): on 25 of the critic's run-17 year-20 saves,
+  12 worlds show nobody in contact on more than two of seven samples. Their wars are young and one-sided; the defenders
+  have a few formations and millions of men in their pool (Germany 255 against France's 5 on a 2,510-cell front; the
+  Soviet Union of 7019 9 formations on 113,000 cells, 9.4 M men, 462 gold a month), their orders held by the gold.
+- **Rule** (`02d1b1cd`, ADR-745): an AI nation at war holding a land front where its side is outnumbered on land queues
+  up to two cadre divisions a month (`LEVY_MONTH`, `levyFormation`) from its manpower, no gold. Six arms read; from 1938
+  × 12 years on 1294–1300 years 2–12 against year 1 0.161 → 0.297. Pin 2283b28a → b22bcdd1.
+- **Tests:** `levy1938.test.ts` new (red without); `economicAi`, `navyBudget1938`, `nukeOverrun1938` restated with their
+  claims kept (ADR-745). Whole unit suite by hand: green but for timeouts under load, each green alone. Browser specs by
+  hand: `fallen1938`, `fightSeen1938` (2), `seaClose1938`, `shipMarks1938` (3), `tankBattle1938`, `tankHulls1938`
+  green (the first run of four workers timed out six; one at a time all green).
+- **AT** (`docs/evidence/7.150/at.md`, 1401–1410 × 30): years 2–30 0.309 × year 1, year 1 1.27 × HEAD's, met; year 20
+  worlds with nobody in contact on more than two of seven samples 2 of 10 (HEAD 4), missed. BLOCKERS; seeds spent.
+- **Run time:** 1408 × 30 both arms at once: mean tick 2.94 → 3.13 ms, worst year 3.88 → 4.75 ms; formations at year
+  20 787 → 1,293.
+- **Gotcha:** a 181-day A/B from saves read 1.69 × for this rule against 2.06 × over 12 years: a rule whose effect
+  piles up reads low on a short window.
+- **Next:** PLAN 7.151 (carriers' decks) while ADR-745 waits.
