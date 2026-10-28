@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, NAVY_SHARE, OUTNUMBERED_SLOTS, outnumberedOnLand, PARALLEL_INCOME, peaceShare, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
+import { BATTLE_FLEET_INCOME, budgetOf, FEW_FORMATIONS, LEVY_MONTH, NAVY_SHARE, OUTNUMBERED_SLOTS, outnumberedOnLand, PARALLEL_INCOME, peaceShare, RESERVE_MONTHS, wantsFerry, wantsTransport } from '../../src/sim/ai/economic';
 import { frontReach } from '../../src/sim/ai/invasion';
 import { neighbours4 } from '../../src/sim/nav/grid';
 import { passageOf } from '../../src/sim/systems/movement';
@@ -363,7 +363,10 @@ describe('a nation without a navy saves for a warship (PLAN 7.35d3b)', () => {
     expect(budgetOf(w, NOR, monthlyAccounts(w, T)).income).toBeLessThan(PARALLEL_INCOME);
     w.nations.cols.gold[NOR] = 3 * w.rules!.templates[BUILD_MIX_1938.infantry]!.gold;
     runEvents(s, 1);
-    expect(land(w, NOR)).toBe(1 + OUTNUMBERED_SLOTS);
+    // Its paid orders, infantry; and the levy's cadre divisions after them (PLAN 7.150, ADR-745).
+    const kinds = w.production.ids().filter((p) => w.production.cols.nation[p] === NOR && w.rules!.templates[w.production.cols.template[p]!]!.domain === Domain.land).map((p) => w.production.cols.template[p]!);
+    expect(kinds.filter((t) => t === BUILD_MIX_1938.infantry).length).toBe(1 + OUTNUMBERED_SLOTS);
+    expect(kinds.filter((t) => t === BUILD_MIX_1938.cadre).length).toBe(LEVY_MONTH);
     expect(ships(w, NOR)).toEqual([]);
   });
 

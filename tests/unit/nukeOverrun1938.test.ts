@@ -98,9 +98,20 @@ describe('an overrun holder of warheads strikes (PLAN 7.18)', () => {
     const war = w.wars.list.find((x) => x.sides[1].includes(FRA))!;
     expect(war, 'the war goes on').toBeDefined();
     expect(war.capitalsLost).toContain(FRA);
-    const { desperation, extreme } = desperationOf(w, FRA, war, 1);
-    expect(desperation).toBeGreaterThanOrEqual(1);
-    expect(extreme).toBe(true);
+    // Since the levy (PLAN 7.150, ADR-745) France's men are made up at each month start and its
+    // desperation stands near 1 after the fall (0.98 on the day, Paris on day 106): the first day
+    // within 30 of the fall that it is 1 or more, France is extreme.
+    let at = desperationOf(w, FRA, war, 1);
+    for (let d = 0; d < 30 && at.desperation < 1; d++) {
+      s.step(24, (ww) => {
+        ww.out.events.length = 0;
+        ww.out.fires.length = 0;
+      });
+      expect(w.wars.list.includes(war), 'the war goes on').toBe(true);
+      at = desperationOf(w, FRA, war, 1);
+    }
+    expect(at.desperation).toBeGreaterThanOrEqual(1);
+    expect(at.extreme).toBe(true);
   }, 600_000);
 
   it("a small nation's capital is not worth TARGET_CAPITAL; a great one's is", () => {

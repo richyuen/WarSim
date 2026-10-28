@@ -119,6 +119,25 @@ export function queueFormation(world: World, nation: number, template: number): 
   return id;
 }
 
+/**
+ * A levy (PLAN 7.150, ADR-745): a land order of `template` that takes its men from the manpower and
+ * no gold, and trains as any order. Returns the production row id, or 0 (not a land template, a
+ * nation not living, short of men, or without the techs).
+ */
+export function levyFormation(world: World, nation: number, template: number): number {
+  const rule = world.rules?.templates[template];
+  const nc = world.nations.cols;
+  if (!rule || rule.domain !== Domain.land || !world.nations.has(nation) || nc.living[nation] !== 1 || nc.manpower[nation]! < rule.manpower || !knowsTechs(world, nation, rule.techs)) return 0;
+  nc.manpower[nation] = nc.manpower[nation]! - rule.manpower;
+  const p = world.production;
+  const id = p.create();
+  p.cols.nation[id] = nation;
+  p.cols.template[id] = template;
+  p.cols.readyDay[id] = Math.floor(world.tick / 24) + Math.max(1, rule.days);
+  world.out.emit(world.tick, EventKind.ProductionQueued, id, nation, NaN, NaN);
+  return id;
+}
+
 /** Where a new formation of `nation` appears (cell centre), or null when it holds no land. */
 export function spawnPoint(world: World, nation: number): [number, number] | null {
   const { w, h, controller } = world.cells;

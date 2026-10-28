@@ -2374,6 +2374,10 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     (`WAR_RESERVE_MONTHS` 0, for the armour's pick too; PLAN 7.65, ADR-615: the defenders of an
     income of 150–500 were stopped by gold in most of their months at war). The warship's
     saving, the refills, the fleets and the wings keep the 3 months.
+  - *The levy (PLAN 7.150, ADR-745):* an AI nation at war holding a land front where its side is
+    outnumbered on land queues up to 2 cadre divisions a month (`LEVY_MONTH`) for no gold, their men
+    from its manpower, while its balance less their upkeep stays over its need. They train as orders
+    do and stand in its order slots meanwhile.
   - *Overseas muster (ADR-47):* a nation whose fronts all lie on other landmasses than its
     capital raises new formations in the theatre (nearest own city to the front), an abstraction
     of sealift until PLAN 4.5. A nation at war with no front cell of its own (its land front its

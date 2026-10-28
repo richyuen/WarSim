@@ -167,6 +167,41 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-745 · 2026-10-28 · accepted — The levy: outnumbered on a land front, an AI nation raises two cadre divisions a month from its manpower, for no gold (PLAN 7.150)
+
+- **Context.** R17-B2: late, land contact is 13 % of year 1's, and half the late worlds show nobody in
+  contact on more than two of seven 10-day samples. Six operational rules read flat (ADR-733); the one
+  lever measured to move contact is the army's size (ADR-692, ADR-739).
+- **Measured** (`docs/evidence/7.150/read.md`; `tools/diag/phantomWars.ts` on 25 of the critic's run-17
+  year-20 saves). The quiet wars are young and one-sided, and their defenders have almost no army on
+  land with millions of men in their pool: Germany 255 formations against France's 5 on a 2,510-cell
+  front; the Soviet Union of 7019 9 formations on 113,000 cells, 9.4 M men, 462 gold a month, its order
+  held by the gold for a division. The land left to the weak side has the men and not the industry.
+- **Decision.** `economicAi` step 3d, monthly: an AI nation at war that holds a land front where its
+  side is outnumbered on land (`outnumberedOnLand`, ADR-739) queues up to `LEVY_MONTH` (2) cadre
+  divisions (`levyFormation`): their men from its manpower, no gold, the template's training days,
+  while its balance less their upkeep stays over its need. They are orders as any (`ProductionQueued`)
+  and stand in its order slots while they train.
+- **Arms read** (from 1938 × 12 years on 1294–1300, years 2–12 against year 1): HEAD 0.161; the rule
+  0.297 (year 1 1.12 ×, years 2–12 2.06 ×, every seed over 0.2); gated to over 1,000 cells a formation
+  0.200; mustered at once 0.224–0.315 with year 1 up a quarter and a seed at 0.150. A 181-day A/B on
+  the saves read 1.69 ×, low against the long runs (the levies pile up): a short save A/B under-reads
+  a cumulative rule.
+- **Cost.** The levies in training take order slots: on 1294, 1296, 1298 × 8 years paid land orders
+  106 → 79 a year, land formations at year 8 551 → 693. Accepted: no column tells a levy from an order
+  without a new state section (PLAN 7.152).
+- **AoC.** AoC's nations raise troops from the land they hold, with no treasury of the kind here; the
+  levy brings the weak side nearer that. No deviation.
+- **Tests.** `tests/unit/levy1938.test.ts` (Norway with no gold at war with Sweden across their border:
+  LEVY_MONTH cadre rows and their men from the pool, red without; not outnumbered, none; short of the
+  men, none). Restated, their claims kept: `economicAi.test.ts` (four cases of Germany's paid orders at
+  war with Luxembourg: Luxembourg's land army removed, so Germany is not outnumbered),
+  `navyBudget1938.test.ts` (the outnumbered's slots counted by its infantry orders, the levy's cadre
+  rows beside them), `nukeOverrun1938.test.ts` (France after the fall of Paris, day 106 now: its
+  desperation stands near 1 with the levy's men; the first day within 30 of the fall that it is 1 or
+  more, France is extreme).
+- **Pin** 2283b28a → b22bcdd1.
+
 ### ADR-744 · 2026-10-28 · accepted — A save that does not fit is refused whole; Continue with one returns to the title (PLAN 7.149)
 
 - **Context.** Critic run 17, R17-B1: an autosave from before ADR-737 lacks `formations.struck`. `loadBytes` ran each

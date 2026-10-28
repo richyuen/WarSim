@@ -106,6 +106,9 @@
  *    its front cells: PLAN 7.90e, ADR-648) of more men than its transports' room. Unlike the landing's, it
  *    stops no other fleet: Britain's island army outnumbers any room it could buy, so the want holds
  *    for the war's length; one group in training at a time, a warship between.
+ * 3d. The levy (PLAN 7.150, ADR-745, `LEVY_MONTH`), after the army's orders: at war, holding a land
+ *    front where its side is outnumbered on land, up to LEVY_MONTH cadre divisions from its manpower
+ *    and for no gold, while its balance less their upkeep stays over its need.
  * 4. Research (PLAN 3.1b, `systems/research.ts`), set between 2 and 3: the budget of the days
  *    to come is RESEARCH_SHARE of income, at most what the lines can take (`researchCap`), and
  *    nothing for a nation in debt or one that step 1 would have disband (short, and the
@@ -126,7 +129,7 @@ import { canDeliver, STOCKPILE_SHARE, WARHEAD_UPKEEP, warheadsOf } from '../syst
 import { SUPPRESSION_COST } from '../systems/revolts';
 import { frontierOf } from '../systems/territory';
 import { neighbours4 } from '../nav/grid';
-import { airfield, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
+import { airfield, levyFormation, queueFormation, refillable, refillFormation, shipyard } from '../systems/production';
 import { liveCarriers } from '../systems/air';
 import { foldHollow } from './hollow';
 import { transportRoom } from '../systems/amphibious';
@@ -182,6 +185,30 @@ export const MAX_PARALLEL = 6;
  * one, full in a third of their months, while their front thinned.
  */
 export const OUTNUMBERED_SLOTS = 1;
+
+/**
+ * The levy (PLAN 7.150, ADR-745): each month an AI nation at war that holds a land front where its side
+ * is outnumbered on land (`outnumberedOnLand`) raises up to LEVY_MONTH cadre divisions from its manpower
+ * and for no gold, while its books carry their upkeep. They train as an order does (the template's days)
+ * and stand in its order slots while they do. Measured before (`docs/evidence/7.150/read.md`): late, the
+ * weak side of the quiet wars held millions of men in its pool and a few formations, its orders held by
+ * the gold for a division (the Soviet Union of seed 7019 at year 20: 462 gold a month, 9.4 M men, 9
+ * formations on 113,000 cells).
+ */
+export const LEVY_MONTH = 2;
+
+/**
+ * `n`'s levy of the month (LEVY_MONTH): cadre divisions (`cadre`, a template index, of upkeep `u` a
+ * month) queued while it has their men and `balance` less each one's upkeep stays over `need`. Returns
+ * how many.
+ */
+function levy(world: World, n: number, cadre: number, u: number, balance: number, need: number): number {
+  const rule = world.rules?.templates[cadre];
+  if (!rule) return 0;
+  let k = 0;
+  while (k < LEVY_MONTH && world.nations.cols.manpower[n]! >= rule.manpower && balance - (k + 1) * u > need && levyFormation(world, n, cadre) !== 0) k++;
+  return k;
+}
 export const POOR_INCOME = 20;
 export const RICH_INCOME = 200;
 export const ARMOUR_HEAVY = 0.2;
@@ -578,6 +605,13 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
         }
       };
       armyOrders();
+      // 3d. The levy (PLAN 7.150, ADR-745): outnumbered on a land front, cadre divisions from its manpower, no gold.
+      if (atWar && outnumbered.has(n)) {
+        const u = upkeepOfTemplate(mix.cadre);
+        const raised = levy(world, n, mix.cadre, u, balance, need);
+        balance -= raised * u;
+        upkeep += raised * u;
+      }
       // 3a. The refills, with what the orders left (PLAN 7.3e1, ADR-435: taken first, they spent
       // the treasury to the reserve every month, and a nation whose army died in contact, where
       // none is refilled, raised nothing for years). With no army order in training and room for

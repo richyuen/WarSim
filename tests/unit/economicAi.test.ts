@@ -140,6 +140,8 @@ describe('economic AI (PLAN 1.26)', () => {
       w.wars.set(GER!, LUX!, true); // a rich nation with no armour: its first order is a panzer division (PLAN 3.5d)
       nc.aiOff[LUX!] = 1;
       for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === GER!) destroyFormation(w, id);
+      // Luxembourg's land army gone, so that Germany is not outnumbered on land and raises no levy (PLAN 7.150, ADR-745).
+      for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === LUX! && !w.isFleet(id) && !w.isWing(id)) destroyFormation(w, id);
       nc.manpower[GER!] = 1e7;
       nc.gold[GER!] = gold(Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!));
       runEvents(s, 1);
@@ -169,6 +171,8 @@ describe('economic AI (PLAN 1.26)', () => {
       if (atWar) w.wars.set(GER!, LUX!, true);
       nc.aiOff[LUX!] = 1;
       for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === GER!) destroyFormation(w, id);
+      // Luxembourg's land army gone, so that Germany is not outnumbered on land and raises no levy (PLAN 7.150, ADR-745).
+      for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === LUX! && !w.isFleet(id) && !w.isWing(id)) destroyFormation(w, id);
       nc.manpower[GER!] = 1e7;
       const income = Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!);
       const cadre = RULES_1938.templates[BUILD_MIX_1938.cadre]!.gold;
@@ -211,6 +215,8 @@ describe('the mix (PLAN 3.5d)', () => {
     const s = peaceful();
     const w = s.world;
     clear(w, GER!);
+    // Luxembourg's land army gone: Germany not outnumbered on land, no levy (PLAN 7.150, ADR-745).
+    for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === LUX! && !w.isFleet(id) && !w.isWing(id)) destroyFormation(w, id);
     rich(w, GER!);
     expect(w.wars.list).toHaveLength(0);
     runEvents(s, 1);
@@ -249,6 +255,8 @@ describe('the mix (PLAN 3.5d)', () => {
     w.nations.forEach((n) => (nc.aiOff[n] = n === GER! ? 0 : 1));
     w.wars.set(GER!, LUX!, true);
     clear(w, GER!);
+    // Luxembourg's land army gone: Germany not outnumbered on land, no levy (PLAN 7.150, ADR-745).
+    for (const id of w.formations.ids()) if (w.formations.cols.nation[id] === LUX! && !w.isFleet(id) && !w.isWing(id)) destroyFormation(w, id);
     rich(w, GER!);
     const income = Math.max(0, monthlyAccounts(w, ECONOMY_TABLES_1938).gross[GER!]!);
     if (army) {
