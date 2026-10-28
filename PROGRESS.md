@@ -24375,3 +24375,9 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Gotcha:** a 181-day A/B from saves read 1.69 × for this rule against 2.06 × over 12 years: a rule whose effect
   piles up reads low on a short window.
 - **Next:** PLAN 7.151 (carriers' decks) while ADR-745 waits.
+
+## 2026-10-28 — The user's decision: ADR-745 (a)
+
+- The levy kept; PLAN 7.150 closed not done; its two quiet worlds of ten (1406, 1408; HEAD 4) noted under PLAN 7.153.
+  BLOCKERS' entry resolved. No code changed; the pin unchanged.
+- **Next:** PLAN 7.151 (carriers' decks).

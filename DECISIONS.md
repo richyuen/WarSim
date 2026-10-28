@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-745 · 2026-10-28 · accepted; its AT's outcome proposed (the user's decision) — The levy: outnumbered on a land front, an AI nation raises two cadre divisions a month from its manpower, for no gold (PLAN 7.150)
+### ADR-745 · 2026-10-28 · accepted (the user's decision, 2026-10-28: option a, kept; 7.150 closed not done) — The levy: outnumbered on a land front, an AI nation raises two cadre divisions a month from its manpower, for no gold (PLAN 7.150)
 
 - **Context.** R17-B2: late, land contact is 13 % of year 1's, and half the late worlds show nobody in
   contact on more than two of seven 10-day samples. Six operational rules read flat (ADR-733); the one

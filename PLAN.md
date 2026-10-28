@@ -69,18 +69,6 @@ blocking; aircraft 7 → 8, stability 7 → 5, naval 7 → 6): R17-B1, R17-B2 an
 under the bar, beyond them, are 7.152 (stability 5), 7.153 (emergent 6) and 7.154 (naval 6). A task each, split when
 taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic has run (1471, 1523):
 
-- [ ] 7.150 R17-B2: the late world is still mostly still. Same 64 seeds `7b88308` → HEAD, engaged land formations a
-  day in years 2–30 4.11 → 5.11 (+24 %), 13 % of year 1's 39.0; in the page 7019 y20 engaged 0, 0, 0, 0, 2, 2, 0 of
-  ~620 at war, 5419 y20 none on 4 of 7 samples (`critic/c17_cmp_y30.json`, `critic/c17_y2_7019_y20.json`,
-  `critic/c17_y2_5419_y20.json`). AT (the critic's bar): on seeds 1401–1410 × 30 years, engaged land formations a day
-  in years 2–30 at least 0.2 × the same runs' year 1, year 1 not below 0.95 × HEAD's on the same seeds; from those
-  runs' year-20 saves, no world with a war on land showing nobody in contact on more than two of seven 10-day samples;
-  a unit test, red without; the gate green.
-  Run 2026-10-28 (ADR-745, to the user; BLOCKERS; `docs/evidence/7.150/read.md`, `at.md`): the quiet wars' defenders
-  hold millions of men and a few formations, their orders held by gold. Rule (`02d1b1cd`): outnumbered on a land front,
-  an AI nation queues two cadre divisions a month from its manpower for no gold. AT on 1401–1410: years 2–30 0.309 ×
-  year 1, year 1 1.27 × HEAD's, met; worlds with nobody in contact on more than two of seven samples at year 20 2 of 10
-  (HEAD 4), missed. Waits on ADR-745; seeds 1401–1410 spent.
 - [ ] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 →
   1.30 a world, year 10 4.55 → 2.08; 12 of 15 carrier groups at war hold no wing in five HEAD y20 saves; the panel
   shows neither the wings nor their mission (`critic/c17_navycmp.json`, `critic/c17_cvread_y20.txt`,
@@ -101,6 +89,9 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   30 years against HEAD on the same seeds, checkpoints at years 10 and 20 (7 days each) with nobody in contact at most
   half HEAD's count (and at least one fewer); no world with the same five largest by area in the same order for more
   than 12 years; a unit test, red without; the gate green.
+  From 7.150 (ADR-745 a, the user's decision): with the levy, year-20 worlds of 1401–1410 with nobody in contact on
+  more than two of seven samples 2 of 10 (1406: armed sides quiet for a month; 1408: the United States against
+  nations with no men left to levy, and a war days old), HEAD 4 (`docs/evidence/7.150/at.md`).
 - [ ] 7.154 Naval 6: beyond 7.151's decks, the sea war fell a third. Same 64 seeds, sea battles late 8.16 → 5.32 a
   world-year (lower on 61), year 1 41.9 → 35.5, ships sunk in battles 80.8 → 59.7, transports at year 20 495 → 456,
   with surface warships afloat 278 → 306; a carrier's strike ashore has no row and reads as land-based planes
@@ -478,3 +469,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.147 (closed not done, ADR-741 a, the user's decision) Year 1's land contact under ADR-737 (found by 7.144's AT; ADR-737 a, the user's decision): on […]
 - [x] 7.148 (closed not done, ADR-742 a, the user's decision) The sea battles under ADR-738 (found by 7.145's AT; ADR-738 a, the user's decision): on […]
 - [x] 7.149 R17-B1: Continue opens an older autosave as a corrupted world, silently. A save from before ADR-737 throws […]
+- [x] 7.150 (closed not done, ADR-745 a, the user's decision) R17-B2: the late world is still mostly still. Same 64 seeds `7b88308` → HEAD, engaged land formations a […]

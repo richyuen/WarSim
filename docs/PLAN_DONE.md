@@ -16016,3 +16016,31 @@ Of 7.116 (open in PLAN.md):
   cannot be loaded and starts nothing; the world held before the load hashes the same after the refusal (no section of
   it replaced); a unit test loading such a save asserts the refusal and the unchanged world, red without; a browser
   spec through Continue; the gate green.
+
+<!-- moved 2026-10-28 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.150 (closed not done, ADR-745 a, the user's decision) R17-B2: the late world is still mostly still. Same 64 seeds `7b88308` → HEAD, engaged land formations a
+  day in years 2–30 4.11 → 5.11 (+24 %), 13 % of year 1's 39.0; in the page 7019 y20 engaged 0, 0, 0, 0, 2, 2, 0 of
+  ~620 at war, 5419 y20 none on 4 of 7 samples (`critic/c17_cmp_y30.json`, `critic/c17_y2_7019_y20.json`,
+  `critic/c17_y2_5419_y20.json`). AT (the critic's bar): on seeds 1401–1410 × 30 years, engaged land formations a day
+  in years 2–30 at least 0.2 × the same runs' year 1, year 1 not below 0.95 × HEAD's on the same seeds; from those
+  runs' year-20 saves, no world with a war on land showing nobody in contact on more than two of seven 10-day samples;
+  a unit test, red without; the gate green.
+  Run 2026-10-28 (ADR-745, to the user; BLOCKERS; `docs/evidence/7.150/read.md`, `at.md`): the quiet wars' defenders
+  hold millions of men and a few formations, their orders held by gold. Rule (`02d1b1cd`): outnumbered on a land front,
+  an AI nation queues two cadre divisions a month from its manpower for no gold. AT on 1401–1410: years 2–30 0.309 ×
+  year 1, year 1 1.27 × HEAD's, met; worlds with nobody in contact on more than two of seven samples at year 20 2 of 10
+  (HEAD 4), missed. Seeds 1401–1410 spent. Closed not done 2026-10-28 (ADR-745 a, the user's decision): the levy
+  kept, the quiet worlds to PLAN 7.153.

@@ -5,7 +5,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
-### PLAN 7.150's AT missed on its second clause: two late worlds of ten with nobody in contact on more than two of seven samples (ADR-745, waits on the user)
+### RESOLVED 2026-10-28 (option a, the user's decision: the levy kept, 7.150 closed not done, the quiet worlds to PLAN 7.153) · PLAN 7.150's AT missed on its second clause: two late worlds of ten with nobody in contact on more than two of seven samples (ADR-745, waits on the user)
 - **The bar:** on 1401–1410 × 30 years, engaged land formations a day in years 2–30 at least 0.2 × the same runs' year 1,
   year 1 not below 0.95 × HEAD's; from the year-20 saves, no world with a war on land showing nobody in contact on more
   than two of seven 10-day samples.
