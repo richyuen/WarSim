@@ -17,7 +17,7 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **Left:** PLAN 7.156 (the fleet on a canal). The rule is kept (a defect fixed, red-without test, pin unchanged).
   Nothing waits on the user.
 
-### PLAN 7.154b: the sea battles' fall has no cause of the kind the task asks for (ADR-751, waits on the user)
+### RESOLVED 2026-10-28 (option a, the user's decision: no rule, 7.154 closed not done) · PLAN 7.154b: the sea battles' fall has no cause of the kind the task asks for (ADR-751, waits on the user)
 - **The bar:** on 1431–1440 × 20 against HEAD, sea battles in years 2–20 at least 1.25 × HEAD's, ships sunk at sea by
   any means and transports at year 20 not below; a rule only with a cause the read names.
 - **What moved** (`docs/evidence/7.154/read-b.md`): nothing was changed. On 1411–1416 × 20, HEAD against `7b883084`:

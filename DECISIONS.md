@@ -167,6 +167,24 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-753 · 2026-10-28 · accepted — PLAN 7.156: a fleet inside a passage's jump keeps its way through a sea battle's closing
+
+- **Context.** 7.155's AT found fleets standing on the Panama canal's cells, no sea zone under them, every order
+  refused for no sea way. `closeOn` (the sea battle's closing, PLAN 7.19a) drops the fleet's way, and where the
+  straight line is over land asks `orderSail` for a way and sails an hour of it. Two halves: (1) a fleet already
+  under way inside a passage's jump lost its step before the ask, so `orderSail` sailed from the cell under it, land,
+  and refused (1453: seven British fleets at Suez for 13 years); (2) an hour that ended inside a jump stopped the
+  fleet there (1448: a Japanese fleet at Balboa).
+- **Decision.** Inside a jump (a step of its way between two cells that are no neighbours, begun and not done) the
+  fleet keeps a way: the closing's ask goes on from the step under way (`orderSail`'s rule for a fleet under way), or,
+  refused, the way it had stands; an hour that ends inside a jump leaves it under way, and the movement system sails
+  it through at its pace. Elsewhere the closing is as before.
+- **Result** (`docs/evidence/7.156/at.md`, 1451–1460 × 20 against `b1d56d92`): fleet-hours standing on a cell of no
+  sea zone 102,183 → 0 a world; refusals for no sea way 0.015 ×; landings 1.01 ×; transports at year 20 0.96 × (the
+  three worlds that had such a fleet took another course; the other seven equal).
+- **Test:** `tests/unit/closeCanal1938.test.ts` (2, red without).
+- **Pin** unchanged (b22bcdd1): seed 99 closes through no passage in year 1.
+
 ### ADR-752 · 2026-10-28 · accepted — PLAN 7.155: the transports sail to their army only for a port in the waters they sail
 
 - **Context.** PLAN 7.154b's read found fleet sailings refused for no sea way 3 × since `7b883084`, all from the
@@ -185,7 +203,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   without: 64 refusals in 30 days, no sail).
 - **Pin** unchanged (b22bcdd1): seed 99 makes no lake-port sail in year 1.
 
-### ADR-751 · 2026-10-28 · proposed (the user's decision) — PLAN 7.154b: the sea battles' fall is four kept rules and the worlds' history; no fleet that could meet the enemy and does not
+### ADR-751 · 2026-10-28 · accepted (the user's decision, 2026-10-28: option a, no rule; 7.154 closed not done) — PLAN 7.154b: the sea battles' fall is four kept rules and the worlds' history; no fleet that could meet the enemy and does not
 
 - **Context.** PLAN 7.154b: sea battles in years 2–20 at least 1.25 × HEAD's on 1431–1440 × 20; "read first, on HEAD
   saves, where the fleets at war that meet no enemy are; a rule only with a cause that read names" (ADR-742 stands).

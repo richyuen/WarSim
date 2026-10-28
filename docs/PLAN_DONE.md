@@ -16157,3 +16157,46 @@ Of 7.154 (open in PLAN.md):
     framed on the carrier and its target, `worker/carrierRaids`); the ships carriers' wings sink are told
     (`CarrierSunk`) and summed in the headless report (`carrierSunk`); `carrierRaid1938.test.ts` red without,
     `carrierRaidRow1938.spec.ts`. No rule: the pin unchanged.
+
+<!-- moved 2026-10-28 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.154 (closed not done, ADR-751 a, the user's decision) Naval 6: beyond 7.151's decks, the sea war fell a third. Same 64 seeds, sea battles late 8.16 → 5.32 a
+  world-year (lower on 61), year 1 41.9 → 35.5, ships sunk in battles 80.8 → 59.7, transports at year 20 495 → 456,
+  with surface warships afloat 278 → 306; a carrier's strike ashore has no row and reads as land-based planes
+  (`critic/c17_cmp_y30.json`, `critic/c17_navycmp.json`, `critic/c17_cv_99.json`,
+  `critic/shots/c17cv_99_0_framed.png`). ADR-742 stands (carrier wings may sink fleets before they meet). AT: on seeds
+  1431–1440 × 20 years against HEAD on the same seeds, sea battles in years 2–20 at least 1.25 × HEAD's, ships sunk at
+  sea by any means and transports at year 20 not below HEAD's; a carrier strike out of a battle (ashore or at a fleet)
+  has a ticker row naming the carrier's nation and its target, and ships sunk by carrier wings are counted in the
+  headless report; a unit test, red without; the gate green.
+  From 7.151 (ADR-746): with the decks re-manned, on 1411–1420 × 20 transports at year 20 0.82 × and armed ships afloat
+  0.77 × HEAD's (each lower on 6 of 10), sea battles 0.99 ×; the wings' gold came from the navy's months
+  (`docs/evidence/7.151/at.md`).
+  - [x] 7.154a A carrier's strike out of a sea battle has its ticker row ("Carrier strike ashore: Japan on China", […]
+  - [x] 7.154b (closed not done, ADR-751 a, the user's decision) The sea battles: in years 2–20 at least 1.25 × HEAD's on 1431–1440 × 20, ships sunk at sea by any
+    means and transports at year 20 not below HEAD's. Read first, on HEAD saves, where the fleets at war that meet no
+    enemy are (ADR-742 stands: the lever is not the wings); a rule only with a cause that read names.
+    Read 2026-10-28 (`docs/evidence/7.154/read-b.md`): no such cause; the fall is four kept rules and history, and HEAD
+    fights more per war of two navies. ADR-751 (a), the user's decision 2026-10-28: no rule, closed not done.
+
+- [x] 7.156 A fleet standing on a canal's crossing cells (no sea zone under it) has every order refused for no sea
+  way: on 1448 with 7.155's rule years 1–9 8,366 refusals (Japan's fleet at Balboa, 8,255 from the sea battle's
+  closing step `closeOn`; a Dutch fleet at Suez), on 1442 years 1–20 4,353 (the USA's and Britain's at Balboa, from
+  `awayOrder`, `closeOn`, `sailHome`, `raid`; `docs/evidence/7.155/at.md`). Read first how it comes to stand there
+  (`closeOn` sails a step and clears the way: a step that ends on a passage's land leaves it there?). AT: on
+  1451–1460 × 20 against HEAD, fleet-hours standing (not under way) on a cell of no sea zone 0, refusals for no sea
+  way at most 0.5 × HEAD's; a unit test of the case, red without; the gate green.
+  Done 2026-10-28 (ADR-753, `docs/evidence/7.156/at.md`): `closeOn` dropped the way of a fleet inside a jump before
+  asking one (1453: British fleets at Suez 13 years); standing hours 102,183 → 0 a world, refusals 0.015 ×.

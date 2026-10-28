@@ -69,25 +69,6 @@ blocking; aircraft 7 → 8, stability 7 → 5, naval 7 → 6): R17-B1, R17-B2 an
 under the bar, beyond them, are 7.152 (stability 5), 7.153 (emergent 6) and 7.154 (naval 6). A task each, split when
 taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic has run (1471, 1523):
 
-- [ ] 7.154 Naval 6: beyond 7.151's decks, the sea war fell a third. Same 64 seeds, sea battles late 8.16 → 5.32 a
-  world-year (lower on 61), year 1 41.9 → 35.5, ships sunk in battles 80.8 → 59.7, transports at year 20 495 → 456,
-  with surface warships afloat 278 → 306; a carrier's strike ashore has no row and reads as land-based planes
-  (`critic/c17_cmp_y30.json`, `critic/c17_navycmp.json`, `critic/c17_cv_99.json`,
-  `critic/shots/c17cv_99_0_framed.png`). ADR-742 stands (carrier wings may sink fleets before they meet). AT: on seeds
-  1431–1440 × 20 years against HEAD on the same seeds, sea battles in years 2–20 at least 1.25 × HEAD's, ships sunk at
-  sea by any means and transports at year 20 not below HEAD's; a carrier strike out of a battle (ashore or at a fleet)
-  has a ticker row naming the carrier's nation and its target, and ships sunk by carrier wings are counted in the
-  headless report; a unit test, red without; the gate green.
-  From 7.151 (ADR-746): with the decks re-manned, on 1411–1420 × 20 transports at year 20 0.82 × and armed ships afloat
-  0.77 × HEAD's (each lower on 6 of 10), sea battles 0.99 ×; the wings' gold came from the navy's months
-  (`docs/evidence/7.151/at.md`).
-  - [x] 7.154a A carrier's strike out of a sea battle has its ticker row ("Carrier strike ashore: Japan on China", […]
-  - [ ] 7.154b The sea battles: in years 2–20 at least 1.25 × HEAD's on 1431–1440 × 20, ships sunk at sea by any
-    means and transports at year 20 not below HEAD's. Read first, on HEAD saves, where the fleets at war that meet no
-    enemy are (ADR-742 stands: the lever is not the wings); a rule only with a cause that read names.
-    Read 2026-10-28 (`docs/evidence/7.154/read-b.md`): no such cause; the fall is four kept rules and history, and HEAD
-    fights more per war of two navies. ADR-751 waits on the user (BLOCKERS).
-
 - [ ] 7.155 The transports' sailings refused for no sea way, 3 × since `7b883084` (7.154b's read: on 1411–1416 × 20
   years 2–20 10,202 → 30,082, year 1 49 → 708; on 1415 year 1 all 384 transport groups from `sailToArmy`, 352 of them
   Canada's, two fleets asking day after day; `tools/diag/noSeaWay.ts`). AT: on 1441–1450 × 20 against HEAD, refusals
@@ -97,14 +78,6 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   Great Lakes ports, Britain's Mzuzu); `sailToArmy` now takes only ports in the transports' waters, year 1 74.3 → 0 a
   world. The AT missed: refusals 1.43 × (fleets on the Panama canal's cells on 1442 and 1448), transports 0.99 ×,
   landings 1.02 ×. BLOCKERS; the canal to PLAN 7.156.
-
-- [ ] 7.156 A fleet standing on a canal's crossing cells (no sea zone under it) has every order refused for no sea
-  way: on 1448 with 7.155's rule years 1–9 8,366 refusals (Japan's fleet at Balboa, 8,255 from the sea battle's
-  closing step `closeOn`; a Dutch fleet at Suez), on 1442 years 1–20 4,353 (the USA's and Britain's at Balboa, from
-  `awayOrder`, `closeOn`, `sailHome`, `raid`; `docs/evidence/7.155/at.md`). Read first how it comes to stand there
-  (`closeOn` sails a step and clears the way: a step that ends on a passage's land leaves it there?). AT: on
-  1451–1460 × 20 against HEAD, fleet-hours standing (not under way) on a cell of no sea zone 0, refusals for no sea
-  way at most 0.5 × HEAD's; a unit test of the case, red without; the gate green.
 
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
@@ -477,3 +450,5 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.151 R17-B3: AI carriers sail with empty decks. Same 64 seeds, carriers with a wing aboard at year 20 3.08 → […]
 - [x] 7.152 Stability 5: beyond 7.149, every new state column will break the older saves again, and one browser run […]
 - [x] 7.153 (closed not done, ADR-749 a, the user's decision) Emergent 6: beyond 7.150's contact, checkpoints with nobody in contact 13 → 17 of 128 (y10 and y20, 7 […]
+- [x] 7.154 (closed not done, ADR-751 a, the user's decision) Naval 6: beyond 7.151's decks, the sea war fell a third. Same 64 seeds, sea battles late 8.16 → 5.32 a […]
+- [x] 7.156 A fleet standing on a canal's crossing cells (no sea zone under it) has every order refused for no sea […]

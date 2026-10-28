@@ -24507,3 +24507,22 @@ No rule changed and nothing on screen changed. One task came out of it.
   and 1442 (no sea zone under them), every order refused, from `closeOn`, `awayOrder`, `sailHome`. HEAD's 1448 has no
   such fleet. BLOCKERS; filed as PLAN 7.156 (seeds 1451–1460).
 - **Next:** PLAN 7.156 (the fleet on a canal) while ADR-751 waits.
+
+## 2026-10-28 — PLAN 7.156: a fleet inside a canal keeps its way through a sea battle's closing (ADR-753); ADR-751 (a)
+
+- **Start:** gate green on `b1d56d92`; critic not due.
+- **The user's decision:** ADR-751 (a): no rule; PLAN 7.154 closed not done; BLOCKERS' entry resolved.
+- **Cause:** `closeOn` (navalCombat.ts). A fleet under way inside a passage's jump had its way dropped before the
+  closing asked `orderSail` for one, which then sailed from the land under it and refused (1453: seven British fleets
+  at Suez, years 1–15); and an hour of closing that ended inside a jump stopped the fleet there (1448's Balboa). The
+  first fix mended only the second half: its AT arm equal to HEAD on all ten seeds; a tap at the first stranded hour
+  on 1453 named the first half.
+- **Rule:** inside a jump the fleet keeps a way (the ask goes on from its step; refused, the old way stands; an hour
+  ending inside leaves it under way). Pin unchanged (b22bcdd1).
+- **Test:** `tests/unit/closeCanal1938.test.ts` (2, both red without). Tool: `tools/diag/seaWayAt.ts` counts
+  `standNoZone` and `refusedNoZone`.
+- **AT** (`docs/evidence/7.156/at.md`, 1451–1460 × 20 against HEAD): standing fleet-hours on no-zone cells 102,183 →
+  0 a world (bar 0), refusals for no sea way 0.015 × (bar 0.5 ×): met. Landings 1.01 ×, transports at year 20 0.96 ×
+  (three worlds took another course; not in this AT).
+- Gate: six unit files red in the related run by timeouts, each green alone (the gate's rerun).
+- **Next:** PLAN 7.155 stays open on its BLOCKERS entry (its AT's transports clause); then PLAN 7.5.

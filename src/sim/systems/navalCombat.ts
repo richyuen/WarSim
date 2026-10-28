@@ -70,6 +70,7 @@ import { SIDE_SHIPS } from '../../shared/history';
 import { isLand } from '../../shared/terrain';
 import { nearestCellWhere } from '../data/ownership';
 import { airOf, basinOf, laneOf, navOf, portSeaOf, seaOf, type SeaBattle, type World } from '../world';
+import { seaNeighbours } from '../nav/sailRoute';
 import { orderSail, sailStep } from './sail';
 import { applyLoss, applyWholeLoss, elementIndex, elementPlace, loopW, noteMove, settleFormation, slotCount } from './elements';
 import { ARMOR_PEN, COOLDOWN } from './combat';
@@ -163,9 +164,11 @@ export function closeBy(d: number, reach: number, kmh: number, theirReach: numbe
 /**
  * Fleet `id` closes `km` on the point (`tx`, `ty`) (PLAN 7.19a): on the straight line where it is
  * water all the way, else along its sea way (`orderSail`, at that pace for the hour). A closing
- * is the battle's, not an order: the fleet is under no way after it (an order it had is dropped).
+ * is the battle's, not an order: the fleet is under no way after it (an order it had is dropped),
+ * but where it is inside a passage when the hour begins or ends (PLAN 7.156): there it keeps a
+ * way, and sails on through it at its pace.
  */
-function closeOn(world: World, id: number, tx: number, ty: number, km: number): void {
+export function closeOn(world: World, id: number, tx: number, ty: number, km: number): void {
   const c = world.formations.cols;
   const { w, h, terrain } = world.cells;
   const x0 = c.x[id]!;
@@ -185,8 +188,14 @@ function closeOn(world: World, id: number, tx: number, ty: number, km: number): 
     const cy = Math.floor(y);
     if (cy < 0 || cy >= h || isLand(terrain[cy * w + cx]!)) clear = false;
   }
-  c.moving[id] = 0;
-  world.paths.delete(id);
+  // Inside a passage's jump it keeps its way (PLAN 7.156, ADR-753): stopped there it stood over the
+  // land, in no sea zone, and every way from it was refused (British fleets at Suez on seed 1453,
+  // a Japanese one at Balboa on 1448): the way is new from the jump (`orderSail` goes on from a
+  // step under way), or, refused, the one it had.
+  if (clear || !inPassage(world, id)) {
+    c.moving[id] = 0;
+    world.paths.delete(id);
+  }
   if (clear) {
     noteMove(world, id);
     const x = x0 + dx * t;
@@ -197,8 +206,17 @@ function closeOn(world: World, id: number, tx: number, ty: number, km: number): 
   }
   if (!orderSail(world, id, tx, ty)) return;
   sailStep(world, id, km);
+  if (inPassage(world, id)) return;
   c.moving[id] = 0;
   world.paths.delete(id);
+}
+
+/** Whether fleet `id` is under way inside a passage's jump: on a step of its way between two cells that are no neighbours, begun and not done. */
+function inPassage(world: World, id: number): boolean {
+  const c = world.formations.cols;
+  const path = world.paths.get(id);
+  const i = c.pathStep[id]!;
+  return c.moving[id] === 1 && path !== undefined && i < path.length - 1 && c.stepFrac[id]! > 0 && !seaNeighbours(navOf(world).grid, path[i]!, path[i + 1]!);
 }
 
 function factsOf(world: World, id: number, els: readonly number[], air: Map<number, number[]>): FleetFacts | null {
