@@ -167,6 +167,22 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-760 · 2026-10-29 · accepted (the user's decision) — outside PLAN: on a phone the news takes less of the map; a Cancel button for touch; no text selection on mobile Safari
+
+- **Context.** The user, on a phone in portrait: the status messages took the whole screen (the ticker's 6–8 rows, a
+  column of war banners and the legend over each other and the map's lower half); there was no way out of a unit
+  selection or a mode (Escape is a key); on mobile Safari a touch-drag selected the whole game.
+- **Decision** (the user's choice, of three put to them: trim and collapse; hide behind a button; both): at a phone's
+  width (≤ 600 px, `usePhone`, the style sheet's breakpoint) the ticker is two rows (the newest event, and the
+  player's last order's news, else the first sea battle, else the event before); the war banners one row of two and a
+  "+N" that opens the rest, up to the desktop's six; the legend folded to its title, top left, opened by a tap, giving
+  way to a panel there as the ranking does. A desktop's is unchanged. Not chosen: hiding them behind a button.
+- **Also** (no options needed): a "✕ Cancel" first in the bottom bar while Escape has something to cancel with no close
+  button of its own (God placing, the player's selection or armed order, an armed God tool); the page not selectable
+  outside a text field (`-webkit-user-select`, which Safari reads, no long-press callout, a `selectstart` guard), and a
+  finger's `touchmove` on the map not the page's. Checked in Chromium; no iPhone here.
+- **Deviation from AoC:** none known; AoC's phone layout is not in the reference.
+
 ### ADR-759 · 2026-10-29 · accepted (the user's decision) — control leaves the AI on, layer by layer; the player's direct orders are left alone until done; a player's march that meets the enemy stops and fights, and an order given in a fight marches through it
 
 - **Context.** Take control switched the nation's AI off (PLAN 1.33a): its fronts went still the hour the player took

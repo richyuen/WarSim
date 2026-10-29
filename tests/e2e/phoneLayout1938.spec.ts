@@ -168,3 +168,64 @@ test.describe('the Cancel button', () => {
     await expect(cancel).toHaveCount(0);
   });
 });
+
+// The user's choice (2026-10-29, ADR-760): on a phone the news took the map's lower half (the
+// ticker's rows, a column of war banners and the legend over each other). At a phone's width the
+// ticker is two rows, the war banners one row of two and a "+N" that opens the rest, the legend
+// folded to its title top left; none lies on another or on the bar. A desktop's is as it was.
+test.describe('the news at a phone\'s width', () => {
+  test.use({ hasTouch: true });
+  for (const [W, H] of [[390, 844], [1280, 800]] as const) {
+    test(`at ${W} × ${H}: the ticker, the war banners and the legend`, async ({ page }) => {
+      test.setTimeout(150_000);
+      const phone = W <= 600;
+      await page.setViewportSize({ width: W, height: H });
+      await page.goto('/?scenario=1938&paused=1&seed=1938');
+      await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+      const wars = await page.evaluate(async () => {
+        const sim = window.__warsim!.sim;
+        const ids = window.__warsim!.hud.stats.value!.nations.map((n) => n.id);
+        for (let k = 0; k + 1 < 20; k += 2) sim.command({ kind: 'declareWar', attacker: ids[k]!, defender: ids[k + 1]! });
+        await sim.step(1);
+        return (await sim.inspect()).wars.length;
+      });
+      expect(wars).toBeGreaterThanOrEqual(8);
+      await expect(page.getByTestId('war-banner').first()).toBeVisible();
+      await expect.poll(() => page.locator('[data-testid="ticker"] li').count()).toBeGreaterThanOrEqual(2);
+      const rows = async (): Promise<number> => page.locator('[data-testid="ticker"] li').count();
+      const banners = (): Promise<number> => page.getByTestId('war-banner').count();
+
+      if (!phone) {
+        expect(await rows(), 'the desktop ticker is not cut to two').toBeGreaterThan(2);
+        expect(await banners()).toBe(6);
+        await expect(page.getByTestId('legend-toggle')).toHaveCount(0);
+        return;
+      }
+      expect(await rows(), 'two rows').toBe(2);
+      expect(await banners(), 'two banners').toBe(2);
+      const more = page.getByTestId('war-more');
+      await expect(more).toHaveText(`+${wars - 2}`);
+      await expect(page.getByTestId('legend-toggle')).toBeVisible();
+      await expect(page.locator('[data-testid="map-legend"] .legend-row')).toHaveCount(0);
+
+      // None on another, nor on the bar; all in view.
+      const parts = ['ticker', 'war-banners', 'map-legend', 'bottombar', 'topbar', 'stats-ranking'];
+      const boxes = await Promise.all(parts.map((p) => box(page, p)));
+      for (let i = 0; i < parts.length; i++) {
+        expect(boxes[i], `${parts[i]} shown`).not.toBeNull();
+        expect(inside(boxes[i]!, W, H), `${parts[i]} in view`).toBe(true);
+        for (let j = i + 1; j < parts.length; j++) expect(apart(boxes[i]!, boxes[j]!), `${parts[i]} and ${parts[j]} apart`).toBe(true);
+      }
+
+      // "+N" opens the rest, as many as a desktop shows, and closes them.
+      await more.tap();
+      expect(await banners()).toBe(6);
+      await page.getByTestId('war-more').tap();
+      expect(await banners()).toBe(2);
+      // A tap on the legend's title opens it.
+      await page.getByTestId('legend-toggle').tap();
+      expect(await page.locator('[data-testid="map-legend"] .legend-row').count()).toBeGreaterThan(0);
+      expect(inside((await box(page, 'map-legend'))!, W, H), 'the opened legend in view').toBe(true);
+    });
+  }
+});

@@ -1252,6 +1252,74 @@ textarea,
     justify-content: flex-start;
     overflow-x: auto;
   }
+  /* The news takes less of the map (the user's choice of 2026-10-29, ADR-760): the war banners a
+     row on the bar, two and a "+N" (opened, they wrap and stand over the ticker); the ticker's two
+     rows across the view above them; the legend folded to its title, top left, giving way to a
+     panel there as the ranking does. */
+  .war-banners {
+    left: 0.5rem;
+    right: 0.5rem;
+    transform: none;
+    max-width: none;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    z-index: 1;
+  }
+  .war-banners.opened {
+    flex-wrap: wrap;
+  }
+  .war-banners:not(.opened) .war-banner {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .war-banners:not(.opened) .war-side {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .war-more-btn {
+    flex: 0 0 auto;
+    padding: 0.2rem 0.5rem;
+    background: rgba(20, 24, 32, 0.85);
+    border: 1px solid rgba(214, 178, 94, 0.55);
+    border-radius: 0.3rem;
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+  .ticker.compact {
+    right: 0.5rem;
+    width: auto;
+  }
+  #ui:has(.war-banners) .ticker.compact {
+    bottom: calc(var(--bar-top, 2.8rem) + 0.4rem + 2.2rem);
+  }
+  .map-legend.foldable {
+    top: 3.4rem;
+    left: 0.5rem;
+    right: auto;
+    bottom: auto;
+    min-width: 0;
+    padding: 4px 8px;
+    pointer-events: auto;
+  }
+  .map-legend.foldable[data-open='false'] .legend-title {
+    margin-bottom: 0;
+  }
+  .legend-toggle {
+    display: block;
+    padding: 0;
+    background: none;
+    border: 0;
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+  }
+  #ui:has(.nation-panel, .history-panel) .map-legend.foldable {
+    display: none;
+  }
   /* The nuclear alert stands on the bottom bar, not over the panels at the top (PLAN 7.16d;
      critic run 7: "on the phone the nuke alert covers the nation panel"). */
   .nuke-alerts {

@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { legendFor, type MapMode } from '../shared/mapModes';
 import { t, type MessageKey } from './i18n';
 import { zonesOf } from './legendText';
@@ -11,6 +12,8 @@ const SEA_HOLDERS_SHOWN = 8;
  * the zone under the cursor named with its holder. In the air-superiority mode (PLAN 5.10) the
  * same of the air: who holds how many zones (the contested as one row), and the zone under the
  * cursor.
+ * `phone` (a phone's width; the user's choice of 2026-10-29, ADR-760): folded to its title, top
+ * left, and a tap on the title opens it.
  */
 export function MapLegend({
   mode,
@@ -20,6 +23,7 @@ export function MapLegend({
   seaHover = null,
   airHolders = [],
   airHover = null,
+  phone = false,
 }: {
   mode: MapMode;
   /** The ground of T2 and T3 shown (PLAN 7.4f3): occupied land is a tint in the occupier's colour, not hatched. */
@@ -31,11 +35,22 @@ export function MapLegend({
   airHolders?: { name: string | null; color: number; zones: number }[];
   /** 'contested', a nation's name, or null for no one. */
   airHover?: { holder: string | null } | null;
+  /** A phone's width: folded to its title until tapped. */
+  phone?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
   const hex = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
   return (
-    <aside class="map-legend" data-testid="map-legend" data-mode={mode}>
-      <div class="legend-title">{t(`mapMode.${mode}` as MessageKey)}</div>
+    <aside class={phone ? 'map-legend foldable' : 'map-legend'} data-testid="map-legend" data-mode={mode} data-open={phone ? String(open) : undefined}>
+      {phone ? (
+        <button type="button" class="legend-title legend-toggle" data-testid="legend-toggle" aria-expanded={open} title={t(open ? 'legend.fold' : 'legend.unfold')} onClick={() => setOpen(!open)}>
+          {open ? '▾' : '▸'} {t(`mapMode.${mode}` as MessageKey)}
+        </button>
+      ) : (
+        <div class="legend-title">{t(`mapMode.${mode}` as MessageKey)}</div>
+      )}
+      {phone && !open ? null : (
+        <>
       {mode === 'diplomacy' && selected ? <div class="legend-selected">{selected}</div> : null}
       {legendFor(mode).map(([color, key]) => (
         <div class="legend-row" key={key}>
@@ -76,6 +91,8 @@ export function MapLegend({
           ) : null}
         </>
       ) : null}
+        </>
+      )}
     </aside>
   );
 }

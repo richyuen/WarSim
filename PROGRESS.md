@@ -24694,3 +24694,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   own (God Mode's placing, the player's selection or armed order, an armed God tool), a "✕ Cancel" button stands first
   in the bottom bar; a tap ends it, as Escape does, in Escape's order. e2e: `phoneLayout1938.spec.ts` "the Cancel
   button".
+- **News commit** (the user's choice, ADR-760: trim and collapse): at a phone's width the ticker is two rows across the
+  view, the war banners one row of two and a "+N" that opens the rest, the legend folded to its title top left. e2e:
+  `phoneLayout1938.spec.ts` "the news at a phone's width" (390: two rows, two banners, none on another or the bar, red
+  before; 1280: as it was). `nukeAlertPhone1938`, `declutter1938`, `ticker1938`, `warBannerRows1938`,
+  `legendOccupied1938`, `seaLegend1938`, `mapModes1938`, `orderNews1938`, `barNarrow1938`, `airControl1938`,
+  `seaControl1938`, `phoneLayout1938`: 23 of 23.
+- Not changed: the ranking still stands under the top bar on a phone (a third of the view); it gives way to a panel.

@@ -12,6 +12,7 @@ import { displayName, t, type MessageKey } from '../ui/i18n';
 import { NationPanel } from '../ui/NationPanel';
 import { StatsRanking } from '../ui/StatsRanking';
 import { WarBanners } from '../ui/WarBanners';
+import { usePhone } from '../ui/usePhone';
 import { Ticker } from '../ui/Ticker';
 import { NukeAlerts } from '../ui/NukeAlert';
 import { GodToolbar } from '../ui/GodToolbar';
@@ -66,6 +67,8 @@ export function App({
   onLoaded: () => void;
 }) {
   const [scenarioStatus, setScenarioStatus] = useState('');
+  // A phone's width (ADR-760): the ticker, the war banners and the legend take less of the map.
+  const phone = usePhone();
   // Re-render when custom flags change (the flag store is outside the signals).
   const [flagVersion, setFlagVersion] = useState(0);
   useEffect(() => hud.sim.onFlags(() => setFlagVersion((v) => v + 1)), []);
@@ -157,6 +160,7 @@ export function App({
         <Ticker
           rows={stats.ticker}
           short={formationTitle !== null || nation !== null}
+          compact={phone}
           startDay={hud.startDay}
           onPlace={(x, y) => hud.onShowPlace(x, y)}
           orders={orders}
@@ -195,7 +199,7 @@ export function App({
       {stats && hud.nukeAlerts.value.length > 0 ? (
         <NukeAlerts alerts={hud.nukeAlerts.value} onGo={(r) => hud.onShowPlace(r.x, r.y)} onClose={(r) => (hud.nukeAlerts.value = hud.nukeAlerts.value.filter((a) => a.row.i !== r.i))} />
       ) : null}
-      {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} /> : null}
+      {stats ? <WarBanners wars={stats.wars} byId={byId} onSelect={(id) => hud.onSelectNation(id)} onBattle={(war) => hud.toBattle(war)} phone={phone} /> : null}
       {hud.showSettings.value ? (
         <SettingsPanel
           uiScale={settings.uiApplied.value}
@@ -401,6 +405,7 @@ export function App({
       <MapTooltip hover={hud.hover} nameOf={(id) => byId.get(id)?.name ?? null} unrestOf={(p) => hud.sim.unrest?.[p] ?? null} />
       <MapLegend
         mode={hud.mapMode.value}
+        phone={phone}
         groundShown={hud.groundShown.value}
         selected={hud.selected.value ? nameOf(hud.selected.value) : null}
         seaHolders={hud.seaHolders.value.map((h) => ({ name: displayName(byId.get(h.id)?.name ?? `#${h.id}`), color: byId.get(h.id)?.color ?? 0x777777, zones: h.zones }))}
