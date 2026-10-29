@@ -24703,3 +24703,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Not changed: the ranking still stands under the top bar on a phone (a third of the view); it gives way to a panel.
 - **Ranking commit** (the user's request): on a phone the ranking is folded to its title, top right, as the legend is;
   a tap opens it. e2e: `phoneLayout1938.spec.ts` "the ranking at a phone's width"; `ranking1938` green.
+- **Landscape commit** (the user's report: on an iPhone on its side the news filled the view too): the compact news,
+  the folded legend and ranking hold for a height ≤ 500 px as well (their rules in a block of their own, `@media
+  (max-width: 600px), (max-height: 500px)`; `usePhone` reads the same query). e2e: the two layout tests at 844 × 390
+  too (red before).

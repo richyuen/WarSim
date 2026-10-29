@@ -175,10 +175,11 @@ test.describe('the Cancel button', () => {
 // folded to its title top left; none lies on another or on the bar. A desktop's is as it was.
 test.describe('the news at a phone\'s width', () => {
   test.use({ hasTouch: true });
-  for (const [W, H] of [[390, 844], [1280, 800]] as const) {
+  for (const [W, H] of [[390, 844], [844, 390], [1280, 800]] as const) {
     test(`at ${W} × ${H}: the ticker, the war banners and the legend`, async ({ page }) => {
       test.setTimeout(150_000);
-      const phone = W <= 600;
+      // A phone upright or on its side (the user's report: landscape too).
+      const phone = W <= 600 || H <= 500;
       await page.setViewportSize({ width: W, height: H });
       await page.goto('/?scenario=1938&paused=1&seed=1938');
       await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
@@ -234,14 +235,14 @@ test.describe('the news at a phone\'s width', () => {
 // folded to its title, top right, and a tap opens it, in view; a desktop's is open as it was.
 test.describe('the ranking at a phone\'s width', () => {
   test.use({ hasTouch: true });
-  for (const [W, H] of [[390, 844], [1280, 800]] as const) {
+  for (const [W, H] of [[390, 844], [844, 390], [1280, 800]] as const) {
     test(`at ${W} × ${H}: the ranking folded to its title on a phone, open on a desktop`, async ({ page }) => {
       test.setTimeout(120_000);
       await page.setViewportSize({ width: W, height: H });
       await page.goto('/?scenario=1938&paused=1&seed=1938');
       await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
       const rows = page.getByTestId('rank-row');
-      if (W > 600) {
+      if (W > 600 && H > 500) {
         await expect(page.getByTestId('ranking-toggle')).toHaveCount(0);
         await expect(rows).toHaveCount(15);
         return;

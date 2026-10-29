@@ -177,6 +177,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   player's last order's news, else the first sea battle, else the event before); the war banners one row of two and a
   "+N" that opens the rest, up to the desktop's six; the legend folded to its title, top left, opened by a tap, giving
   way to a panel there as the ranking does. A desktop's is unchanged. Not chosen: hiding them behind a button.
+  Then, the user's request: the ranking folded to its title too, top right. And, the user's report (landscape on an
+  iPhone filled the view as well): all of the above holds for a phone on its side too, a height ≤ 500 px (`@media
+  (max-width: 600px), (max-height: 500px)`, `usePhone`); the ticker there at most 30 rem wide.
 - **Also** (no options needed): a "✕ Cancel" first in the bottom bar while Escape has something to cancel with no close
   button of its own (God placing, the player's selection or armed order, an armed God tool); the page not selectable
   outside a text field (`-webkit-user-select`, which Safari reads, no long-press callout, a `selectstart` guard), and a

@@ -1252,9 +1252,25 @@ textarea,
     justify-content: flex-start;
     overflow-x: auto;
   }
+  /* The nuclear alert stands on the bottom bar, not over the panels at the top (PLAN 7.16d;
+     critic run 7: "on the phone the nuke alert covers the nation panel"). */
+  .nuke-alerts {
+    top: auto;
+    bottom: calc(var(--bar-top, 2.8rem) + 0.4rem);
+    left: 0.5rem;
+    right: 0.5rem;
+    transform: none;
+    max-width: none;
+    align-items: stretch;
+  }
+}
+
+/* A phone's screen, upright or on its side (ADR-760, the user's choice and report): a width of a
+   phone, or a landscape phone's height. `usePhone` (src/ui/usePhone.ts) reads the same query. */
+@media (max-width: 600px), (max-height: 500px) {
   /* The news takes less of the map (the user's choice of 2026-10-29, ADR-760): the war banners a
      row on the bar, two and a "+N" (opened, they wrap and stand over the ticker); the ticker's two
-     rows across the view above them; the legend folded to its title, top left, giving way to a
+     rows above them, at most 30 rem wide; the legend folded to its title, top left, giving way to a
      panel there as the ranking does. */
   .war-banners {
     left: 0.5rem;
@@ -1291,6 +1307,7 @@ textarea,
   .ticker.compact {
     right: 0.5rem;
     width: auto;
+    max-width: 30rem;
   }
   #ui:has(.war-banners) .ticker.compact {
     bottom: calc(var(--bar-top, 2.8rem) + 0.4rem + 2.2rem);
@@ -1336,17 +1353,6 @@ textarea,
   }
   #ui:has(.nation-panel, .history-panel) .map-legend.foldable {
     display: none;
-  }
-  /* The nuclear alert stands on the bottom bar, not over the panels at the top (PLAN 7.16d;
-     critic run 7: "on the phone the nuke alert covers the nation panel"). */
-  .nuke-alerts {
-    top: auto;
-    bottom: calc(var(--bar-top, 2.8rem) + 0.4rem);
-    left: 0.5rem;
-    right: 0.5rem;
-    transform: none;
-    max-width: none;
-    align-items: stretch;
   }
 }
 
