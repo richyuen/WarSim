@@ -33,6 +33,16 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
+- [ ] 7.157 R18-B1: the tick budget fails on late years after the levy (SPEC "≤ 5.5 ms in any year", ADR-709).
+  Pinned, three of the critic's eight slowest years are over: 6599 y17 5.76/5.75 ms, 2539 y28 5.67/5.84, 1307 y30
+  5.33/5.55; 6599 y17 read 2.82 ms on `cfedb50a` (817 formations, operational AI 1.03 ms) against 5.76 on HEAD (1,061,
+  2.57 ms); seed 99 × 5 years 2.10 → 2.56 ms; ADR-745's cost line (worst year 4.75 ms) not reproduced
+  (`critic/c18_perf_summary.json`, `critic/c18_perf_6599_y17_read1.log`, `critic/c18o_perf_6599_y17_read1.log`,
+  `critic/c18_perf_2539_y28_read2.log`, `critic/c18_perf_seed99_5y_head.log`, `critic/c18_perf_seed99_5y_cfed.log`,
+  `critic/c18_cmp_y30.txt`, `critic/c18_l_6599.log`). The critic's fix: make the levy's armies cheaper to plan (fold
+  or cap cadres per front, or a cheaper operational AI per formation). AT: `npm run sim -- --profile --affinity
+  0xFFFF`, pinned, reads ≤ 5.5 ms mean tick on each of the five slowest years of ten unseen seeds (1461–1470) × 30
+  years, and on the critic's cases 6599 y17, 2539 y28 and 1307 y30; a stop: a year over 5.5 ms on either.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

@@ -1,60 +1,37 @@
 {
-  "commit": "cfedb50a062a70dc6c8731ff7ca31c16bb25c253",
+  "commit": "cfa73219698918700a3a6b0a8758b3315d6bc0fa",
   "scores": {
     "mapVisuals": 7,
     "diplomacyWarDepth": 7,
-    "emergentDynamics": 6,
+    "emergentDynamics": 7,
     "godMode": 7,
     "editorScenarios": 7,
     "statsHistory": 7,
     "uiUxPolish": 7,
     "performance": 7,
-    "stability": 5,
+    "stability": 7,
     "semanticZoom": 8,
-    "naval": 6,
+    "naval": 8,
     "tanks": 8,
     "aircraft": 8,
     "aiNukes": 8
   },
   "blocking": [
     {
-      "id": "R17-B1",
-      "title": "Continue opens an older autosave as a corrupted world, silently: a save from before ADR-737 throws 'missing section formations.struck' after the map, date and tick are replaced; the 1938 start's 1,467 formations and its wars ('Nationalist Spain ⚔ ?') remain and the game runs on with no message. The same save (8f6732e3's 4219 y10) loads whole on 7b883084 (636 formations, its own wars). Every autosave from before ADR-737 (52f71a5a) on Pages now opens this way.",
+      "id": "R18-B1",
+      "title": "The tick budget fails on late years after the levy (contradicts SPEC's 5.5 ms in any year, ADR-709): pinned 6599 y17 5.76/5.75 ms, 2539 y28 5.67/5.84, 1307 y30 5.33/5.55, three of the eight slowest measured years (run 17: one); same seed-year 6599 y17 2.82 ms on cfedb50a (817 formations, operational AI 1.03 ms) against 5.76 (1,061, 2.57 ms); seed 99 x 5 years 2.10 -> 2.56 ms; ADR-745's cost line (worst year 4.75 ms) not reproduced. The slowest year at Max is still 59.4 s.",
       "evidence": [
-        "critic/c17_os_c10.json",
-        "critic/shots/c17os_01_after_continue.png",
-        "critic/c17o_os.json",
-        "critic/shots/c17oos_01_after_continue.png",
-        "critic/c17_os.json",
-        "critic/scripts/c17_oldsave.mjs",
-        "critic/scripts/c17_loadtest.ts"
+        "critic/c18_perf_summary.json",
+        "critic/c18_perf_6599_y17_read1.log",
+        "critic/c18o_perf_6599_y17_read1.log",
+        "critic/c18_perf_2539_y28_read2.log",
+        "critic/c18_perf_seed99_5y_head.log",
+        "critic/c18_perf_seed99_5y_cfed.log",
+        "critic/c18_cmp_y30.txt",
+        "critic/c18_l_6599.log"
       ],
-      "fix": "Load into a scratch world and swap only on success (or check a stored save format version on the record before offering Continue); on failure tell the player on the title and start nothing half-loaded; a test that loads a save lacking a column asserts a refusal, not a mixed state."
-    },
-    {
-      "id": "R17-B2",
-      "title": "The late world is still mostly still (R16-B1 carried, improved a quarter): same 64 seeds 7b883084 -> HEAD, engaged land formations a day in years 2-30 4.11 -> 5.11 (+24 %, se 0.12, higher on 56), 13 % of year 1's 39.0 and 3.8 at year 20; HEAD's 7019 y20 in the page 0, 0, 0, 0, 2, 2, 0 of ~620 at war, 5419 y20 none on 4 of 7 samples; checkpoints with nobody in contact 13 -> 17 of 128.",
-      "evidence": [
-        "critic/c17_cmp_y30.json",
-        "critic/c17_y2_7019_y20.json",
-        "critic/c17_y2_5419_y20.json",
-        "critic/c17_engaged_w1.json",
-        "critic/shots/c17y2_7019_y20_d00_3000m.png"
-      ],
-      "fix": "Bar I would accept: on unseen seeds x 30 years, engaged a day in years 2-30 at least a fifth of year 1's, and no late world with a land war showing nobody in contact on more than two of seven 10-day page samples."
-    },
-    {
-      "id": "R17-B3",
-      "title": "AI carriers sail with empty decks (run 16's manned carriers and ADR-738's 'the carriers now fight' undone by year 20): carriers with a wing aboard at year 20 3.08 -> 1.30 a world on the same 64 seeds (y10 4.55 -> 2.08); in five HEAD y20 saves 12 of 15 carrier groups at war hold no wing. Inferred: ADR-738's missions spend the wings and nothing re-mans them (carrier air hours 5,004 -> 708 a world-year, y1 -> y20); the carrier's panel shows neither its wings nor their mission.",
-      "evidence": [
-        "critic/c17_navycmp.json",
-        "critic/c17_navy_w1.json",
-        "critic/c17cv_6301_save.json",
-        "critic/c17_cvread_y20.txt",
-        "critic/c17_cv_99.json"
-      ],
-      "fix": "Rebuild or reassign wings to carriers at war (count deck wings in ADR-736's rebuild), and show a carrier's wings and mission on its panel."
+      "fix": "Make the levy's armies cheaper to plan (fold or cap cadres per front, or a cheaper operational AI per formation); bar: pinned <= 5.5 ms on the five slowest years of ten unseen 30-year seeds."
     }
   ],
-  "timestamp": "2026-10-28T07:40:00Z"
+  "timestamp": "2026-10-29T03:10:00Z"
 }

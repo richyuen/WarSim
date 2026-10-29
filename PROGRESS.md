@@ -24548,3 +24548,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - PLAN.md: the notes of critic runs 11–17 moved to `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes"), one line
   left on unseen seeds (1461 on). BLOCKERS' 7.155 entry resolved. No code changed.
 - **Next:** PLAN 7.5: `check:review` again from the start, then critic run 18.
+
+## 2026-10-28 — PLAN 7.5: critic run 18 on `cfa73219`: every dimension at its bar, one blocking
+
+- **Start:** gate green on `cfa73219`. `check:review` from the start: green (1 known red, zoomDemo1938; 0 not known).
+- **Critic run 18** (`critic/CRITIC_REPORT.json` names `cfa73219`): mapVisuals 7, diplomacyWarDepth 7, emergentDynamics
+  7 (6), godMode 7, editorScenarios 7, statsHistory 7, uiUxPolish 7, performance 7, stability 7 (5); semanticZoom 8,
+  naval 8 (6), tanks 8, aircraft 8, aiNukes 8. Blocking 1. Run 17's three blocking issues fixed on their cases.
+- **Filed:** PLAN 7.157 (R18-B1: pinned late-year ticks over 5.5 ms after the levy; seeds 1461–1470). No dimension
+  under its bar, so no dimension task.
+- **Next:** PLAN 7.157.
