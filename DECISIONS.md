@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-756 · 2026-10-29 · proposed (the user's decision) — PLAN 7.157's AT missed: 7 of 53 late world-years over 5.5 ms after a pure speed-up; the cost is the plans of a shared front, not the levy's formations
+
+- **Context.** R18-B1 (critic run 18): pinned late years over SPEC's 5.5 ms a tick (ADR-709) after the levy (ADR-745).
+  PLAN 7.157's AT: ≤ 5.5 ms on the five slowest years of 1461–1470 × 30 and on the critic's 6599 y17, 2539 y28, 1307 y30.
+- **Done** (`14a1b285`, no rule moved, the pin and the cases' hashes held): `wideLinked`'s walk kept from hour to hour
+  on the passage's node parts while no cell goes between an open and a closed holder. 6599 y17 5.76 → 5.51.
+- **The AT** (`docs/evidence/7.157/at.md`): 7 of 53 over 5.5, the worst 1461 y29 5.99 and 2539 y28 5.93; 46 under.
+  Missed.
+- **What the cost is** (`.cache` probes, PROGRESS): ~2,500 sectors a plan on one world coalition's front, every
+  planner of it walking them in several loops; Afghanistan with one free formation 4.6 ms a plan. By free formations,
+  planners with ≤ 5 take 18 % (2539) and 38 % (6599) of the plan time, those with 21 or more 49 % and 35 %. Folding or
+  capping the levy's cadres (the critic's fix) would cut formations, not the sectors each plan reads. Tried and
+  dropped: a finer drop rule for the walk (makes −9 %), pocket stores by passage (the pin moved: `pocketOf`'s answers
+  depend on the asks' order), `joined` in place of a dropped walk (pure, joinWide walks 5 → 22, no gain).
+- **Options:**
+  - **(a)** Keep 5.5; 7.157 closed not done; PLAN 7.158 (the plans of a shared front made cheaper: what all planners
+    of one front and one hour read alike done once; a rule change allowed under its own ADR) is the next task.
+    (Recommended: the bar is the user's, and the cost has one named cause left.)
+  - **(b)** Raise the budget to 6.0 ms in any year (every one of the 53 reads under it, 0.01 ms of room on the worst);
+    7.157 ticked on it; 7.158 not filed.
+  - **(c)** The critic's fix: cap the levy's cadres per front (a rule change against ADR-745's contact gain), with an AT
+    on the same seeds.
+- **Meanwhile** the loop takes PLAN 7.158. Seeds 1461–1470 spent; next unseen 1471.
+
 ### ADR-755 · 2026-10-28 · accepted (the user's decision) — PLAN 7.155 closed not done; the critic runs' notes leave PLAN.md
 
 - **Context.** PLAN 7.155's AT (1441–1450 × 20 against HEAD) missed on two clauses (ADR-752): refusals for no sea way

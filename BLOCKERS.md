@@ -5,6 +5,14 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.157: R18-B1, late world-years over 5.5 ms; the AT missed after a pure speed-up (ADR-756, waits on the user)
+- **The bar:** pinned, ≤ 5.5 ms mean tick on the five slowest years of 1461–1470 × 30 and on the critic's 6599 y17,
+  2539 y28, 1307 y30.
+- **What moved** (`docs/evidence/7.157/at.md`): `wideLinked`'s walk kept across hours (`14a1b285`, pure): 6599 y17
+  5.76 → 5.51. 7 of 53 still over, worst 1461 y29 5.99, 2539 y28 5.93.
+- **Left:** the plans' cost on a shared front of ~2,500 sectors (PLAN 7.158). Waits on the user: ADR-756 (a) keep 5.5,
+  7.158 next (recommended); (b) budget 6.0; (c) cap the levy's cadres.
+
 ### seaRow1938's Speed x1 test (critic run 18's review): red on this machine, the code not its cause; on `tools/gate/knownRed.json`
 - **The bar:** from the row of Germany's and Britain's sea battle (seed 5591, hour 45), at Speed x1 for 6 s, a frame
   with both sides' ships' tracers on the screen (`seaRow1938.spec.ts`, PLAN 7.22a).

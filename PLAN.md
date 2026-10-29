@@ -43,6 +43,14 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   or cap cadres per front, or a cheaper operational AI per formation). AT: `npm run sim -- --profile --affinity
   0xFFFF`, pinned, reads ≤ 5.5 ms mean tick on each of the five slowest years of ten unseen seeds (1461–1470) × 30
   years, and on the critic's cases 6599 y17, 2539 y28 and 1307 y30; a stop: a year over 5.5 ms on either.
+  Missed 2026-10-29 (7 of 53 over, `docs/evidence/7.157/at.md`): BLOCKERS, ADR-756 waits on the user.
+- [ ] 7.158 The plans of a shared front made cheaper (from 7.157's AT, ADR-756): on one world coalition's front each
+  planner reads ~2,500 sectors in several loops (2539 y28: Afghanistan with one free formation 4.6 ms a plan; the
+  sectors, reserve-and-threat and allotment parts 0.48, 0.45, 0.74 ms a tick of the operational AI's 2.9 on its month
+  1, `tools/diag/opCalls.ts`). What the planners of one front and one hour read alike is read once (a pure change
+  keeps the pin; a rule change moves it under its own ADR). AT: on 2539 y28's month-1 save (made by `--load
+  critic/c18_ck_seed2539_y27.bin` and 730 hours), the operational AI's ms a tick ≤ 0.75 × HEAD's in a paired run (both
+  at once, swapped); then pinned ≤ 5.5 ms on 1461 y29, 2539 y28, 1307 y30, 1468 y25 and y26; a stop: a year over 5.5.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

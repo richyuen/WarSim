@@ -24581,3 +24581,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Test:** `tests/unit/wideLinked1938.test.ts` "keeps the walk for the next passage…" (red without).
 - **Next:** 7.157 goes on: the link's daily remake on a flipping front (`joined` with its runs as a survivor), then
   the AT's ten seeds (1461–1470).
+
+## 2026-10-29 — PLAN 7.157: the AT missed, 7 of 53 late world-years over 5.5 ms (ADR-756 proposed)
+
+- **AT** (`docs/evidence/7.157/at.md`, code `14a1b285`): 1461–1470 × 30 unpinned six at a time, each seed's five
+  slowest years read pinned one at a time, and the critic's three cases: 46 of 53 ≤ 5.5; over: 1461 y29 5.99, 2539 y28
+  5.93, 1307 y30 5.63, 1468 y25 5.58, y26 5.54, 6599 y17 5.51, 1462 y23 5.51. Missed: BLOCKERS.
+- **Tried after the commit, dropped:** `joined` built in place of a dropped walk (hash held; joinWide walks 5 → 22, no
+  gain in a paired run). Plan time by the planner's free formations: spread over every band (≤ 5: 18 % on 2539, 38 %
+  on 6599).
+- **Filed:** PLAN 7.158 (the plans of a shared front made cheaper). ADR-756 waits on the user: (a) keep 5.5, 7.158
+  next (recommended); (b) budget 6.0; (c) cap the levy's cadres. Seeds 1461–1470 spent.
+- **Next:** PLAN 7.158 while ADR-756 waits.
