@@ -1216,6 +1216,19 @@ body {
 .map-tooltip-nation {
   color: #f6ead2;
 }
+/* The AI assist's boxes at the top of the Actions tab (ADR-759). */
+.act-assist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 8px;
+  margin-bottom: 4px;
+}
+.act-assist-box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
 /* The menu of a nation opened by a right-click while playing (`NationMenu`). */
 #ui > .nation-menu,
 .nation-menu {

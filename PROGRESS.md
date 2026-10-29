@@ -24647,4 +24647,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   (7); four tests set the boxes they were written for; `headless` counts 32 systems; e2e taking control all green.
 - **Gotcha:** `SYSTEM_NAMES_1938` in `sim.ts` is a hand list beside the systems: a new system needs its name there, or
   every profile name after it is off by one.
-- **Next:** the AI assist boxes in the Actions tab.
+- **UI commit:** the AI assist boxes at the top of the Actions tab (`act-assist-*`); `playerActions1938` unticks them
+  through the boxes.

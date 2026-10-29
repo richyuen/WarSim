@@ -331,6 +331,7 @@ export function App({
                   selected: player.selectedCount.value,
                   dropArmed: player.dropArmed.value,
                   onArmDrop: () => player.armDrop(),
+                  assist: { layers: stats.playerAi, onChange: (layers) => hud.command({ kind: 'setPlayerAi', layers }) },
                   place: hud.godMode.value ? { armed: player.placing.value, onArm: (t) => player.armPlace(t), refusal: hud.refusal.value } : null,
                 }
               : null

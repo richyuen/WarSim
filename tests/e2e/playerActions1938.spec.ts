@@ -23,10 +23,20 @@ test('player actions: build a formation, declare war, offer peace, propose an al
   await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
   await expect(page.getByTestId('tab-actions')).toHaveCount(0); // only for the controlled nation
   await page.getByTestId('take-control').click();
-  // Poland's AI boxes unticked (ADR-759: control leaves them on): the counts below are the player's builds alone.
-  await page.evaluate(() => window.__warsim!.sim.command({ kind: 'setPlayerAi', layers: 0 }, true));
   await page.getByTestId('tab-actions').click();
   await expect(page.getByTestId('panel-actions')).toBeVisible();
+
+  // The AI assist (ADR-759): every box ticked but nuclear strikes. Unticked here through the boxes,
+  // so that the counts below are the player's builds alone.
+  const playerAi = async () => (await inspect(page)).playerAi;
+  for (const k of ['army', 'navy', 'air', 'diplomacy', 'economy']) await expect(page.getByTestId(`act-assist-${k}`), k).toBeChecked();
+  await expect(page.getByTestId('act-assist-nukes')).not.toBeChecked();
+  expect(await playerAi()).toBe(31);
+  await page.getByTestId('act-assist-nukes').check();
+  await expect.poll(playerAi).toBe(63);
+  for (const k of ['army', 'navy', 'air', 'diplomacy', 'economy', 'nukes']) await page.getByTestId(`act-assist-${k}`).uncheck();
+  await expect.poll(playerAi).toBe(0);
+  await expect(page.getByTestId('act-assist-army')).not.toBeChecked();
 
   // A template whose techs Poland does not know cannot be ordered (PLAN 3.1a): the panzer
   // division asks for the medium tank. The tank brigade of its own army is known to it (whether

@@ -3030,7 +3030,10 @@ on screen.
   disabled at war and between allies. The Actions tab's commands. It closes with its action, a
   press or a wheel turn on the map, Escape (before the selection), a load, or a change of the
   nation played; a refusal of its action within 3 s is told in words where it was, for 5 s.
-  The controlled nation gets an Actions tab (PLAN 1.33b, `src/ui/ActionsTab.tsx`):
+  The controlled nation gets an Actions tab (PLAN 1.33b, `src/ui/ActionsTab.tsx`). At its top the
+  AI assist (ADR-759): a box for each layer of the AI (Army, Navy, Air, Diplomacy, Economy,
+  Nuclear strikes), ticked as `World.playerAi` has them (`nationStats.playerAi`); a tick or an
+  untick sends `setPlayerAi`, applied at once. Below:
   - `declareWar`, `offerPeace` and `proposeAlliance` (refusable, unlike God commands):
     - peace is accepted when the offering side leads by ≥ 25 or the other side's exhaustion is
       > 40, never against a side fighting to the death;

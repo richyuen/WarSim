@@ -26,7 +26,19 @@ export interface ActionsTabProps {
    * the sim did not carry out the last command (`Refusal`, 0 = it did). Null: God Mode is off.
    */
   place?: { armed: number | null; onArm: (template: number) => void; refusal: number } | null;
+  /** The AI assist (ADR-759): the mask of the AI's layers that act for this nation, and its change. */
+  assist?: { layers: number; onChange: (layers: number) => void } | null;
 }
+
+/** The AI assist's boxes (ADR-759), in the order shown, with their bits (`AiLayer` of the sim). */
+const ASSIST: readonly { key: 'army' | 'navy' | 'air' | 'diplomacy' | 'economy' | 'nukes'; bit: number }[] = [
+  { key: 'army', bit: 1 },
+  { key: 'navy', bit: 2 },
+  { key: 'air', bit: 4 },
+  { key: 'diplomacy', bit: 8 },
+  { key: 'economy', bit: 16 },
+  { key: 'nukes', bit: 32 },
+];
 
 /** A wing's order at a place (PLAN 5.8v1); `WingOrder` of the page's player control. */
 export type WingOrderKind = 'patrol' | 'strike' | 'supply' | 'rebase';
@@ -41,7 +53,7 @@ const num = (v: number): string => Math.round(v).toLocaleString('en-US');
  * on the map (patrol, strike, supply for a transport, rebase); and a paradrop of the formations
  * selected, the same way (PLAN 5.8v2).
  */
-export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing, selected, dropArmed, onArmDrop, place }: ActionsTabProps) {
+export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing, selected, dropArmed, onArmDrop, place, assist }: ActionsTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   const [target, setTarget] = useState(0);
@@ -53,6 +65,21 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
   };
   return (
     <section class="god-tab" data-testid="panel-actions">
+      {assist ? (
+        <>
+          <div class="panel-sub" title={t('act.assistHint')}>
+            {t('act.assist')}
+          </div>
+          <div class="act-assist" data-testid="act-assist" title={t('act.assistHint')}>
+            {ASSIST.map(({ key, bit }) => (
+              <label key={key} class="act-assist-box">
+                <input type="checkbox" data-testid={`act-assist-${key}`} checked={(assist.layers & bit) !== 0} onChange={(e) => assist.onChange((e.currentTarget as HTMLInputElement).checked ? assist.layers | bit : assist.layers & ~bit)} />
+                {t(`act.assist.${key}` as MessageKey)}
+              </label>
+            ))}
+          </div>
+        </>
+      ) : null}
       <div class="panel-sub">{t('god.diplomacy')}</div>
       <div class="god-row">
         <select data-testid="act-target" value={tgt} onChange={(e) => setTarget(Number((e.currentTarget as HTMLSelectElement).value))}>
