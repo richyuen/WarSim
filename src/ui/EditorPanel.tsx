@@ -302,7 +302,7 @@ export function EditorPanel({ state, nations, dead, undo, redo, lineStarted, onC
         <input
           data-testid="scenario-import"
           type="file"
-          accept=".warsim-scenario"
+          accept=".warism-scenario,.warsim-scenario"
           aria-label={t('scenario.import')}
           onChange={(e) => {
             const input = e.currentTarget as HTMLInputElement;

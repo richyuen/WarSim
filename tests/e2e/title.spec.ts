@@ -44,9 +44,9 @@ test('/ opens the title screen and no world', async ({ page }, info) => {
   // The pseudo-locale is the tester's (PLAN 7.16c): offered where `warsim.testLocale` is set.
   await page.addInitScript(() => localStorage.setItem('warsim.testLocale', '1'));
   await page.goto('/');
-  await expect(page).toHaveTitle('WarSim');
+  await expect(page).toHaveTitle('Warism');
   await expect(page.getByTestId('title-screen')).toBeVisible();
-  await expect(page.getByTestId('app-title')).toHaveText('WarSim');
+  await expect(page.getByTestId('app-title')).toHaveText('Warism');
 
   // No world behind it: no sim worker, no map canvas, no HUD, no test API of a game.
   expect(page.workers()).toHaveLength(0);
@@ -263,14 +263,14 @@ test('a scenario file chosen on the title screen starts its game; a file that do
   // scenario this version does not have. No game starts.
   const damaged = Buffer.from(file);
   damaged[damaged.length - 40] = damaged[damaged.length - 40]! ^ 0xff;
-  await pick('damaged.warsim-scenario', damaged);
+  await pick('damaged.warism-scenario', damaged);
   await expect(error).toContainText('Could not load');
-  await pick('other.warsim-scenario', Buffer.from('hello'));
-  await expect(error).toContainText('not a WarSim scenario file');
+  await pick('other.warism-scenario', Buffer.from('hello'));
+  await expect(error).toContainText('not a Warism scenario file');
   // A size its map has not (PLAN 7.1b8: a file at S or L starts its game at that size).
-  await pick('odd.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, w: 1000, h: 500 }, bytes)));
+  await pick('odd.warism-scenario', Buffer.from(await encodeScenarioFile({ ...header, w: 1000, h: 500 }, bytes)));
   await expect(error).toContainText('1000×500');
-  await pick('atlantis.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, base: 'atlantis' }, bytes)));
+  await pick('atlantis.warism-scenario', Buffer.from(await encodeScenarioFile({ ...header, base: 'atlantis' }, bytes)));
   await expect(error).toContainText('atlantis');
   expect(new URL(page.url()).search).toBe('');
   expect(page.workers()).toHaveLength(0);
@@ -278,7 +278,7 @@ test('a scenario file chosen on the title screen starts its game; a file that do
 
   // A file that fits is not started when it is chosen (PLAN 7.13b, critic run 7: "a file starts the
   // game at once, with no confirmation"): its name and date, Start and Cancel. Cancel puts it away.
-  await pick('title-test.warsim-scenario', file);
+  await pick('title-test.warism-scenario', file);
   await expect(page.getByTestId('title-file-pending')).toBeVisible();
   await expect(page.getByTestId('title-file-name')).toHaveText('Title test');
   await expect(page.getByTestId('title-file-pending')).toContainText('11 January 1938');
@@ -292,14 +292,14 @@ test('a scenario file chosen on the title screen starts its game; a file that do
 
   // A file whose state is not the one its header names passes the title screen and is refused
   // by the game, which returns to the title screen.
-  await pick('forged.warsim-scenario', Buffer.from(await encodeScenarioFile({ ...header, hash: (hash ^ 1) >>> 0 }, bytes)));
+  await pick('forged.warism-scenario', Buffer.from(await encodeScenarioFile({ ...header, hash: (hash ^ 1) >>> 0 }, bytes)));
   await Promise.all([page.waitForURL(/failed=scenario/, { timeout: 60_000 }), page.getByTestId('title-file-start').click()]);
   await expect(page.getByTestId('title-screen')).toBeVisible();
   await expect(error).toHaveText('The scenario file could not be loaded. Choose it again.');
 
   // The file itself: the game of its base scenario starts with the file's state. That world has
   // no looping map, so the game corrects its URL and draws the map without wrap copies.
-  await pick('title-test.warsim-scenario', file);
+  await pick('title-test.warism-scenario', file);
   await Promise.all([page.waitForURL(/load=scenario/), page.getByTestId('title-file-start').click()]);
   await page.waitForURL(/looping=0/, { timeout: 60_000 });
   await ready(page);
@@ -329,7 +329,7 @@ test('a scenario file chosen on the title screen starts its game; a file that do
   await ready(page);
   await page.waitForFunction(() => window.__warsim!.sim.mapLayers !== null);
   await page.getByTestId('editor-btn').click();
-  await page.getByTestId('scenario-import').setInputFiles({ name: 'title-test.warsim-scenario', mimeType: 'application/octet-stream', buffer: file });
+  await page.getByTestId('scenario-import').setInputFiles({ name: 'title-test.warism-scenario', mimeType: 'application/octet-stream', buffer: file });
   await expect(page.getByTestId('scenario-status')).toContainText('Loaded', { timeout: 30_000 });
   await page.getByTestId('settings-btn').click();
   await expect(page.getByTestId('settings-current-seed')).toContainText('seed 5');

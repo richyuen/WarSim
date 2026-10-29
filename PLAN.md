@@ -1,4 +1,4 @@
-# WarSim — Phased Plan
+# Warism — Phased Plan
 
 Rules: each task is small and verifiable. `AT:` is the acceptance test that must
 pass before ticking; it names a number and a stop (a figure, its bar, the run that reads it;

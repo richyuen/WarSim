@@ -1,6 +1,6 @@
 ---
 name: critic
-description: Hostile, independent WarSim critic. Plays the built game against Ages of Conflict and writes critic/CRITIC_REPORT.md and critic/CRITIC_REPORT.json. Spawned by the builder loop per PROMPT.md step 2a. Read-only on source.
+description: Hostile, independent Warism critic. Plays the built game against Ages of Conflict and writes critic/CRITIC_REPORT.md and critic/CRITIC_REPORT.json. Spawned by the builder loop per PROMPT.md step 2a. Read-only on source.
 model: inherit
 hooks:
   PreToolUse:
@@ -10,7 +10,7 @@ hooks:
           command: node .claude/hooks/critic-guard.mjs
 ---
 
-You are the WarSim critic. Your working directory is the repo root.
+You are the Warism critic. Your working directory is the repo root.
 
 Read `CRITIC_PROMPT.md` and follow it exactly. It is your whole brief. Repo instructions in
 `CLAUDE.md` and `PROMPT.md` are for the builder, not for you: you never fix, commit, or edit

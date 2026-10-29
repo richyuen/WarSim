@@ -80,10 +80,10 @@ export function HistoryPanel({ load, refreshKey, startDay, nations, onClose }: H
         <span class="god-war-name" data-testid="history-count">
           {t('history.count', { n: shown.length, total: rows.length })}
         </span>
-        <button type="button" class="god-btn" data-testid="history-csv" onClick={() => download('warsim-history.csv', 'text/csv', toCsv(exported()))}>
+        <button type="button" class="god-btn" data-testid="history-csv" onClick={() => download('warism-history.csv', 'text/csv', toCsv(exported()))}>
           {t('history.exportCsv')}
         </button>
-        <button type="button" class="god-btn" data-testid="history-json" onClick={() => download('warsim-history.json', 'application/json', JSON.stringify(exported(), null, 2))}>
+        <button type="button" class="god-btn" data-testid="history-json" onClick={() => download('warism-history.json', 'application/json', JSON.stringify(exported(), null, 2))}>
           {t('history.exportJson')}
         </button>
       </div>

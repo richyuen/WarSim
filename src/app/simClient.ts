@@ -55,7 +55,7 @@ export class SimClient {
   received = 0;
 
   constructor() {
-    this.worker = new Worker(new URL('../worker/entry.ts', import.meta.url), { type: 'module', name: 'warsim-sim' });
+    this.worker = new Worker(new URL('../worker/entry.ts', import.meta.url), { type: 'module', name: 'warism-sim' });
     this.worker.onmessage = (e: MessageEvent<FromWorker>) => this.onMessage(e.data);
     this.worker.onerror = (e) => {
       const err = new Error(`sim worker error: ${e.message}`);

@@ -1,4 +1,4 @@
-# WarSim — the plan's tasks that are done
+# Warism — the plan's tasks that are done
 
 The full text of every task of `PLAN.md` that is ticked, word for word, in the plan's order
 within each run of `npm run plan:archive` (ADR-231). `PLAN.md` keeps the first line of each.

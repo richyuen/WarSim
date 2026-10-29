@@ -1,14 +1,14 @@
 /**
  * PLAN 7.41c: what the editor's fleets do (critic run 11, `critic/c11_g_4877.json`: two German and two
  * British battle squadrons placed face to face in the North Sea, "no battle in 30 days" read from
- * `hud.seaBattles` at days 3, 10 and 30). Loads a `.warsim-scenario` file, gives the critic's commands
+ * `hud.seaBattles` at days 3, 10 and 30). Loads a `.warism-scenario` file, gives the critic's commands
  * (Germany declares war on Poland, then on Britain), steps hour by hour and records: every sea battle
  * any of the editor's fleets is in (its first and last hour, its fleets' nations, ships lost each
  * side), each editor fleet's fate (sunk in a battle, laid up or disbanded, or living, where), every
  * sea battle between the two navies' blocs, and the sea battles standing at the critic's sample hours.
  * The editor's fleets are each nation's last `per` fleets by id (the editor appends them).
  *
- * Usage: npx tsx tools/diag/editorFleets.ts <file.warsim-scenario> [days = 30] [A = GER] [D = ENG] [per = 2] [pre = POL] [out]
+ * Usage: npx tsx tools/diag/editorFleets.ts <file.warism-scenario> [days = 30] [A = GER] [D = ENG] [per = 2] [pre = POL] [out]
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { decodeScenarioFile } from '../../src/shared/scenarioFile';

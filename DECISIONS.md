@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-761 · 2026-10-29 · accepted (the user's request) — outside PLAN: the game is called Warism, not WarSim
+
+- **Context.** The user, on feedback: rename the project to Warism, everywhere possible.
+- **Decision.** What a player sees says Warism: the page and bench titles, the title screen and top bar, the
+  messages, the download names (`warism-<date>.png`, `warism-history.csv/json`), the scenario files (`.warism-scenario`,
+  magic `WARISM-SCENARIO`). The package, the worker, the ESLint plugin (`tools/eslint/warism-plugin.js`, rules
+  `warism/…`), the test API's type (`WarismTestApi`) and the living documents' titles follow.
+- **Kept, on purpose.**
+  - What a player has stored: the `warsim.*` settings keys and the IndexedDB database `warsim`. Renaming them would
+    drop every player's settings and autosave for a name no one sees.
+  - Old scenario files: a `WARSIM-SCENARIO` file still loads, and the file pickers take `.warsim-scenario` too.
+  - The test handle `window.__warsim`, which the e2e specs and the critic's scripts use; `window.__warism` is the
+    same object, for new code. Renaming it in every spec is one commit of its own (it runs the whole e2e suite).
+  - The record: past PROGRESS entries, past ADRs, `docs/PLAN_DONE.md` and the ticked PLAN lines, `docs/evidence/`,
+    `critic/`, and worktree paths such as `C:/Git/WarSim_chase`.
+  - The GitHub repository (and so the Pages address, https://richyuen.github.io/WarSim/) and the local folder
+    `C:\Git\WarSim`: the user's to rename.
+- **Consequences.** A file exported now is a `.warism-scenario` an older build does not read.
+
 ### ADR-760 · 2026-10-29 · accepted (the user's decision) — outside PLAN: on a phone the news takes less of the map; a Cancel button for touch; no text selection on mobile Safari
 
 - **Context.** The user, on a phone in portrait: the status messages took the whole screen (the ticker's 6–8 rows, a

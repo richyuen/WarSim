@@ -1,6 +1,6 @@
 # DATA SOURCES
 
-Every data, art and font source used by WarSim, with its license. Status:
+Every data, art and font source used by Warism, with its license. Status:
 **in use** (shipped or used by a build step), **planned** (chosen, not yet
 downloaded), **rejected** (evaluated and not used, with the reason).
 `reference/` (private AoC material) is never a data source and is never shipped.

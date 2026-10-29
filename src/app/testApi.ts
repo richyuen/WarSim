@@ -1,5 +1,6 @@
 /**
- * `window.__warsim`: the automation surface for Playwright and the critic (SPEC §10).
+ * `window.__warsim`: the automation surface for Playwright and the critic (SPEC §10). The name is
+ * from before the rename to Warism; `window.__warism` is the same object.
  * It grows with the game (god commands, fps …).
  */
 import type { Autosave } from './autosave';
@@ -10,7 +11,7 @@ import type { Settings } from './settings';
 import type { SimClient } from './simClient';
 import type { Sound } from './sound';
 
-export interface WarsimTestApi {
+export interface WarismTestApi {
   sim: SimClient;
   /** Null when the page was opened with ?view=0. */
   view: MapView | null;
@@ -27,10 +28,12 @@ export interface WarsimTestApi {
 
 declare global {
   interface Window {
-    __warsim?: WarsimTestApi;
+    __warsim?: WarismTestApi;
+    __warism?: WarismTestApi;
   }
 }
 
-export function installTestApi(api: WarsimTestApi): void {
+export function installTestApi(api: WarismTestApi): void {
   window.__warsim = api;
+  window.__warism = api;
 }

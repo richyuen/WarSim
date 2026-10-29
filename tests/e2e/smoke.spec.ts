@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('page loads with the WarSim title and a sized map canvas', async ({ page }) => {
+test('page loads with the Warism title and a sized map canvas', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => {
@@ -8,7 +8,7 @@ test('page loads with the WarSim title and a sized map canvas', async ({ page })
   });
 
   await page.goto('/?scenario=toy');
-  await expect(page).toHaveTitle('WarSim');
+  await expect(page).toHaveTitle('Warism');
   const canvas = page.locator('canvas#map');
   await expect(canvas).toBeVisible();
   const size = await canvas.evaluate((c: HTMLCanvasElement) => ({ w: c.width, h: c.height }));

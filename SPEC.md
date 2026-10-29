@@ -1,4 +1,4 @@
-# WarSim — Specification & Architecture
+# Warism — Specification & Architecture
 
 Status: v0.2 (2026-10-02, Phase 0 review: §2, §5.3, §8, §9, §10 synced with the implementation). Living document: update when decisions change and
 record the *why* in `DECISIONS.md` (ADR numbers referenced as `[ADR-n]`).
@@ -60,8 +60,8 @@ claims are lower confidence. Observations from the screenshots (VISUAL, 2026-10-
 | `src/editor/**` | shared, render, ui | sim, worker, app |
 | `src/app/**` | shared, render, ui, editor (worker only via `new Worker(new URL(...))`) | sim |
 
-Enforcement (`eslint.config.js`): the layer table is the local rule `warsim/module-boundaries`
-(`tools/eslint/warsim-plugin.js`, lexical path resolution, so it also works on virtual
+Enforcement (`eslint.config.js`): the layer table is the local rule `warism/module-boundaries`
+(`tools/eslint/warism-plugin.js`, lexical path resolution, so it also works on virtual
 fixture paths). Sim purity uses `no-restricted-globals`, `no-restricted-properties`
 (`Math.random`, non-exact `Math.*`, `localeCompare`, `toLocaleString`) and
 `no-restricted-syntax` (`for-in`, `**`, Math destructuring/computed access). Fixtures in
@@ -305,14 +305,14 @@ As built (reviewed 2026-10-04; §2.5 has the details of saves and autosave):
   `World.parts()`, the command log included), gzipped with `CompressionStream` (browser and
   Node 18+; `src/shared/saveCodec.ts`). No header of its own: the seed and the tick are in the
   `meta` section.
-- **Scenario** (`.warsim-scenario`, `src/shared/scenarioFile.ts`): gzip of a magic line, a JSON
+- **Scenario** (`.warism-scenario`, `src/shared/scenarioFile.ts`): gzip of a magic line, a JSON
   header line (name, base scenario, map size, tick, state hash) and the state bytes without run
   history (`Sim.exportScenario`). Shareable; loaded in the editor or from the title screen.
 - **IndexedDB** (`src/app/saveDb.ts`, database `warsim`, store `saves`): slot `autosave` (one
   slot; every 60 s of real time while running, on page hide and on Main menu) and slot
   `scenario` (the scenario file on its way from the title screen into its game).
 - Settings (speed, paused, UI size, locale, unit size, map mode, etc.): localStorage.
-- **Designed, not built:** a `.warsim-save` file on disk with its own header (magic, version,
+- **Designed, not built:** a `.warism-save` file on disk with its own header (magic, version,
   scenario hash), several rotating autosave slots, an autosave interval in sim months as a
   setting (PARITY row 65).
 
@@ -3129,7 +3129,7 @@ on screen.
   - City cells keep their land (a city becomes an island). Formations left on water move to the
     nearest land within 64 cells, or are removed (PLAN 1.41).
 - **Scenario files** (PLAN 1.38, `src/shared/scenarioFile.ts`, `src/app/scenarioFiles.ts`):
-  - A `.warsim-scenario` file is gzip of the magic line, a JSON header (format, name, base,
+  - A `.warism-scenario` file is gzip of the magic line, a JSON header (format, name, base,
     w, h, tick, hash) and the state bytes.
   - `Sim.exportScenario` saves the world without its run history (command log, pending,
     history log, statistics, undo stack) and leaves the running game untouched.
@@ -3300,7 +3300,7 @@ on screen.
     - *Continue:* shown when there is an autosave, with its scenario, in-game date and the time
       of the save. It opens the URL of the game that wrote it plus `continue=1` (the record keeps
       that game's seed and options).
-    - *Scenario file:* a `.warsim-scenario` file is checked on the title screen (it unpacks, its
+    - *Scenario file:* a `.warism-scenario` file is checked on the title screen (it unpacks, its
       format, its base scenario exists here at that map size), kept in IndexedDB (slot
       `scenario`) and loaded by `?scenario=<base>&load=scenario`. The game checks the state hash.
       The file stays stored, so a reload starts the scenario again. A file the game cannot load
@@ -3414,7 +3414,7 @@ on screen.
   (`zoomDemo1938.spec.ts`, PLAN 2.10a; the spawned battle is `tiers1938.spec.ts`); tank, naval and air
   battle scenes; AI nuclear strike scene (seeded scenario with forced escalation
   conditions, AI-decided rather than God-forced); editor round trip; save/load.
-  The test API is `window.__warsim`: now `sim` (SimClient: init/step/command/hash/save/load/
+  The test API is `window.__warsim` (also `window.__warism`, the same object; ADR-761): now `sim` (SimClient: init/step/command/hash/save/load/
   speed/pause/subscribe/buildProvinces) and `view` (camera, controller.set/zoomTo, frames,
   draw); later `god(cmd)`, `fps()`. It exists only in a game, not on the title screen. URL
   options: `?scenario=1938|random|toy` (none = the title screen), `?seed=`, `?paused=1`,

@@ -31,13 +31,13 @@ const mustFail: [string, string][] = [
   ['sim-settimeout.ts', 'no-restricted-globals'],
   ['sim-for-in.ts', 'no-restricted-syntax'],
   ['sim-locale.ts', 'no-restricted-properties'],
-  ['sim-imports-render.ts', 'warsim/module-boundaries'],
-  ['sim-imports-package.ts', 'warsim/module-boundaries'],
-  ['sim-imports-tools.ts', 'warsim/module-boundaries'],
-  ['render-imports-sim.ts', 'warsim/module-boundaries'],
-  ['shared-imports-sim.ts', 'warsim/module-boundaries'],
-  ['ui-imports-worker.ts', 'warsim/module-boundaries'],
-  ['ui-literal-string.tsx', 'warsim/no-literal-ui-string'],
+  ['sim-imports-render.ts', 'warism/module-boundaries'],
+  ['sim-imports-package.ts', 'warism/module-boundaries'],
+  ['sim-imports-tools.ts', 'warism/module-boundaries'],
+  ['render-imports-sim.ts', 'warism/module-boundaries'],
+  ['shared-imports-sim.ts', 'warism/module-boundaries'],
+  ['ui-imports-worker.ts', 'warism/module-boundaries'],
+  ['ui-literal-string.tsx', 'warism/no-literal-ui-string'],
 ];
 
 const mustPass = ['sim-clean.ts', 'worker-imports-sim.ts', 'app-uses-browser.ts', 'ui-translated.tsx'];
@@ -53,7 +53,7 @@ describe('ESLint sim purity and module boundaries (SPEC §2.1)', () => {
 
   it('every literal in the UI fixture is reported (JSX text, title, aria-label, string child)', async () => {
     const rules = await lintFixture('ui-literal-string.tsx');
-    expect(rules.filter((r) => r === 'warsim/no-literal-ui-string')).toHaveLength(4);
+    expect(rules.filter((r) => r === 'warism/no-literal-ui-string')).toHaveLength(4);
   });
 
   it('Math.atan2 and Math.sin are both reported', async () => {

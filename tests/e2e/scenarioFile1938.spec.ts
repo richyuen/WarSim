@@ -38,7 +38,7 @@ test('scenario file: export, load in a fresh game, identical hash', async ({ pag
   await page.getByTestId('editor-btn').click();
   await page.getByTestId('scenario-name').fill('Poland 1938 (test)');
   const [dl] = await Promise.all([page.waitForEvent('download'), page.getByTestId('scenario-export').click()]);
-  expect(dl.suggestedFilename()).toBe('poland-1938-test.warsim-scenario');
+  expect(dl.suggestedFilename()).toBe('poland-1938-test.warism-scenario');
   const file = path.join(info.outputPath(), dl.suggestedFilename());
   await dl.saveAs(file);
   await expect(page.getByTestId('scenario-status')).toContainText('Poland 1938 (test)');
@@ -64,8 +64,8 @@ test('scenario file: export, load in a fresh game, identical hash', async ({ pag
   // A damaged file is refused; the game stays as it was.
   const bad = readFileSync(file);
   bad[bad.length - 40] = bad[bad.length - 40]! ^ 0xff;
-  await page.getByTestId('scenario-import').setInputFiles({ name: 'bad.warsim-scenario', mimeType: 'application/octet-stream', buffer: bad });
+  await page.getByTestId('scenario-import').setInputFiles({ name: 'bad.warism-scenario', mimeType: 'application/octet-stream', buffer: bad });
   await expect(page.getByTestId('scenario-status')).toContainText('Could not load', { timeout: 30_000 });
-  await page.getByTestId('scenario-import').setInputFiles({ name: 'not.warsim-scenario', mimeType: 'application/octet-stream', buffer: Buffer.from('hello') });
-  await expect(page.getByTestId('scenario-status')).toContainText('not a WarSim scenario file');
+  await page.getByTestId('scenario-import').setInputFiles({ name: 'not.warism-scenario', mimeType: 'application/octet-stream', buffer: Buffer.from('hello') });
+  await expect(page.getByTestId('scenario-status')).toContainText('not a Warism scenario file');
 });

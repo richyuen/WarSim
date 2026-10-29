@@ -1,17 +1,20 @@
 /**
- * Scenario files (PLAN 1.38, `.warsim-scenario`): shareable starting points. Layout before gzip:
+ * Scenario files (PLAN 1.38, `.warism-scenario`): shareable starting points. Layout before gzip:
  * the magic line, a JSON header line, then the world's state bytes (`Sim.exportScenario`):
  *
- *   WARSIM-SCENARIO\n{"format":1,"name":…,"base":"1938","w":2048,"h":1024,"tick":…,"hash":…}\n<bytes>
+ *   WARISM-SCENARIO\n{"format":1,"name":…,"base":"1938","w":2048,"h":1024,"tick":…,"hash":…}\n<bytes>
  *
  * `base` and the map size must match the running scenario (its map assets); `hash` is the state
- * hash of the bytes, checked after loading.
+ * hash of the bytes, checked after loading. Files from before the rename to Warism (magic
+ * `WARSIM-SCENARIO`, `.warsim-scenario`) still load.
  */
 import { packSave, unpackSave } from './saveCodec';
 
-export const SCENARIO_MAGIC = 'WARSIM-SCENARIO\n';
+export const SCENARIO_MAGIC = 'WARISM-SCENARIO\n';
+/** The magic line of files written before the rename to Warism: read, never written. */
+export const SCENARIO_MAGIC_OLD = 'WARSIM-SCENARIO\n';
 export const SCENARIO_FORMAT = 1;
-export const SCENARIO_EXT = '.warsim-scenario';
+export const SCENARIO_EXT = '.warism-scenario';
 
 export interface ScenarioHeader {
   format: number;
@@ -36,8 +39,13 @@ export async function encodeScenarioFile(header: ScenarioHeader, bytes: Uint8Arr
 /** Parses a scenario file; throws a readable error on anything else. */
 export async function decodeScenarioFile(file: Uint8Array): Promise<{ header: ScenarioHeader; bytes: Uint8Array }> {
   const raw = await unpackSave(file);
+  const startsWith = (m: string): boolean => {
+    const b = new TextEncoder().encode(m);
+    for (let i = 0; i < b.length; i++) if (raw[i] !== b[i]) return false;
+    return true;
+  };
+  if (!startsWith(SCENARIO_MAGIC) && !startsWith(SCENARIO_MAGIC_OLD)) throw new Error('not a Warism scenario file');
   const magic = new TextEncoder().encode(SCENARIO_MAGIC);
-  for (let i = 0; i < magic.length; i++) if (raw[i] !== magic[i]) throw new Error('not a WarSim scenario file');
   let nl = magic.length;
   while (nl < raw.length && raw[nl] !== 10) nl++;
   if (nl >= raw.length) throw new Error('scenario file: missing header');

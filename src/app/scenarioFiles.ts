@@ -1,5 +1,5 @@
 /**
- * Scenario files in the app (PLAN 1.38): export the running world as a `.warsim-scenario`
+ * Scenario files in the app (PLAN 1.38): export the running world as a `.warism-scenario`
  * download, and import one into the running sim after checking its base scenario, map size and
  * state hash. A file chosen on the title screen (PLAN 1.43b) is checked there, staged in
  * IndexedDB and loaded by the game that the title screen then navigates to.

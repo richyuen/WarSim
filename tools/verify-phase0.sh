@@ -9,7 +9,7 @@ row() { # id, description, command
 echo "| task | acceptance test | result |"
 echo "|---|---|---|"
 row 0.1 "reference/ ignored and never tracked" "git check-ignore -q reference/screens && [ -z \"\$(git ls-files reference)\" ]"
-row 0.2 "build succeeds; built page has a canvas and title WarSim" "npm run build && grep -q '<title>WarSim</title>' dist/index.html && grep -q 'canvas id=\"map\"' dist/index.html"
+row 0.2 "build succeeds; built page has a canvas and title Warism" "npm run build && grep -q '<title>Warism</title>' dist/index.html && grep -q 'canvas id=\"map\"' dist/index.html"
 row 0.3 "sim purity / module-boundary fixtures fail lint" "npx vitest run tests/unit/lint-rules.test.ts"
 row 0.4 "npm run check script exists; Playwright smoke finds the canvas" "grep -q '\"check\"' package.json && npx playwright test tests/e2e/smoke.spec.ts"
 row 0.5 "BLOCKERS/DATA_SOURCES exist; PROGRESS dated; NOTES.md-missing noted" "[ -f BLOCKERS.md ] && [ -f DATA_SOURCES.md ] && grep -q '^## 2026-' PROGRESS.md && grep -q 'NOTES.md' PROGRESS.md"

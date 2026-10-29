@@ -69,7 +69,7 @@ test('settings: UI size, unit size, screenshot, seed and speed persistence', asy
 
   // F2: a PNG of the map, at the canvas size.
   const [dl] = await Promise.all([page.waitForEvent('download'), page.keyboard.press('F2')]);
-  expect(dl.suggestedFilename()).toMatch(/^warsim-1938-01-01\.png$/);
+  expect(dl.suggestedFilename()).toMatch(/^warism-1938-01-01\.png$/);
   const file = path.join(info.outputPath(), dl.suggestedFilename());
   await dl.saveAs(file);
   const png = readFileSync(file);

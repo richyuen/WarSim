@@ -172,6 +172,6 @@ const noLiteralUiString = {
 };
 
 export default {
-  meta: { name: 'warsim' },
+  meta: { name: 'warism' },
   rules: { 'module-boundaries': moduleBoundaries, 'no-literal-ui-string': noLiteralUiString },
 };

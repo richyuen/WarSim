@@ -2,7 +2,7 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import globals from 'globals';
-import warsim from './tools/eslint/warsim-plugin.js';
+import warism from './tools/eslint/warism-plugin.js';
 
 /**
  * Math members that are not exactly specified by ECMAScript and may differ between
@@ -38,9 +38,9 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     languageOptions: { ecmaVersion: 2022, sourceType: 'module' },
-    plugins: { warsim },
+    plugins: { warism },
     rules: {
-      'warsim/module-boundaries': 'error',
+      'warism/module-boundaries': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       eqeqeq: ['error', 'always'],
@@ -54,7 +54,7 @@ export default tseslint.config(
     // i18n from day one (PROMPT.md, PLAN 0.21): no literal user-facing text in UI components.
     files: ['src/ui/**/*.tsx', 'src/editor/**/*.tsx', 'src/app/**/*.tsx'],
     ignores: ['src/app/bench/**'],
-    rules: { 'warsim/no-literal-ui-string': 'error' },
+    rules: { 'warism/no-literal-ui-string': 'error' },
   },
   {
     files: ['src/worker/**'],

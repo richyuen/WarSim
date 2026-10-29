@@ -226,11 +226,11 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     try {
       tick = await autosave.restore();
     } catch (err) {
-      console.warn(`WarSim: the autosave could not be loaded: ${err instanceof Error ? err.message : String(err)}`);
+      console.warn(`Warism: the autosave could not be loaded: ${err instanceof Error ? err.message : String(err)}`);
       location.replace(loadFailedUrl('save'));
       return;
     }
-    if (tick !== null) console.info(`WarSim: resumed autosave at tick ${tick}`);
+    if (tick !== null) console.info(`Warism: resumed autosave at tick ${tick}`);
     loaded = tick !== null;
   }
   if (loaded) {

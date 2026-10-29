@@ -14,7 +14,7 @@ import './style.css';
 
 const canvas = document.getElementById('map');
 if (!(canvas instanceof HTMLCanvasElement)) {
-  throw new Error('WarSim: #map canvas missing from index.html');
+  throw new Error('Warism: #map canvas missing from index.html');
 }
 const uiRoot = document.getElementById('ui');
 // No text selection outside a text field (the user's report: on mobile Safari a touch-drag

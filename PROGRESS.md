@@ -24707,3 +24707,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   the folded legend and ranking hold for a height ≤ 500 px as well (their rules in a block of their own, `@media
   (max-width: 600px), (max-height: 500px)`; `usePhone` reads the same query). e2e: the two layout tests at 844 × 390
   too (red before).
+
+## 2026-10-29 — Outside the loop (the user's request): the game is called Warism (ADR-761)
+
+- Every name a player sees now reads Warism (titles, title screen, top bar, messages, download names, scenario files
+  `.warism-scenario`); package, worker, ESLint plugin (`warism/…`) and the documents' titles follow.
+- Kept: the `warsim.*` storage keys and IndexedDB `warsim` (players' settings and autosaves), old `WARSIM-SCENARIO`
+  files load (`tests/unit/scenarioFile.test.ts` "still reads a file from before the rename"), `window.__warsim` (with
+  `window.__warism` beside it), the record, the GitHub repository and local folder names.

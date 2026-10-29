@@ -159,7 +159,7 @@ export async function saveScreenshot(view: MapView, dateLabel: string): Promise<
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `warsim-${dateLabel}.png`;
+  a.download = `warism-${dateLabel}.png`;
   document.body.append(a);
   a.click();
   a.remove();

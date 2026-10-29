@@ -1,4 +1,4 @@
-# WarSim
+# Warism
 
 Follow `PROMPT.md`. It is the standing brief for this repo. Unless the user asks for something
 else, a request like "continue", "next" or "go" means: do one iteration of the EVERY ITERATION steps in

@@ -122,7 +122,7 @@ export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContin
               class="title-file"
               data-testid="title-scenario-file"
               type="file"
-              accept=".warsim-scenario"
+              accept=".warism-scenario,.warsim-scenario"
               aria-label={t('scenario.import')}
               onChange={(e) => {
                 const input = e.currentTarget as HTMLInputElement;
