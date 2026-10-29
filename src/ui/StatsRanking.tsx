@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import type { NationLife, NationStat } from '../shared/protocol';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
@@ -20,6 +21,8 @@ const ROWS = 15;
  * As AoC's Statistics panel (PLAN 7.4c, ADR-442): each row has the nation's flag and a bar in its
  * colour under its name and value, as long as its value is of the first row's. The lists of a life
  * (PLAN 7.4f28) have the dead in them, marked with a dagger and dimmed, as AoC's lists mark them.
+ * `phone` (a phone's width; the user's choice of 2026-10-29, ADR-760): folded to its title, as the
+ * legend is, and a tap on the title opens it; it took a third of the view.
  */
 export function StatsRanking({
   nations,
@@ -31,6 +34,7 @@ export function StatsRanking({
   onSelect,
   onCharts,
   flagUrlOf,
+  phone = false,
 }: {
   nations: NationStat[];
   /** Every nation's life (PLAN 7.4f28), and the dead's names and colours. */
@@ -44,7 +48,22 @@ export function StatsRanking({
   onCharts?: () => void;
   /** A nation's flag as an image URL (PLAN 7.4c); none: its colour's swatch. */
   flagUrlOf?: (id: number) => string | null;
+  /** A phone's width: folded to its title until tapped. */
+  phone?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
+  const toggle = phone ? (
+    <button type="button" class="ranking-toggle" data-testid="ranking-toggle" aria-expanded={open} title={t(open ? 'stats.fold' : 'stats.unfold')} onClick={() => setOpen(!open)}>
+      {open ? '▾' : '▸'} {t('stats.title')}
+    </button>
+  ) : null;
+  if (phone && !open) {
+    return (
+      <aside class="stats-ranking folded" data-testid="stats-ranking" data-metric={metric} data-open="false">
+        <header class="ranking-head">{toggle}</header>
+      </aside>
+    );
+  }
   let rows: Row[];
   if (isLifeMetric(metric)) {
     const who = new Map<number, { name: string; color: number }>();
@@ -59,9 +78,9 @@ export function StatsRanking({
   const shown = (x: number): string => (metric === 'age' ? x.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : Math.round(x).toLocaleString('en-US'));
   const top = Math.max(0, ...rows.map(v));
   return (
-    <aside class="stats-ranking" data-testid="stats-ranking" data-metric={metric}>
+    <aside class="stats-ranking" data-testid="stats-ranking" data-metric={metric} data-open={phone ? 'true' : undefined}>
       <header class="ranking-head">
-        <span>{t('stats.title')}</span>
+        {toggle ?? <span>{t('stats.title')}</span>}
         <select data-testid="rank-metric" aria-label={t('stats.metric')} value={metric} onChange={(e) => onMetric((e.currentTarget as HTMLSelectElement).value as RankList)}>
           {/* The present's lists, then a life's (PLAN 7.4f28), each under its heading. */}
           {[RANK_METRICS, LIFE_METRICS].map((group, g) => (

@@ -24701,3 +24701,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   `legendOccupied1938`, `seaLegend1938`, `mapModes1938`, `orderNews1938`, `barNarrow1938`, `airControl1938`,
   `seaControl1938`, `phoneLayout1938`: 23 of 23.
 - Not changed: the ranking still stands under the top bar on a phone (a third of the view); it gives way to a panel.
+- **Ranking commit** (the user's request): on a phone the ranking is folded to its title, top right, as the legend is;
+  a tap opens it. e2e: `phoneLayout1938.spec.ts` "the ranking at a phone's width"; `ranking1938` green.

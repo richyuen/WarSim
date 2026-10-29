@@ -1317,6 +1317,23 @@ textarea,
     text-align: left;
     cursor: pointer;
   }
+  /* The ranking folded to its title too (ADR-760), top right: it took a third of the view. */
+  .stats-ranking.folded {
+    width: auto;
+    padding: 4px 8px;
+  }
+  .stats-ranking.folded .ranking-head {
+    margin-bottom: 0;
+  }
+  .ranking-toggle {
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
   #ui:has(.nation-panel, .history-panel) .map-legend.foldable {
     display: none;
   }

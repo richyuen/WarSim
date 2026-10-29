@@ -229,3 +229,36 @@ test.describe('the news at a phone\'s width', () => {
     });
   }
 });
+
+// The user's choice (2026-10-29, ADR-760): on a phone the ranking took a third of the view. It is
+// folded to its title, top right, and a tap opens it, in view; a desktop's is open as it was.
+test.describe('the ranking at a phone\'s width', () => {
+  test.use({ hasTouch: true });
+  for (const [W, H] of [[390, 844], [1280, 800]] as const) {
+    test(`at ${W} × ${H}: the ranking folded to its title on a phone, open on a desktop`, async ({ page }) => {
+      test.setTimeout(120_000);
+      await page.setViewportSize({ width: W, height: H });
+      await page.goto('/?scenario=1938&paused=1&seed=1938');
+      await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+      const rows = page.getByTestId('rank-row');
+      if (W > 600) {
+        await expect(page.getByTestId('ranking-toggle')).toHaveCount(0);
+        await expect(rows).toHaveCount(15);
+        return;
+      }
+      await expect(page.getByTestId('ranking-toggle')).toBeVisible();
+      await expect(rows).toHaveCount(0);
+      const folded = (await box(page, 'stats-ranking'))!;
+      expect(folded.bottom - folded.top, 'a chip, not a list').toBeLessThan(40);
+      expect(apart(folded, (await box(page, 'map-legend'))!), 'the ranking and the legend apart').toBe(true);
+      await page.getByTestId('ranking-toggle').tap();
+      await expect(rows).toHaveCount(15);
+      expect(inside((await box(page, 'stats-ranking'))!, W, H), 'the opened ranking in view').toBe(true);
+      await rows.nth(1).tap();
+      await expect(page.getByTestId('nation-panel')).toBeVisible();
+      await page.evaluate(() => window.__warsim!.view!.select(0));
+      await page.getByTestId('ranking-toggle').tap();
+      await expect(rows).toHaveCount(0);
+    });
+  }
+});
