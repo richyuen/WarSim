@@ -24682,3 +24682,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   Terrain sets `data-mode` to `terrain`, at 390 × 844 and at 1280 × 800; red on `c689c2e4` at 390, green after.
   `phoneLayout1938`, `alliances1938`, `ticker1938`, `puppets1938`, `player1938`: 14 of 14 green.
 - **Next:** PLAN 7.5 (critic not due).
+
+## 2026-10-29 — Outside the loop (the user's report): mobile Safari, the phone's news, a way out on touch
+
+- **iOS commit:** on mobile Safari a touch-drag selected the whole game: the page set only `user-select: none` on the
+  bars (Safari reads `-webkit-user-select`). Now the page is not selectable outside a text field (both properties,
+  `-webkit-touch-callout: none`, a `selectstart` guard), and a finger's `touchmove` on the map is not the page's.
+  Not tried on a real iPhone (none here): checked in Chromium. e2e: `phoneLayout1938.spec.ts` "the game is not text a
+  touch selects" (red before); `camera`, `editorDrag1938`, `player1938`, `phoneLayout1938` 17 of 17.

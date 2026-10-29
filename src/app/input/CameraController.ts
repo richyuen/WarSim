@@ -92,6 +92,10 @@ export class CameraController {
       this.zoomTo(this.targetScale * DOUBLE_CLICK_ZOOM, this.local(e as MouseEvent));
     });
     el.style.touchAction = 'none';
+    // Mobile Safari: a finger's move on the map is the camera's, never the page's scroll or a
+    // text selection (the user's report: a touch-drag selected the whole game). The pointer
+    // events that pan and pinch are not touched by it.
+    this.listen(el, 'touchmove', (e) => e.preventDefault(), { passive: false });
   }
 
   private listen(target: EventTarget, type: string, fn: (e: Event) => void, opts?: AddEventListenerOptions): void {

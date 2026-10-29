@@ -17,6 +17,12 @@ if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error('WarSim: #map canvas missing from index.html');
 }
 const uiRoot = document.getElementById('ui');
+// No text selection outside a text field (the user's report: on mobile Safari a touch-drag
+// selected the whole game); `user-select: none` in the style sheet is the first guard.
+document.addEventListener('selectstart', (e) => {
+  const at = e.target instanceof Element ? e.target : e.target instanceof Node ? e.target.parentElement : null;
+  if (!at?.closest('input, textarea, [contenteditable]')) e.preventDefault();
+});
 
 // A game is its URL: ?scenario=1938 (or toy, the test world) with the options `startGame` reads.
 // Without a scenario, or with an unknown one, the page is the title screen (PLAN 1.43): no sim

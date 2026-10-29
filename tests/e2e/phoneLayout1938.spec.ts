@@ -95,3 +95,35 @@ test.describe('the map-mode menu', () => {
     });
   }
 });
+
+// The user's report (2026-10-29): on mobile Safari a touch-drag selected the whole game. The page
+// is not selectable outside a text field (Safari's prefixed property too), and a finger's move on
+// the map is not the page's.
+test('the game is not text a touch selects; a text field still is', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0, null, { timeout: 60_000 });
+  const got = await page.evaluate(() => {
+    const css = (el: Element, p: string): string => getComputedStyle(el).getPropertyValue(p);
+    const select = (el: Node): boolean => !el.dispatchEvent(new Event('selectstart', { bubbles: true, cancelable: true }));
+    const map = document.getElementById('map')!;
+    const label = document.querySelector('[data-testid="date-label"]')!;
+    const field = document.createElement('textarea');
+    field.value = 'text';
+    document.getElementById('ui')!.append(field);
+    const move = new TouchEvent('touchmove', { bubbles: true, cancelable: true });
+    map.dispatchEvent(move);
+    const out = {
+      body: [css(document.body, 'user-select'), css(document.body, '-webkit-user-select')],
+      field: css(field, 'user-select'),
+      blockedOnMap: select(map),
+      blockedOnLabel: select(label.firstChild ?? label),
+      blockedInField: select(field.firstChild ?? field),
+      touchmoveKept: move.defaultPrevented,
+    };
+    field.remove();
+    return out;
+  });
+  expect(got).toEqual({ body: ['none', 'none'], field: 'text', blockedOnMap: true, blockedOnLabel: true, blockedInField: false, touchmoveKept: true });
+});
