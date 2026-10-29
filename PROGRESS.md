@@ -24690,3 +24690,7 @@ No rule changed and nothing on screen changed. One task came out of it.
   `-webkit-touch-callout: none`, a `selectstart` guard), and a finger's `touchmove` on the map is not the page's.
   Not tried on a real iPhone (none here): checked in Chromium. e2e: `phoneLayout1938.spec.ts` "the game is not text a
   touch selects" (red before); `camera`, `editorDrag1938`, `player1938`, `phoneLayout1938` 17 of 17.
+- **Cancel commit:** a touch screen had no Escape. While there is something Escape cancels with no close button of its
+  own (God Mode's placing, the player's selection or armed order, an armed God tool), a "✕ Cancel" button stands first
+  in the bottom bar; a tap ends it, as Escape does, in Escape's order. e2e: `phoneLayout1938.spec.ts` "the Cancel
+  button".

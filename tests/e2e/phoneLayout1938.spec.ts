@@ -127,3 +127,44 @@ test('the game is not text a touch selects; a text field still is', async ({ pag
   });
   expect(got).toEqual({ body: ['none', 'none'], field: 'text', blockedOnMap: true, blockedOnLabel: true, blockedInField: false, touchmoveKept: true });
 });
+
+// The user's request (2026-10-29): a way out of a selection or an armed tool on a touch screen,
+// which has no Escape. A Cancel button stands first in the bar while there is one, and a tap
+// ends it.
+test.describe('the Cancel button', () => {
+  test.use({ hasTouch: true });
+  test('cancels a selection and an armed God tool on a phone, and is gone with nothing to cancel', async ({ page }) => {
+    test.setTimeout(150_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/?scenario=1938&paused=1&seed=1938');
+    await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+    await page.waitForFunction((p) => window.__warsim!.view!.formationsOf(p).length > 3, POL, { timeout: 60_000 });
+    const cancel = page.getByTestId('cancel-btn');
+    await expect(cancel).toHaveCount(0);
+
+    // A selection of the played nation's formations: the button, in view at the bar's start.
+    await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
+    await page.getByTestId('take-control').tap();
+    await expect(page.getByTestId('release-control')).toBeVisible();
+    await page.evaluate(() => window.__warsim!.player!.selectAll());
+    await expect(page.getByTestId('player-label')).not.toContainText(' 0 selected');
+    expect(await page.evaluate(() => window.__warsim!.player!.selectedCount.value)).toBeGreaterThan(0);
+    await expect(cancel).toBeVisible();
+    const [b, bar] = [(await box(page, 'cancel-btn'))!, (await box(page, 'bottombar'))!];
+    expect(b.left >= bar.left && b.right <= bar.right, 'the button in view in the bar').toBe(true);
+    await cancel.tap();
+    expect(await page.evaluate(() => window.__warsim!.player!.selectedCount.value)).toBe(0);
+    await expect(cancel).toHaveCount(0);
+
+    // An armed God tool.
+    await page.evaluate(() => {
+      const h = window.__warsim!.hud;
+      if (!h.godMode.value) h.toggleGod();
+      h.setGodTool('revolt');
+    });
+    await expect(cancel).toBeVisible();
+    await cancel.tap();
+    expect(await page.evaluate(() => window.__warsim!.hud.godTool.value)).toBeNull();
+    await expect(cancel).toHaveCount(0);
+  });
+});

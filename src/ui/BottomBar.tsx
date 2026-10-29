@@ -34,6 +34,11 @@ export interface BottomBarProps {
   playing?: { name: string; selected: number } | null;
   /** God Mode's map tools, a row of the bar's own while God Mode is on (PLAN 7.16b). */
   godTools?: ComponentChildren;
+  /**
+   * What Escape would cancel (a selection, an armed order or placing, a God tool), as a button
+   * first in the bar: a touch screen has no Escape (the user's request of 2026-10-29). Null: none.
+   */
+  onCancel?: (() => void) | null;
 }
 
 /**
@@ -47,7 +52,7 @@ function widestDates(year: number): string {
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings, godTools }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings, godTools, onCancel }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   // How far the bar's top is from the view's bottom, for what stands above it (PLAN 7.4f25): a
   // played nation's label that does not fit goes onto a second line.
@@ -70,6 +75,11 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
   return (
     <footer class={godTools ? 'bottombar with-god' : 'bottombar'} data-testid="bottombar" ref={bar}>
       {godTools}
+      {onCancel ? (
+        <button type="button" class="bar-btn bar-cancel" data-testid="cancel-btn" title={t('bar.cancelHint')} onClick={onCancel}>
+          {t('bar.cancel')}
+        </button>
+      ) : null}
       <button type="button" class="bar-btn bar-reserve" data-testid="pause-btn" data-reserve={paused ? t('bar.pause') : t('bar.resume')} aria-pressed={paused} onClick={onTogglePause}>
         {paused ? t('bar.resume') : t('bar.pause')}
       </button>

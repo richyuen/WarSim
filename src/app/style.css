@@ -623,6 +623,12 @@ textarea,
 }
 
 /* God Mode (PLAN 1.32b): bottom-bar toggle and the God tab. */
+/* The way out on a touch screen (the user's request of 2026-10-29): first in the bar, lit. */
+.bar-cancel {
+  background: rgba(233, 196, 106, 0.35);
+  color: #fff3c4;
+  font-weight: 700;
+}
 .bar-god.active {
   background: rgba(233, 196, 106, 0.35);
   color: #fff3c4;
