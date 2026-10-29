@@ -16269,3 +16269,40 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   landings 1.02 ×. BLOCKERS; the canal to PLAN 7.156.
   Closed 2026-10-28 not done (ADR-755, the user's decision): the lake-port rule kept; PLAN 7.156 took the canal's
   refusals to 0.015 × on 1451–1460; the transports' clause missed by 0.99 ×, within ten seeds' spread.
+
+<!-- moved 2026-10-29 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.157 (ticked at 6.5 ms, ADR-757, the user's decision) R18-B1: the tick budget fails on late years after the levy (SPEC "≤ 5.5 ms in any year", ADR-709).
+  Pinned, three of the critic's eight slowest years are over: 6599 y17 5.76/5.75 ms, 2539 y28 5.67/5.84, 1307 y30
+  5.33/5.55; 6599 y17 read 2.82 ms on `cfedb50a` (817 formations, operational AI 1.03 ms) against 5.76 on HEAD (1,061,
+  2.57 ms); seed 99 × 5 years 2.10 → 2.56 ms; ADR-745's cost line (worst year 4.75 ms) not reproduced
+  (`critic/c18_perf_summary.json`, `critic/c18_perf_6599_y17_read1.log`, `critic/c18o_perf_6599_y17_read1.log`,
+  `critic/c18_perf_2539_y28_read2.log`, `critic/c18_perf_seed99_5y_head.log`, `critic/c18_perf_seed99_5y_cfed.log`,
+  `critic/c18_cmp_y30.txt`, `critic/c18_l_6599.log`). The critic's fix: make the levy's armies cheaper to plan (fold
+  or cap cadres per front, or a cheaper operational AI per formation). AT: `npm run sim -- --profile --affinity
+  0xFFFF`, pinned, reads ≤ 5.5 ms mean tick on each of the five slowest years of ten unseen seeds (1461–1470) × 30
+  years, and on the critic's cases 6599 y17, 2539 y28 and 1307 y30; a stop: a year over 5.5 ms on either.
+  Missed 2026-10-29 (7 of 53 over, `docs/evidence/7.157/at.md`): BLOCKERS, ADR-756 waits on the user. The budget
+  6.5 ms (ADR-757, the user's decision): all 53 reads under it, the worst 5.99 (6.05 re-read in 7.158's AT).
+
+- [x] 7.158 (closed not done, ADR-757, the user's decision) The plans of a shared front made cheaper (from 7.157's AT, ADR-756): on one world coalition's front each
+  planner reads ~2,500 sectors in several loops (2539 y28: Afghanistan with one free formation 4.6 ms a plan; the
+  sectors, reserve-and-threat and allotment parts 0.48, 0.45, 0.74 ms a tick of the operational AI's 2.9 on its month
+  1, `tools/diag/opCalls.ts`). What the planners of one front and one hour read alike is read once (a pure change
+  keeps the pin; a rule change moves it under its own ADR). AT: on 2539 y28's month-1 save (made by `--load
+  critic/c18_ck_seed2539_y27.bin` and 730 hours), the operational AI's ms a tick ≤ 0.75 × HEAD's in a paired run (both
+  at once, swapped); then pinned ≤ 5.5 ms on 1461 y29, 2539 y28, 1307 y30, 1468 y25 and y26; a stop: a year over 5.5.
+  Missed 2026-10-29 (`d551fc60`, pure: 0.83–0.85 × paired; pinned 5.57–6.05 ms, `docs/evidence/7.158/at.md`): BLOCKERS;
+  ADR-756 waits on the user.

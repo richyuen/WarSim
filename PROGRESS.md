@@ -24610,3 +24610,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   (`--cpu-prof-interval 100`, `--max-inlined-bytecode-size=0` to keep closures apart). Pinned to one logical CPU the
   tick reads twice as slow; pairs on four each (0xF0, 0xF00).
 - **Next:** 7.5 waits on 7.157; both wait on ADR-756. No other open task.
+
+## 2026-10-29 — The tick budget is 6.5 ms (ADR-757, the user's decision)
+
+- After (a)–(c) of ADR-756 were explained (option (a) a rule change of uncertain reach), the user set the budget to 6.5
+  ms in any year. SPEC updated; PLAN 7.157 ticked (all its reads under 6.5, the worst 6.05); 7.158 closed not done,
+  its pure speed-up kept; BLOCKERS resolved. No code changed.
+- **Next:** PLAN 7.5 (critic not due: no phase review since run 18).

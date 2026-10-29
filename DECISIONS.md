@@ -167,7 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-756 · 2026-10-29 · proposed (the user's decision) — PLAN 7.157's AT missed: 7 of 53 late world-years over 5.5 ms after a pure speed-up; the cost is the plans of a shared front, not the levy's formations
+### ADR-757 · 2026-10-29 · accepted (the user's decision) — the tick budget is 6.5 ms in any year; PLAN 7.157 ticked, 7.158 closed not done
+
+- **Context.** ADR-756: late world-years over SPEC's 5.5 ms after the levy (R18-B1); PLAN 7.157 and 7.158 took them as
+  far as pure speed-ups go (`14a1b285`, `d551fc60`): the worst read 1461 y29 6.05 ms, 2539 y28 5.91–5.93, 1307 y30
+  5.63–5.77; what is left is the reach walks and route searches, whose next step is a rule change.
+- **Decision** (the user's, 2026-10-29, after the options were explained): the budget is 6.5 ms in any year (at least
+  150 game hours a second), in place of ADR-709's 5.5. Neither ADR-756's (a) (keeping the pocket marks, a rule change)
+  nor (c) (capping the levy's cadres).
+- **Consequences.** SPEC's budget line reads 6.5. PLAN 7.157 ticked: every read of its AT is under 6.5 (53 of 53, the
+  worst 5.99, and 6.05 on the re-read of 7.158's AT). PLAN 7.158 closed not done (its 0.75 × and 5.5 ms bars belong to
+  the old budget); its speed-up kept. BLOCKERS' two entries resolved. Room on the worst year read: 0.45 ms. No code
+  changed; pin unchanged. Next: PLAN 7.5.
+
+### ADR-756 · 2026-10-29 · decided by ADR-757 (the user's decision: a budget of 6.5 ms, none of a–c as written) — PLAN 7.157's AT missed: 7 of 53 late world-years over 5.5 ms after a pure speed-up; the cost is the plans of a shared front, not the levy's formations
 
 - **Context.** R18-B1 (critic run 18): pinned late years over SPEC's 5.5 ms a tick (ADR-709) after the levy (ADR-745).
   PLAN 7.157's AT: ≤ 5.5 ms on the five slowest years of 1461–1470 × 30 and on the critic's 6599 y17, 2539 y28, 1307 y30.
