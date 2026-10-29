@@ -2947,6 +2947,11 @@ on screen.
   While paused, the worker keeps pumping (without ticking) until throttled derived messages are
   flushed, so a single step still updates the UI.
 - **Map modes** (implemented PLAN 1.17–1.30a, `src/shared/mapModes.ts`):
+  - *Choosing one* (the user's request of 2026-10-29, `BottomBar.tsx` `MapModeMenu`): the bar's
+    map button opens a menu of every mode above it, the current one ticked, each with its number
+    key (1–9, 0; the eleventh has none); a pick switches and closes it, as do Escape (before the
+    game's Escape), the button again and a press elsewhere. The button no longer steps to the
+    next mode. While it is open the bar stands over the war banners and the ticker.
   - *Implemented:* political, alliances, puppets, terrain, wars (red at war), diplomacy (relations
     to the nation selected by clicking the map), income (log ramp) and revolts.
   - *Off-map rows* (above/below the map when fully zoomed out) render as sea.

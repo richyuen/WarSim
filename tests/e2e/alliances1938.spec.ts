@@ -44,7 +44,18 @@ test('alliance map mode colours members by alliance and non-aligned nations grey
   const italyPolitical = await colourAt(page, 12.5, 42.5);
   expect(dist(italyPolitical, rgb(hex('ITA')))).toBeLessThan(30);
 
+  // The map button opens its menu of every mode (the user's request of 2026-10-29), the current
+  // one ticked; Escape closes it and changes nothing; a pick switches and closes it.
   await btn.click();
+  const menu = page.getByTestId('mapmode-menu');
+  await expect(menu.getByRole('menuitemradio')).toHaveCount(MAP_MODES.length);
+  await expect(page.getByTestId('mapmode-opt-political')).toHaveAttribute('aria-checked', 'true');
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
+  await expect(btn).toHaveAttribute('data-mode', 'political');
+  await btn.click();
+  await page.getByTestId('mapmode-opt-alliances').click();
+  await expect(menu).toHaveCount(0);
   await expect(btn).toHaveAttribute('data-mode', 'alliances');
   await expect(btn).toHaveText(/Alliances/);
   const ger = rgb(hex('GER'));
@@ -65,7 +76,8 @@ test('alliance map mode colours members by alliance and non-aligned nations grey
   await page.evaluate(({ x, y }) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale: 3.2 }), { x: ex, y: ey });
   await page.waitForTimeout(400);
   await page.screenshot({ path: path.join(out, 'alliances-europe.png') });
-  // Cycle back to political for later tests sharing storage (modes cycle in MAP_MODES order).
-  for (let i = 0; i < MAP_MODES.length && (await btn.getAttribute('data-mode')) !== 'political'; i++) await btn.click();
+  // Back to political for later tests sharing storage, from the menu.
+  await btn.click();
+  await page.getByTestId('mapmode-opt-political').click();
   await expect(btn).toHaveAttribute('data-mode', 'political');
 });

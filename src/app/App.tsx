@@ -115,7 +115,7 @@ export function App({
         onTogglePause={() => hud.togglePause()}
         onSpeed={(l) => hud.setSpeedLevel(l)}
         mapMode={hud.mapMode.value}
-        onCycleMapMode={() => hud.cycleMapMode()}
+        onMapMode={(m) => hud.setMapMode(m)}
         showStats={hud.showStats.value}
         onToggleStats={stats ? () => hud.toggleStats() : undefined}
         godMode={hud.godMode.value}

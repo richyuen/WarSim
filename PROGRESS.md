@@ -24655,3 +24655,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Shift-drag adds the played nation's formations in a box, Ctrl+Shift-drag takes them out, a long press then drag on
   touch draws one, Ctrl+A selects all; land first, else fleets, never wings; the camera stays. e2e: `player1938.spec.ts`
   "box select".
+
+## 2026-10-29 — Outside the loop (the user's request): the map modes from a menu
+
+- The map button opens a menu of every mode (ticked, with its key) instead of stepping to the next. `alliances1938` and
+  `ticker1938` pick from the menu; `hud.cycleMapMode` removed (no caller left).
+- Answered, not changed: airbases and wings at their bases are not drawn on the map (SPEC: "a wing at its base is not
+  drawn"); only sorties in flight are.

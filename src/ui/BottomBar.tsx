@@ -1,14 +1,15 @@
 import type { ComponentChildren } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import type { SimDate } from '../shared/calendar';
-import type { MapMode } from '../shared/mapModes';
+import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { SPEED_LEVELS } from '../shared/speed';
 import { t, type MessageKey } from './i18n';
 
 export interface BottomBarProps {
   date: SimDate;
   mapMode: MapMode;
-  onCycleMapMode: () => void;
+  /** A map mode picked from the map button's menu. */
+  onMapMode: (mode: MapMode) => void;
   speedLevel: number;
   paused: boolean;
   onTogglePause: () => void;
@@ -45,7 +46,7 @@ function widestDates(year: number): string {
 }
 
 /** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
-export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onCycleMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings, godTools }: BottomBarProps) {
+export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings, godTools }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   // How far the bar's top is from the view's bottom, for what stands above it (PLAN 7.4f25): a
   // played nation's label that does not fit goes onto a second line.
@@ -87,9 +88,7 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
       >
         +
       </button>
-      <button type="button" class="bar-btn" data-testid="mapmode-btn" data-mode={mapMode} onClick={onCycleMapMode}>
-        {t('bar.mapMode', { mode: t(`mapMode.${mapMode}` as MessageKey) })}
-      </button>
+      <MapModeMenu mode={mapMode} onMode={onMapMode} />
       {onToggleStats ? (
         <button type="button" class="bar-btn" data-testid="stats-btn" aria-pressed={showStats} onClick={onToggleStats}>
           {t('bar.statistics')}
@@ -125,5 +124,66 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
         {paused ? <span class="bar-paused"> · {t('bar.paused')}</span> : null}
       </span>
     </footer>
+  );
+}
+
+/** The key of each map mode, by its place in MAP_MODES (`game.tsx`'s MODE_KEYS: 1 to 9, then 0). */
+const modeKey = (i: number): string | null => (i < 10 ? String((i + 1) % 10) : null);
+
+/**
+ * The map button and its menu (the user's request of 2026-10-29, in place of a button that went
+ * to the next mode): the button opens a list of every map mode above it, the current one ticked,
+ * each with its number key; a pick switches to it and closes the list, as do Escape, the button
+ * again and a press anywhere else.
+ */
+function MapModeMenu({ mode, onMode }: { mode: MapMode; onMode: (mode: MapMode) => void }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const away = (e: PointerEvent): void => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
+    };
+    // Escape closes the list first, before the game's Escape (the selection, the panels).
+    const key = (e: KeyboardEvent): void => {
+      if (e.key !== 'Escape') return;
+      e.stopImmediatePropagation();
+      setOpen(false);
+    };
+    window.addEventListener('pointerdown', away, true);
+    window.addEventListener('keydown', key, true);
+    return () => {
+      window.removeEventListener('pointerdown', away, true);
+      window.removeEventListener('keydown', key, true);
+    };
+  }, [open]);
+  return (
+    <span class="mapmode-wrap" ref={root}>
+      <button type="button" class="bar-btn" data-testid="mapmode-btn" data-mode={mode} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+        {t('bar.mapMode', { mode: t(`mapMode.${mode}` as MessageKey) })}
+      </button>
+      {open ? (
+        <div class="mapmode-menu" role="menu" data-testid="mapmode-menu">
+          {MAP_MODES.map((m, i) => (
+            <button
+              type="button"
+              key={m}
+              role="menuitemradio"
+              aria-checked={m === mode}
+              class={m === mode ? 'mapmode-opt current' : 'mapmode-opt'}
+              data-testid={`mapmode-opt-${m}`}
+              onClick={() => {
+                onMode(m);
+                setOpen(false);
+              }}
+            >
+              <span class="mapmode-tick">{m === mode ? '✓' : ''}</span>
+              <span class="mapmode-name">{t(`mapMode.${m}` as MessageKey)}</span>
+              {modeKey(i) !== null ? <kbd class="mapmode-key">{modeKey(i)}</kbd> : <span />}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </span>
   );
 }

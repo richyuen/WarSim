@@ -488,12 +488,6 @@ export class Hud {
     this.onMapMode(mode);
   }
 
-  /** Next map mode in MAP_MODES order (the bottom-bar button). */
-  cycleMapMode(): void {
-    const i = MAP_MODES.indexOf(this.mapMode.value);
-    this.setMapMode(MAP_MODES[(i + 1) % MAP_MODES.length]!);
-  }
-
   /** God Mode (PLAN 1.32b): the God tab in the nation panel and map tools. */
   readonly godMode = signal(false);
   /** Active God map tool and, for a breakthrough, its first point. */

@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { EventKind } from '../../src/shared/events';
+import { MAP_MODES, type MapMode } from '../../src/shared/mapModes';
 import { TICKER_HOURS, TICKER_KINDS, TICKER_ROWS } from '../../src/shared/history';
 import { NATIONS_1938 } from '../../src/sim/scenario1938';
 
@@ -268,7 +269,10 @@ test('a view 1,100 px wide: the bar is inside the view at every UI size offered 
       }
       expect(bar.left, `bar left, ${what}, mode ${m}`).toBeGreaterThanOrEqual(0);
       expect(bar.right, `bar right, ${what}, mode ${m}`).toBeLessThanOrEqual(width);
+      // The next mode, from the map button's menu.
       await page.getByTestId('mapmode-btn').click();
+      const now = (await page.getByTestId('mapmode-btn').getAttribute('data-mode')) as MapMode;
+      await page.getByTestId(`mapmode-opt-${MAP_MODES[(MAP_MODES.indexOf(now) + 1) % MAP_MODES.length]}`).click();
     }
     return widest;
   };

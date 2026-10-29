@@ -126,6 +126,59 @@ body {
 }
 
 /* A button's `min-width` would let it shrink under its text. */
+/* The map button's menu of every mode, above it (the user's request of 2026-10-29). */
+/* While it is open the bar stands over the war banners and the ticker above it. */
+.bottombar:has(.mapmode-menu) {
+  z-index: 8;
+}
+.mapmode-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.mapmode-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  min-width: 13rem;
+  padding: 4px;
+  background: var(--frame-bg);
+  border: 1px solid var(--frame-trim);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--frame-edge), 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+.mapmode-opt {
+  display: grid;
+  grid-template-columns: 1.1rem 1fr auto;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  background: none;
+  border: 0;
+  border-radius: 2px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.mapmode-opt:hover,
+.mapmode-opt:focus-visible {
+  background: rgba(214, 178, 94, 0.18);
+}
+.mapmode-opt.current {
+  color: #f6ead2;
+  font-weight: 700;
+}
+.mapmode-key {
+  padding: 0 4px;
+  border: 1px solid rgba(214, 178, 94, 0.45);
+  border-radius: 2px;
+  font: inherit;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
 .bottombar > * {
   flex-shrink: 0;
 }
