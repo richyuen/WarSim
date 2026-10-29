@@ -7,7 +7,7 @@ import { CityLabelLayer, NAME_CLEAR_PX, type NameObstacle } from '../render/labe
 import { LABEL_STRIDE } from '../shared/nationLabels';
 import { FlagStore } from './flagStore';
 import { formationPips, type Pips } from '../render/units/pips';
-import { AT_REST, drawMarkers, MARKER_H, MARKER_W, markerMorph, MORPH_MS, orderShown, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type OrderViewer, type PlacedMarker } from '../render/units/markers';
+import { AT_REST, drawMarkers, drawOrderArrows, MARKER_H, MARKER_W, markerMorph, MORPH_MS, orderShown, strengthText, T1_MAX_M, T1_MIN_M, type MarkerInput, type MarkerMorph, type OrderArrow, type OrderViewer, type PlacedMarker } from '../render/units/markers';
 import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle } from '../render/units/tags';
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
@@ -1460,6 +1460,7 @@ export class MapView {
       this.dirty = true;
     }
     this.drawUnitMarkers(cam, now);
+    this.drawCloseOrders(cam, now);
     this.drawFormationTags(cam);
     this.drawFx(cam, now);
   }
@@ -1740,6 +1741,7 @@ export class MapView {
     const alpha = share * this.morph.box;
     this.markerOpacity = alpha;
     this.markerRects = [];
+    this.orderLineIds = [];
     const ctx = this.overlay.getContext('2d')!;
     // The nation's own colour in every map mode (the palette carries the mode's colours).
     const hex = (id: number): string => `#${(this.ownColor.get(id) ?? 0x888888).toString(16).padStart(6, '0')}`;
@@ -2042,23 +2044,67 @@ export class MapView {
    */
   followPoint(now = performance.now()): [number, number] | null {
     const t = this.tickProgress(now);
-    const k = this.shares.elements;
     const cx = this.controller.cam.cx;
     let sx = 0;
     let sy = 0;
     let n = 0;
     for (let i = 0; i < this.formIds.length; i++) {
       if (!this.selectedFormations.has(this.formIds[i]!)) continue;
-      const mx = this.unwrapped(this.formPrevX[i]!, this.formX[i]!);
-      const bx = this.unwrapped(this.blockPrevX[i]!, this.blockX[i]!);
-      const fx = mx + (this.formX[i]! - mx) * t;
-      const fy = this.formPrevY[i]! + (this.formY[i]! - this.formPrevY[i]!) * t;
-      const x = fx + (this.unwrapped(bx + (this.blockX[i]! - bx) * t, fx) - fx) * k;
+      const [x, y] = this.shownAt(i, t);
       sx += this.unwrapped(x, cx);
-      sy += fy + (this.blockPrevY[i]! + (this.blockY[i]! - this.blockPrevY[i]!) * t - fy) * k;
+      sy += y;
       n++;
     }
     return n === 0 ? null : [sx / n, sy / n];
+  }
+
+  /**
+   * Where formation `i` is drawn at tick progress `t` (world cells, x near its place in the
+   * rules): between its place a tick before and its place now, as the sprites go, at its marker
+   * far out and its block close in.
+   */
+  private shownAt(i: number, t: number): [number, number] {
+    const k = this.shares.elements;
+    const mx = this.unwrapped(this.formPrevX[i]!, this.formX[i]!);
+    const bx = this.unwrapped(this.blockPrevX[i]!, this.blockX[i]!);
+    const fx = mx + (this.formX[i]! - mx) * t;
+    const fy = this.formPrevY[i]! + (this.formY[i]! - this.formPrevY[i]!) * t;
+    const x = fx + (this.unwrapped(bx + (this.blockX[i]! - bx) * t, fx) - fx) * k;
+    return [x, fy + (this.blockPrevY[i]! + (this.blockY[i]! - this.blockPrevY[i]!) * t - fy) * k];
+  }
+
+  /**
+   * Order arrows at T2 and T3 (the user's request of 2026-10-29; the markers draw them at T1):
+   * for the formations whose lines are shown (`orderShown`), from where each is drawn, faded in
+   * as the markers' go.
+   */
+  private drawCloseOrders(cam: Camera, now: number): void {
+    const alpha = Math.min(this.shares.elements, 1 - this.markerOpacity);
+    if (alpha <= 0.01) return;
+    const viewer: OrderViewer = { picked: this.picked, selected: this.selectedFormations, player: this.selectionNation, nation: this.selected };
+    const w = this.geo.w;
+    const t = this.tickProgress(now);
+    const orders: OrderArrow[] = [];
+    for (let i = 0; i < this.formIds.length; i++) {
+      if ((this.formFlags[i]! & FormationFlag.moving) === 0 || !orderShown(this.formIds[i]!, this.formNation[i]!, viewer)) continue;
+      const target = this.formTarget[i]!;
+      const ws = this.formWayStart[i]!;
+      const we = this.formWayStart[i + 1]!;
+      orders.push({
+        x: this.formX[i]!,
+        y: this.formY[i]!,
+        target: [(target % w) + 0.5, Math.floor(target / w) + 0.5],
+        way: we - ws >= 4 ? this.formWay.subarray(ws, we) : null,
+        from: this.shownAt(i, t),
+      });
+      if (!this.orderLineIds.includes(this.formIds[i]!)) this.orderLineIds.push(this.formIds[i]!);
+    }
+    if (orders.length === 0) return;
+    const ctx = this.overlay.getContext('2d')!;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    drawOrderArrows(ctx, orders, cam, this.geo, this.canvas.clientWidth, this.canvas.clientHeight, true);
+    ctx.restore();
   }
 
   /** Has the camera follow the selected formations (`followPoint`), or stops it. */
@@ -2427,6 +2473,7 @@ export class MapView {
     // clear of the T0 counters (PLAN 1.45c), and the city names of the flags and of the unit
     // layer that is shown, counters or markers (PLAN 2.7r, 2.7u).
     this.drawUnitMarkers(cam, now);
+    this.drawCloseOrders(cam, now);
     this.drawFormationTags(cam);
     this.drawFx(cam, now);
     this.drawFlags(cam, now);

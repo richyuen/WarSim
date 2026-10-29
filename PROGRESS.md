@@ -24634,3 +24634,6 @@ No rule changed and nothing on screen changed. One task came out of it.
   (no gold, training or research) at each map click; a refusal is told. e2e: `playerActions1938.spec.ts` "God Mode
   places any unit". The pin of seed 99 is untouched by all three (no sim input changed).
 - **Gotcha:** `sim.inspect()` lists formations only with `full` (`inspect(true)`).
+- **Follow-up (the user's report):** zoomed in, a moving unit had no order arrow (the markers drew the arrows, and are
+  gone at T2/T3). The arrows are drawn at T2 and T3 too, from where the unit is drawn, with a dark edge. e2e:
+  `player1938.spec.ts` checks the line close in; `orderLines1938.spec.ts` still green.

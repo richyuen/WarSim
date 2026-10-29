@@ -285,6 +285,9 @@ test('a selected formation is marked at every zoom, and the camera follows it un
   await expect.poll(offMiddle, { timeout: 5_000 }).toBeLessThan(1);
   const after = await page.evaluate(() => [window.__warsim!.view!.controller.cam.cx, window.__warsim!.view!.controller.cam.cy]);
   expect(Math.hypot(after[0]! - before[0]!, after[1]! - before[1]!), 'the camera moved with the march, cells').toBeGreaterThan(0.5);
+  // Close in, its order arrow is drawn too (the markers draw it far out), from where it is drawn.
+  await expect.poll(() => page.evaluate((id) => window.__warsim!.view!.orderLineIds.includes(id), picked)).toBe(true);
+  await page.screenshot({ path: path.join(out, 'marching-close.png') });
 
   // A drag of the map is the user's pan: the follow ends, and the camera stays where it was put.
   await page.mouse.move(400, 300);

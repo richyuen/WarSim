@@ -256,6 +256,100 @@ function boxSprite(m: MarkerInput, colorOf: (nation: number) => string, flagOf: 
 /** A device pixel's share a picture's corner is placed by: 8 places between two pixels. */
 const PHASE_STEPS = 8;
 
+/** A formation's order to draw (`drawOrderArrows`): where it is, its target and a fleet's or a march's way. */
+export interface OrderArrow {
+  /** Its place in the rules, in cells: the way's first point is there. */
+  x: number;
+  y: number;
+  target: [number, number] | null;
+  way?: ArrayLike<number> | null;
+  /** Where the line starts, if not at (x, y): where the formation is drawn (the close tiers, between ticks). */
+  from?: [number, number];
+}
+
+/**
+ * Order arrows (PLAN 2.1; 4.7d, 7.4g3: along the way): a dashed line from each formation along
+ * its way's turns, or straight to its target, with an arrow head; at the canvas's alpha. The
+ * markers draw them at T1, the view at T2 and T3 (the user's request of 2026-10-29).
+ */
+export function drawOrderArrows(
+  ctx: CanvasRenderingContext2D,
+  orders: readonly OrderArrow[],
+  cam: Camera,
+  geo: MapGeometry,
+  vw: number,
+  vh: number,
+  /** A dark edge under the line and its head, wider: for the light ground of the close tiers. */
+  edge = false,
+): void {
+  const offs = itemOffsets(cam, geo, vw);
+  ctx.save();
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 3]);
+  for (const m of orders) {
+    if (!m.target) continue;
+    // The points of the line in cells: the formation, then a fleet's turns (each on the near side
+    // of the one before: `wayLine`), or the target.
+    const line: number[] = m.from ? [m.from[0], m.from[1]] : [m.x, m.y];
+    const way = m.way;
+    if (way && way.length >= 4) {
+      const dx = m.x - way[0]!;
+      for (let i = 2; i < way.length; i += 2) line.push(way[i]! + dx, way[i + 1]!);
+    } else {
+      let tx = m.target[0];
+      if (geo.wrapX && Math.abs(tx - m.x) > geo.w / 2) tx += tx < m.x ? geo.w : -geo.w;
+      line.push(tx, m.target[1]);
+    }
+    for (const off of offs) {
+      const pts: [number, number][] = [];
+      let [x0, x1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity];
+      for (let i = 0; i < line.length; i += 2) {
+        const p = worldToScreen(cam, line[i]! + off, line[i + 1]!, vw, vh);
+        pts.push(p);
+        [x0, x1, y0, y1] = [Math.min(x0, p[0]), Math.max(x1, p[0]), Math.min(y0, p[1]), Math.max(y1, p[1])];
+      }
+      if (x1 < 0 || x0 > vw || y1 < 0 || y0 > vh) continue;
+      if (edge) {
+        const [ax, ay] = pts[pts.length - 2]!;
+        const [bx, by] = pts[pts.length - 1]!;
+        const ang = Math.atan2(by - ay, bx - ax);
+        ctx.save();
+        ctx.setLineDash([]);
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)';
+        ctx.beginPath();
+        ctx.moveTo(pts[0]![0], pts[0]![1]);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i]![0], pts[i]![1]);
+        ctx.moveTo(bx - 9 * Math.cos(ang - 0.45), by - 9 * Math.sin(ang - 0.45));
+        ctx.lineTo(bx, by);
+        ctx.lineTo(bx - 9 * Math.cos(ang + 0.45), by - 9 * Math.sin(ang + 0.45));
+        ctx.stroke();
+        ctx.restore();
+        ctx.lineWidth = 2;
+      }
+      ctx.strokeStyle = 'rgba(255, 232, 150, 0.9)';
+      ctx.beginPath();
+      ctx.moveTo(pts[0]![0], pts[0]![1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i]![0], pts[i]![1]);
+      ctx.stroke();
+      const [ax, ay] = pts[pts.length - 2]!;
+      const [bx, by] = pts[pts.length - 1]!;
+      const ang = Math.atan2(by - ay, bx - ax);
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      const head = edge ? 9 : 7;
+      ctx.lineTo(bx - head * Math.cos(ang - 0.45), by - head * Math.sin(ang - 0.45));
+      ctx.moveTo(bx, by);
+      ctx.lineTo(bx - head * Math.cos(ang + 0.45), by - head * Math.sin(ang + 0.45));
+      ctx.stroke();
+      ctx.setLineDash([4, 3]);
+    }
+  }
+  ctx.restore();
+}
+
 /**
  * Draws the markers (already in the CSS-px transform of `ctx`) and returns where they went.
  * `colorOf` gives a nation's CSS colour; `flagOf` its flag image (or null).
@@ -288,50 +382,7 @@ export function drawMarkers(
   ctx.imageSmoothingEnabled = false;
   const offs = itemOffsets(cam, geo, vw);
   // Order arrows below the boxes.
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([4, 3]);
-  for (const m of markers) {
-    if (!m.target || boxAlpha <= 0.01) continue;
-    // The points of the line in cells: the formation, then a fleet's turns (each on the near side
-    // of the one before: `wayLine`), or the target.
-    const line: number[] = [m.x, m.y];
-    const way = m.way;
-    if (way && way.length >= 4) {
-      const dx = m.x - way[0]!;
-      for (let i = 2; i < way.length; i += 2) line.push(way[i]! + dx, way[i + 1]!);
-    } else {
-      let tx = m.target[0];
-      if (geo.wrapX && Math.abs(tx - m.x) > geo.w / 2) tx += tx < m.x ? geo.w : -geo.w;
-      line.push(tx, m.target[1]);
-    }
-    for (const off of offs) {
-      const pts: [number, number][] = [];
-      let [x0, x1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity];
-      for (let i = 0; i < line.length; i += 2) {
-        const p = worldToScreen(cam, line[i]! + off, line[i + 1]!, vw, vh);
-        pts.push(p);
-        [x0, x1, y0, y1] = [Math.min(x0, p[0]), Math.max(x1, p[0]), Math.min(y0, p[1]), Math.max(y1, p[1])];
-      }
-      if (x1 < 0 || x0 > vw || y1 < 0 || y0 > vh) continue;
-      ctx.strokeStyle = 'rgba(255, 232, 150, 0.9)';
-      ctx.beginPath();
-      ctx.moveTo(pts[0]![0], pts[0]![1]);
-      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i]![0], pts[i]![1]);
-      ctx.stroke();
-      const [ax, ay] = pts[pts.length - 2]!;
-      const [bx, by] = pts[pts.length - 1]!;
-      const ang = Math.atan2(by - ay, bx - ax);
-      ctx.setLineDash([]);
-      ctx.beginPath();
-      ctx.moveTo(bx, by);
-      ctx.lineTo(bx - 7 * Math.cos(ang - 0.45), by - 7 * Math.sin(ang - 0.45));
-      ctx.moveTo(bx, by);
-      ctx.lineTo(bx - 7 * Math.cos(ang + 0.45), by - 7 * Math.sin(ang + 0.45));
-      ctx.stroke();
-      ctx.setLineDash([4, 3]);
-    }
-  }
-  ctx.setLineDash([]);
+  if (boxAlpha > 0.01) drawOrderArrows(ctx, markers, cam, geo, vw, vh);
   // Pictures of the boxes, made when a morph needs them (one for each nation, symbol and state).
   const sprites = new Map<string, HTMLCanvasElement>();
   // Boxes, back to front by y.
