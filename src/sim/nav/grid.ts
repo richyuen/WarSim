@@ -577,24 +577,31 @@ export function findPath(g: NavGrid, mobility: MobilityId, start: number, goal: 
     const cy = (c - cx) / w;
     const gc = gs[c]!;
     const hc = holder === undefined ? 0 : holder[c]!;
+    // Away from the map's edges (most cells): the neighbours by their offsets (PLAN 7.158, as `pocketOf`).
+    const inner = cx > 0 && cx < w - 1 && cy > 0 && cy < h - 1;
     for (let k = 0; k < 8; k++) {
       const dx = DIR_X[k]!;
       const dy = DIR_Y[k]!;
       const ny = cy + dy;
-      if (ny < 0 || ny >= h) continue;
       let nx = cx + dx;
-      if (nx < 0 || nx >= w) {
-        if (!wrapX) continue;
-        nx = (nx + w) % w;
+      let n: number;
+      if (inner) n = c + dy * w + dx;
+      else {
+        if (ny < 0 || ny >= h) continue;
+        if (nx < 0 || nx >= w) {
+          if (!wrapX) continue;
+          nx = (nx + w) % w;
+        }
+        n = ny * w + nx;
       }
-      const n = ny * w + nx;
       const sn = stamp[n]!;
       if (sn === CLOSED) continue;
       const cost = costRow[terrain[n]!]!;
       if (cost === Infinity || (on !== undefined && on[nodeOf![n]!] !== 1)) continue;
       if (ok !== undefined && ok[holder![n]!] !== 1 && holder![n] !== hc) continue;
-      // No corner cutting: a diagonal step needs both orthogonal neighbours passable.
-      if (dx !== 0 && dy !== 0 && (!passable(cy * w + nx) || !passable(ny * w + cx))) continue;
+      // No corner cutting: a diagonal step needs both orthogonal neighbours passable (c's row and
+      // n's column, n's row and c's column).
+      if (dx !== 0 && dy !== 0 && (!passable(n - dy * w) || !passable(c + dy * w))) continue;
       // stepKm, inlined: the row scales of the upper of the two rows.
       const row = dy > 0 ? cy : ny;
       const t = gc + (dy === 0 ? kx[row]! : dx === 0 ? ky[row]! : kd[row]!) * cost;

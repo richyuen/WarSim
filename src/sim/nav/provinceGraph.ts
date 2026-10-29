@@ -459,20 +459,26 @@ function walkGroup(g: NavGrid, pg: ProvinceGraph, pass: Passage, st: WideLinks, 
           if (open[node] === 1 && shut[node] === 1) mixed = true;
           const cx = c % w;
           const cy = (c - cx) / w;
+          // Away from the map's edges (most cells): the neighbours by their offsets (PLAN 7.158, as `pocketOf`).
+          const inner = cx > 0 && cx < w - 1 && cy > 0 && cy < h - 1;
           for (let d = 0; d < 8; d++) {
             const dx = STEP_X[d]!;
             const dy = STEP_Y[d]!;
-            const ny = cy + dy;
-            if (ny < 0 || ny >= h) continue;
+            let n: number;
             let nx = cx + dx;
-            if (nx < 0 || nx >= w) {
-              if (!wrapX) continue;
-              nx = (nx + w) % w;
+            if (inner) n = c + dy * w + dx;
+            else {
+              const ny = cy + dy;
+              if (ny < 0 || ny >= h) continue;
+              if (nx < 0 || nx >= w) {
+                if (!wrapX) continue;
+                nx = (nx + w) % w;
+              }
+              n = ny * w + nx;
             }
-            const n = ny * w + nx;
             if (component[n] === 0 || ok[holder[n]!] !== 1) continue;
             // No corner cutting, as in `findPath`: by the terrain, whoever holds the two cells.
-            if (dx !== 0 && dy !== 0 && (component[cy * w + nx] === 0 || component[ny * w + cx] === 0)) continue;
+            if (dx !== 0 && dy !== 0 && (component[n - dy * w] === 0 || component[c + dy * w] === 0)) continue;
             const m = group[nodeOf[n]!]!;
             if (m !== 0) {
               met.push(m);
