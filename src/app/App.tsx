@@ -2,6 +2,7 @@ import { BottomBar } from '../ui/BottomBar';
 import { AIR_CONTESTED, AIR_CONTESTED_COLOR } from '../shared/mapModes';
 import { MapLegend } from '../ui/MapLegend';
 import { MapTooltip } from '../ui/MapTooltip';
+import { NationMenu, NationMenuNotice } from '../ui/NationMenu';
 import { FormationPanel } from '../ui/FormationPanel';
 import { HistoryPanel } from '../ui/HistoryPanel';
 import { StatsChart } from '../ui/StatsChart';
@@ -357,6 +358,32 @@ export function App({
               : null
           }
         />
+      ) : null}
+      {player && stats && player.menu.value
+        ? (() => {
+            const m = player.menu.value;
+            const me = player.nation.value;
+            const target = byId.get(m.nation);
+            if (!target) return null;
+            const war = stats.wars.find((w) => (w.attackers.includes(me) && w.defenders.includes(m.nation)) || (w.defenders.includes(me) && w.attackers.includes(m.nation)));
+            const mine = byId.get(me)?.alliance?.id;
+            return (
+              <NationMenu
+                name={target.name}
+                flagUrl={view && flagVersion >= 0 ? view.flags.urlOf(m.nation) : null}
+                x={m.x}
+                y={m.y}
+                war={war ? war.id : null}
+                allied={mine !== undefined && target.alliance?.id === mine}
+                onWar={() => player.menuCommand({ kind: 'declareWar', attacker: me, defender: m.nation })}
+                onPeace={(w) => player.menuCommand({ kind: 'offerPeace', war: w, from: me })}
+                onAlly={() => player.menuCommand({ kind: 'proposeAlliance', from: me, to: m.nation })}
+              />
+            );
+          })()
+        : null}
+      {player && player.menuNotice.value ? (
+        <NationMenuNotice name={byId.get(player.menuNotice.value.nation)?.name ?? `#${player.menuNotice.value.nation}`} x={player.menuNotice.value.x} y={player.menuNotice.value.y} reason={player.menuNotice.value.reason} />
       ) : null}
       <MapTooltip hover={hud.hover} nameOf={(id) => byId.get(id)?.name ?? null} unrestOf={(p) => hud.sim.unrest?.[p] ?? null} />
       <MapLegend

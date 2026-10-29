@@ -383,6 +383,21 @@ export class MapView {
       }
       down = null;
     });
+    // A click (no drag) of the secondary button: the menu of the nation there (`onContextClick`).
+    let downR: [number, number] | null = null;
+    canvas.addEventListener('pointerdown', (e) => {
+      if (e.button === 2) downR = [e.clientX, e.clientY];
+    });
+    canvas.addEventListener('pointerup', (e) => {
+      if (e.button !== 2) return;
+      if (downR && Math.hypot(e.clientX - downR[0], e.clientY - downR[1]) < 5) {
+        const r = canvas.getBoundingClientRect();
+        const sx = e.clientX - r.left;
+        const sy = e.clientY - r.top;
+        this.onContextClick?.(this.nationAt(sx, sy), sx, sy, e.clientX, e.clientY);
+      }
+      downR = null;
+    });
     this.overlay = document.createElement('canvas');
     this.overlay.className = 'map-labels map-nations';
     canvas.insertAdjacentElement('afterend', this.overlay);
@@ -769,6 +784,11 @@ export class MapView {
    * point and Shift; returns true to consume the click.
    */
   onPick: ((x: number, y: number, sx: number, sy: number, shift: boolean) => boolean) | null = null;
+  /**
+   * A click of the secondary button (no drag: a drag of it pans) at CSS px (sx, sy) of the map
+   * and the page's (cx, cy), with the nation of the ground there (the player's menu of a nation).
+   */
+  onContextClick: ((nation: number, sx: number, sy: number, cx: number, cy: number) => void) | null = null;
 
   /** The tool that paints on a primary-button drag, if any (PLAN 1.44; the editor's brush and line). */
   paint: PaintDrag | null = null;

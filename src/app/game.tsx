@@ -99,6 +99,11 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       hud.selectFormation(formation);
       return p.click(x, y, sx, sy, shift) || formation !== 0;
     };
+    // A right-click on another nation's ground opens its menu for the player (declare war, peace,
+    // alliance); a press of any button on the map or a wheel turn closes it.
+    view.onContextClick = (nation, _sx, _sy, cx, cy) => p.openMenu(nation, cx, cy);
+    canvas.addEventListener('pointerdown', () => p.closeMenu());
+    canvas.addEventListener('wheel', () => p.closeMenu(), { passive: true });
     // The editor's brush and line paint on a left-drag (PLAN 1.44); the cursor says so.
     view.paint = { active: () => hud.dragTool() !== null, start: (x, y) => hud.dragStart(x, y), move: (x, y) => hud.dragMove(x, y), end: (x, y) => hud.dragEnd(x, y), cancel: () => hud.dragCancel() };
     effect(() => {
@@ -108,7 +113,8 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       const typing = (e.target as HTMLElement | null)?.closest('textarea, input:not([type=checkbox]):not([type=radio]):not([type=file])');
       // Escape (PLAN 7.4f1): the player's selection or armed order first, else the nearest panel.
       if (e.key === 'Escape') {
-        if (p.selectedCount.value > 0 || p.wingOrder.value !== null || p.dropArmed.value) p.clearSelection();
+        if (p.menu.value !== null) p.closeMenu();
+        else if (p.selectedCount.value > 0 || p.wingOrder.value !== null || p.dropArmed.value) p.clearSelection();
         else hud.escape();
       }
       // The map modes on the number keys, 1 to 9 and 0 in the order of the button (PLAN 7.4f1).

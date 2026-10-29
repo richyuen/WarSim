@@ -24627,3 +24627,6 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **This commit:** the selection's mark is a gold frame around the T1 marker, a ring at T0, and close in a frame around
   the elements that grows with the zoom; a click that selects starts a follow of the selection, eased, ended by a pan.
   e2e: `player1938.spec.ts` "a selected formation is marked at every zoom".
+- **Second commit:** a right-click on another nation's ground opens its menu while playing: Declare war (or Offer
+  peace at war), Propose alliance; a refusal is told where it was. e2e: `playerActions1938.spec.ts` "a right-click on a
+  nation's ground".

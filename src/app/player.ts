@@ -11,13 +11,31 @@
  *
  * A click that selects a formation has the camera follow the selection (`MapView.followSelection`)
  * until the user pans, or the selection is empty.
+ *
+ * A right-click on another nation's ground opens its menu (`menu`): declare war on it, or offer
+ * peace in the war with it, and propose an alliance; the same commands as the Actions tab's. The
+ * menu closes with its action, a press on the map, Escape, or a change of the nation played. What
+ * the sim refuses of its action in the next seconds is told where the menu was (`menuNotice`).
  */
 import { signal } from '@preact/signals';
+import type { Command } from '../shared/commands';
 import type { Hud } from './hud';
 import type { MapView } from './MapView';
 
 /** What a wing can be ordered to do at a place (PLAN 5.8v1): a mission, or a rebase there. */
 export type WingOrder = 'patrol' | 'strike' | 'supply' | 'rebase';
+
+/** The menu of a nation opened by a right-click: the nation and where on the page. */
+export interface NationMenu {
+  nation: number;
+  x: number;
+  y: number;
+}
+
+/** How long after a menu's action a refusal is taken for its (ms): the sim answers a `now` command at once. */
+const MENU_ANSWER_MS = 3000;
+/** How long the words of a refusal stay (ms). */
+const MENU_NOTICE_MS = 5000;
 
 export class PlayerControl {
   /** The controlled nation (0 = none) and how many of its formations are selected. */
@@ -27,6 +45,11 @@ export class PlayerControl {
   readonly wingOrder = signal<{ wing: number; kind: WingOrder } | null>(null);
   /** A paradrop of the selection waiting for its place on the map (PLAN 5.8v2). */
   readonly dropArmed = signal(false);
+  /** The menu of a nation opened by a right-click, or null; the refusal of its action, in words' key, where it was. */
+  readonly menu = signal<NationMenu | null>(null);
+  readonly menuNotice = signal<(NationMenu & { reason: number }) | null>(null);
+  private menuSent: { at: number; menu: NationMenu } | null = null;
+  private noticeTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private readonly hud: Hud,
@@ -36,6 +59,7 @@ export class PlayerControl {
     hud.sim.onStats((m) => {
       if (m.player !== this.nation.value) {
         this.nation.value = m.player;
+        this.closeMenu();
         this.clearSelection();
       }
     });
@@ -45,11 +69,42 @@ export class PlayerControl {
       if (view.selectedFormations.size === 0) view.followSelection(false);
     };
     // A loaded world's formations are others, with the same ids (PLAN 2.16Rk).
-    hud.sim.onLoad(() => this.clearSelection());
+    hud.sim.onLoad(() => {
+      this.clearSelection();
+      this.closeMenu();
+    });
+    hud.sim.onRefused((reason) => {
+      const sent = this.menuSent;
+      if (!sent || performance.now() - sent.at > MENU_ANSWER_MS) return;
+      this.menuSent = null;
+      this.menuNotice.value = { ...sent.menu, reason };
+      if (this.noticeTimer) clearTimeout(this.noticeTimer);
+      this.noticeTimer = setTimeout(() => (this.menuNotice.value = null), MENU_NOTICE_MS);
+    });
+  }
+
+  /** Opens the menu of `nation` at page point (x, y): only while playing, and for another nation. */
+  openMenu(nation: number, x: number, y: number): void {
+    this.menuNotice.value = null;
+    this.menu.value = this.nation.value !== 0 && nation !== 0 && nation !== this.nation.value ? { nation, x, y } : null;
+  }
+
+  closeMenu(): void {
+    this.menu.value = null;
+  }
+
+  /** The menu's action: the command is sent, and the menu closes; a refusal is told (`menuNotice`). */
+  menuCommand(cmd: Command): void {
+    const m = this.menu.value;
+    if (!m) return;
+    this.hud.command(cmd);
+    this.menuSent = { at: performance.now(), menu: m };
+    this.menu.value = null;
   }
 
   take(id: number): void {
     if (this.nation.value === id) return;
+    this.closeMenu();
     this.hud.command({ kind: 'setPlayer', nation: id });
     this.nation.value = id;
     this.clearSelection();
@@ -57,6 +112,7 @@ export class PlayerControl {
 
   release(): void {
     if (this.nation.value === 0) return;
+    this.closeMenu();
     this.hud.command({ kind: 'setPlayer', nation: 0 });
     this.nation.value = 0;
     this.clearSelection();

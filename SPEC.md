@@ -3004,6 +3004,12 @@ on screen.
   are drawn, between the tick before and the tick in hand, is eased to the middle of the view;
   a zoom goes on about it. A pan of the user's (a drag past 5 px, a pan key, one finger, a jump
   or a flight) ends the follow, as an empty selection does.
+  A right-click (no drag: a drag of the right button pans) on the ground of another nation
+  (its controller) opens its menu (`src/ui/NationMenu.tsx`, `PlayerControl.menu`; the user's
+  request of 2026-10-29): Declare war, or Offer peace in the war with it; Propose alliance,
+  disabled at war and between allies. The Actions tab's commands. It closes with its action, a
+  press or a wheel turn on the map, Escape (before the selection), a load, or a change of the
+  nation played; a refusal of its action within 3 s is told in words where it was, for 5 s.
   The controlled nation gets an Actions tab (PLAN 1.33b, `src/ui/ActionsTab.tsx`):
   - `declareWar`, `offerPeace` and `proposeAlliance` (refusable, unlike God commands):
     - peace is accepted when the offering side leads by ≥ 25 or the other side's exhaustion is
