@@ -24715,3 +24715,5 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Kept: the `warsim.*` storage keys and IndexedDB `warsim` (players' settings and autosaves), old `WARSIM-SCENARIO`
   files load (`tests/unit/scenarioFile.test.ts` "still reads a file from before the rename"), `window.__warsim` (with
   `window.__warism` beside it), the record, the GitHub repository and local folder names.
+- The GitHub repository is renamed `richyuen/Warism` (the user's choice); the remote and the Pages address in
+  CLAUDE.md follow: https://richyuen.github.io/Warism/.

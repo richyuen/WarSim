@@ -182,8 +182,10 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
     same object, for new code. Renaming it in every spec is one commit of its own (it runs the whole e2e suite).
   - The record: past PROGRESS entries, past ADRs, `docs/PLAN_DONE.md` and the ticked PLAN lines, `docs/evidence/`,
     `critic/`, and worktree paths such as `C:/Git/WarSim_chase`.
-  - The GitHub repository (and so the Pages address, https://richyuen.github.io/WarSim/) and the local folder
-    `C:\Git\WarSim`: the user's to rename.
+  - The local folder `C:\Git\WarSim`: the user's to rename.
+- **The repository** (the user's choice, put to them): renamed on GitHub to `richyuen/Warism`, so the game is now at
+  https://richyuen.github.io/Warism/ (Pages serves it at http://richardyuen.com/Warism/); the old /WarSim/ address
+  may stop working.
 - **Consequences.** A file exported now is a `.warism-scenario` an older build does not read.
 
 ### ADR-760 · 2026-10-29 · accepted (the user's decision) — outside PLAN: on a phone the news takes less of the map; a Cancel button for touch; no text selection on mobile Safari
