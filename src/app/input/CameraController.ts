@@ -5,7 +5,9 @@
  * `flyTo` is the one eased pan: a flight to a place (PLAN 2.14f5b4), which any input of the
  * user's ends where it is.
  * While a paint tool has the primary button (`leftPans` false, PLAN 1.44), the left button and
- * one finger do not pan: the middle and right buttons, two fingers and the keys still do.
+ * one finger do not pan: the middle and right buttons, two fingers and the keys still do. The
+ * press itself is asked too (a Shift-drag draws the player's selection box), and a finger can be
+ * given up after its press (`release`: a long press draws the box).
  * `follow` keeps a point (the selected formations) at the middle of the view, eased: a zoom
  * goes on about it, and a pan of the user's (a drag past a click's slack, the keys, one finger,
  * a jump or a flight) ends it.
@@ -61,7 +63,7 @@ export class CameraController {
   private flying: { path: Flight; t: number } | null = null;
   private readonly detach: (() => void)[] = [];
   /** False while something else uses a primary-button drag (the editor's brush and line). */
-  leftPans: () => boolean = () => true;
+  leftPans: (e?: PointerEvent) => boolean = () => true;
   /** The point the camera follows (world cells), null to stop; see `follow`. */
   private followed: (() => [number, number] | null) | null = null;
   /** Told when a follow ends by the user's hand or for want of a point (not by `follow(null)`). */
@@ -244,7 +246,7 @@ export class CameraController {
       return;
     }
     if (e.button !== 0 && e.button !== 1 && e.button !== 2) return;
-    if (e.button === 0 && !this.leftPans()) return;
+    if (e.button === 0 && !this.leftPans(e)) return;
     e.preventDefault();
     this.land();
     this.drag = { id: e.pointerId, x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY };
@@ -294,6 +296,12 @@ export class CameraController {
     if (this.drag && e.pointerId === this.drag.id) this.drag = null;
   }
 
+  /** Gives up pointer `id`: a finger that pans no more (a long press, PLAN of the box select); a drag that stops. */
+  release(id: number): void {
+    if (this.touches.delete(id)) this.pinch = null;
+    if (this.drag && this.drag.id === id) this.drag = null;
+  }
+
   private startPinchIfTwo(): void {
     if (this.touches.size !== 2) return;
     const [a, b] = [...this.touches.values()] as [[number, number], [number, number]];
@@ -304,6 +312,8 @@ export class CameraController {
     const t = e.target as HTMLElement | null;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
     if (!(e.code in PAN_KEYS) && !ZOOM_IN_KEYS.has(e.code) && !ZOOM_OUT_KEYS.has(e.code)) return;
+    // With Ctrl, Cmd or Alt it is a shortcut (Ctrl+A selects all, Ctrl+S, Ctrl+E ...), not the camera's.
+    if (down && (e.ctrlKey || e.metaKey || e.altKey)) return;
     if (down) {
       this.keys.add(e.code);
       e.preventDefault();

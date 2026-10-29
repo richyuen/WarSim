@@ -3024,6 +3024,14 @@ on screen.
   are drawn, between the tick before and the tick in hand, is eased to the middle of the view;
   a zoom goes on about it. A pan of the user's (a drag past 5 px, a pan key, one finger, a jump
   or a flight) ends the follow, as an empty selection does.
+  A selection box (the user's request of 2026-10-29; `MapView.formationsInBox`, `PlayerControl.boxSelect`):
+  a Shift-drag of the mouse (past 6 px; less is a Shift-click) adds the played nation's
+  formations in it, a Ctrl+Shift-drag takes them out; on a touch screen a finger held still
+  450 ms, then dragged, draws one (a finger that moves first pans). In it: each formation drawn
+  in the box, and far out every one a T1 marker overlapping it stands for. The land formations
+  where there is one, else the fleets; never wings. Ctrl+A selects all of them (`selectAll`).
+  A box and Ctrl+A leave the camera where it is (no follow). The box is drawn dashed gold, red
+  for one that takes out.
   A right-click (no drag: a drag of the right button pans) on the ground of another nation
   (its controller) opens its menu (`src/ui/NationMenu.tsx`, `PlayerControl.menu`; the user's
   request of 2026-10-29): Declare war, or Offer peace in the war with it; Propose alliance,

@@ -104,6 +104,8 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     // A right-click on another nation's ground opens its menu for the player (declare war, peace,
     // alliance); a press of any button on the map or a wheel turn closes it.
     view.onContextClick = (nation, _sx, _sy, cx, cy) => p.openMenu(nation, cx, cy);
+    // A selection box (Shift-drag; Ctrl+Shift-drag takes out; a long press's drag on a touch screen).
+    view.onBoxSelect = (ids, remove) => p.boxSelect(ids, remove);
     // God Mode's placing is God Mode's: it goes with it, and with a God tool armed.
     effect(() => {
       if (!hud.godMode.value || hud.godTool.value !== null) p.stopPlacing();
@@ -123,6 +125,12 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
         else if (p.placing.value !== null) p.stopPlacing();
         else if (p.selectedCount.value > 0 || p.wingOrder.value !== null || p.dropArmed.value) p.clearSelection();
         else hud.escape();
+      }
+      // Ctrl+A: every formation of the nation played that a click orders, while playing one.
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.code === 'KeyA' && !typing && p.nation.value !== 0) {
+        e.preventDefault();
+        p.selectAll();
+        return;
       }
       // The map modes on the number keys, 1 to 9 and 0 in the order of the button (PLAN 7.4f1).
       const mode = MODE_KEYS.indexOf(e.code);

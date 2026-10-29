@@ -304,3 +304,92 @@ test('a selected formation is marked at every zoom, and the camera follows it un
   expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(false);
   await expect(page.getByTestId('player-label')).toContainText('1 selected');
 });
+
+// The user's request of 2026-10-29: box select. A Shift-drag adds the player's formations in the
+// box (land first), a Ctrl+Shift-drag takes them out, Ctrl+A selects all, and a long press of one
+// finger then its drag draws the box on a touch screen. The camera stays where it is.
+test('box select: Shift-drag adds, Ctrl+Shift-drag takes out, Ctrl+A selects all, a long press draws one; the camera stays', async ({ page }, info) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction((p) => window.__warsim!.view!.formationsOf(p).length > 3, POL, { timeout: 60_000 });
+  await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
+  await page.getByTestId('take-control').click();
+  await expect(page.getByTestId('player-label')).toContainText('Poland');
+  await page.evaluate(() => window.__warsim!.view!.select(0));
+  const unit = (await page.evaluate((p) => window.__warsim!.view!.formationsOf(p), POL))[0]!;
+  const at = (await page.evaluate((id) => window.__warsim!.view!.formationPos(id), unit))!;
+  await page.evaluate(([x, y]) => window.__warsim!.view!.controller.set({ cx: x, cy: y, scale: 16 }), at);
+  await page.waitForTimeout(300);
+  const cam = () => page.evaluate(() => ({ ...window.__warsim!.view!.controller.cam }));
+  const selected = () => page.evaluate(() => [...window.__warsim!.view!.selectedFormations].sort((a, b) => a - b));
+  const before = await cam();
+  // What a box of 400 × 300 px about the middle holds, as the view counts it.
+  const inBox = await page.evaluate((p) => window.__warsim!.view!.formationsInBox(500, 250, 900, 550, p), POL);
+  expect(inBox.length, 'Polish formations in the box').toBeGreaterThan(1);
+
+  // Shift-drag: they are selected, the camera has not moved, and no nation was opened by a click.
+  await page.keyboard.down('Shift');
+  await page.mouse.move(500, 250);
+  await page.mouse.down();
+  await page.mouse.move(700, 400, { steps: 4 });
+  const out = info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.mouse.move(900, 550, { steps: 4 });
+  await page.screenshot({ path: path.join(out, 'box-drawn.png') });
+  await page.mouse.up();
+  await page.keyboard.up('Shift');
+  expect(await selected()).toEqual(inBox);
+  await expect(page.getByTestId('player-label')).toContainText(`${inBox.length} selected`);
+  expect(await cam(), 'the camera stayed').toEqual(before);
+  expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(false);
+  await page.screenshot({ path: path.join(out, 'box-selected.png') });
+
+  // Ctrl+Shift-drag over part of it: those go out of the selection.
+  const part = await page.evaluate((p) => window.__warsim!.view!.formationsInBox(500, 250, 700, 550, p), POL);
+  await page.keyboard.down('Control');
+  await page.keyboard.down('Shift');
+  await page.mouse.move(500, 250);
+  await page.mouse.down();
+  await page.mouse.move(700, 550, { steps: 6 });
+  await page.mouse.up();
+  await page.keyboard.up('Shift');
+  await page.keyboard.up('Control');
+  expect(await selected()).toEqual(inBox.filter((id) => !part.includes(id)));
+  expect(await cam()).toEqual(before);
+
+  // Ctrl+A: every Polish land formation; the camera stays.
+  await page.keyboard.press('Control+KeyA');
+  const all = await page.evaluate((p) => window.__warsim!.view!.orderable(window.__warsim!.view!.formationsOf(p)), POL);
+  expect(await selected()).toEqual(all);
+  expect(await cam()).toEqual(before);
+  await page.keyboard.press('Escape');
+  expect(await selected()).toEqual([]);
+
+  // A long press of one finger, then its drag: the same box, and no pan.
+  await page.evaluate(() => {
+    const c = document.querySelector('canvas')!;
+    const ev = (type: string, x: number, y: number): PointerEvent => new PointerEvent(type, { pointerId: 7, pointerType: 'touch', isPrimary: true, button: 0, buttons: 1, clientX: x, clientY: y, bubbles: true });
+    c.dispatchEvent(ev('pointerdown', 500, 250));
+  });
+  await page.waitForTimeout(700);
+  await page.evaluate(() => {
+    const c = document.querySelector('canvas')!;
+    const ev = (type: string, x: number, y: number): PointerEvent => new PointerEvent(type, { pointerId: 7, pointerType: 'touch', isPrimary: true, button: 0, buttons: 1, clientX: x, clientY: y, bubbles: true });
+    for (let k = 1; k <= 8; k++) c.dispatchEvent(ev('pointermove', 500 + 50 * k, 250 + 37.5 * k));
+    c.dispatchEvent(ev('pointerup', 900, 550));
+  });
+  expect(await selected()).toEqual(inBox);
+  expect(await cam(), 'a long press does not pan').toEqual(before);
+  // A quick drag of a finger still pans.
+  await page.evaluate(() => {
+    const c = document.querySelector('canvas')!;
+    const ev = (type: string, x: number, y: number): PointerEvent => new PointerEvent(type, { pointerId: 8, pointerType: 'touch', isPrimary: true, button: 0, buttons: 1, clientX: x, clientY: y, bubbles: true });
+    c.dispatchEvent(ev('pointerdown', 600, 400));
+    for (let k = 1; k <= 5; k++) c.dispatchEvent(ev('pointermove', 600 + 20 * k, 400));
+    c.dispatchEvent(ev('pointerup', 700, 400));
+  });
+  expect((await cam()).cx, 'a quick drag pans').not.toBe(before.cx);
+  expect(await selected(), 'and selects nothing more').toEqual(inBox);
+});

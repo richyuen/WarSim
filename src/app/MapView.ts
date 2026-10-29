@@ -111,6 +111,10 @@ const ELEMENT_CELLS = 0.026;
 /** The selection's colour, and the radius of its ring at the far tiers, CSS px (`drawSelection`). */
 const SELECTION_GOLD = '#ffe28a';
 const SELECTION_RING_PX = 12;
+/** A Shift-drag shorter than this is a Shift-click (CSS px); a finger that moves more before its long press pans. */
+const BOX_SLACK_PX = 6;
+/** How long a finger is held still for its drag to draw the selection box (ms). */
+const LONG_PRESS_MS = 450;
 /** And at least this many CSS px, before the size setting. */
 const ELEMENT_MIN_PX = 5;
 /**
@@ -298,7 +302,7 @@ export class MapView {
     // the pointer from cell to cell until the release, and the camera leaves that button alone.
     // World x is not wrapped here, so a stroke crosses the seam of a map that loops; beyond an
     // edge of one that does not, the sim paints nothing (PLAN 3.12Rse2).
-    this.controller.leftPans = () => !this.paint?.active();
+    this.controller.leftPans = (e) => !this.paint?.active() && !(e && e.pointerType !== 'touch' && e.shiftKey && this.boxable());
     const worldAt = (e: PointerEvent): [number, number] => {
       const r = canvas.getBoundingClientRect();
       return screenToWorld(this.controller.cam, e.clientX - r.left, e.clientY - r.top, canvas.clientWidth, canvas.clientHeight);
@@ -343,10 +347,67 @@ export class MapView {
       stroke = null;
       this.paint?.cancel();
     });
+    // The player's selection box: a Shift-drag of the mouse (Ctrl+Shift: out of the selection), a
+    // long press of one finger and its drag. Under BOX_SLACK_PX it is a click (Shift toggles one).
+    let longPress: ReturnType<typeof setTimeout> | null = null;
+    const local = (e: PointerEvent): [number, number] => {
+      const r = canvas.getBoundingClientRect();
+      return [e.clientX - r.left, e.clientY - r.top];
+    };
+    const endBox = (): void => {
+      if (longPress) clearTimeout(longPress);
+      longPress = null;
+      if (this.box?.active) this.requestDraw();
+      this.box = null;
+    };
+    window.addEventListener('pointermove', (e) => {
+      const b = this.box;
+      if (!b || e.pointerId !== b.id) return;
+      const [sx, sy] = local(e);
+      if (!b.active) {
+        // A finger that moves before its long press pans: no box.
+        if (b.touch) {
+          if (Math.hypot(sx - b.x0, sy - b.y0) > BOX_SLACK_PX) endBox();
+          return;
+        }
+        if (Math.hypot(sx - b.x0, sy - b.y0) <= BOX_SLACK_PX) return;
+        b.active = true;
+      }
+      [b.x1, b.y1] = [sx, sy];
+      this.requestDraw();
+    });
+    window.addEventListener('pointercancel', (e) => {
+      if (this.box && e.pointerId === this.box.id) endBox();
+    });
     // Click (no drag) of the primary button selects the nation under the cursor.
     let down: [number, number] | null = null;
     canvas.addEventListener('pointerdown', (e) => {
       if (e.button !== 0) return;
+      if (this.box) {
+        // A second finger: the box goes, and the two fingers move the map.
+        endBox();
+        return;
+      }
+      if (this.boxable() && !this.paint?.active()) {
+        const [sx, sy] = local(e);
+        if (e.pointerType === 'touch') {
+          const id = e.pointerId;
+          this.box = { id, x0: sx, y0: sy, x1: sx, y1: sy, remove: false, active: false, touch: true };
+          longPress = setTimeout(() => {
+            longPress = null;
+            const b = this.box;
+            if (!b || b.id !== id) return;
+            // The finger is the box's now: the camera lets it go, and its lift is no click.
+            this.controller.release(id);
+            b.active = true;
+            down = null;
+            this.requestDraw();
+          }, LONG_PRESS_MS);
+        } else if (e.shiftKey) {
+          this.box = { id: e.pointerId, x0: sx, y0: sy, x1: sx, y1: sy, remove: e.ctrlKey || e.metaKey, active: false, touch: false };
+          canvas.setPointerCapture?.(e.pointerId);
+        }
+      }
       if (stroke) {
         // A second finger: the stroke stops where it is and the two fingers move the map.
         stroke = null;
@@ -364,6 +425,18 @@ export class MapView {
     });
     canvas.addEventListener('pointerup', (e) => {
       if (e.button !== 0) return;
+      const b = this.box;
+      if (b && b.id === e.pointerId) {
+        if (b.active) {
+          const [sx, sy] = local(e);
+          [b.x1, b.y1] = [sx, sy];
+          this.onBoxSelect?.(this.formationsInBox(b.x0, b.y0, b.x1, b.y1, this.selectionNation), b.remove);
+          endBox();
+          down = null;
+          return;
+        }
+        endBox();
+      }
       if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 5) {
         const r = canvas.getBoundingClientRect();
         const sx = e.clientX - r.left;
@@ -823,6 +896,10 @@ export class MapView {
   selectionNation = 0;
   /** Called when a snapshot took formations out of the selection. */
   onSelectionDropped: (() => void) | null = null;
+  /** A selection box drawn by the player (`formationsInBox`): its formations, to add or (Ctrl+Shift) to take out. Null: no boxes. */
+  onBoxSelect: ((ids: number[], remove: boolean) => void) | null = null;
+  /** The selection box being drawn, CSS px of the map: from its press to the pointer; `active` once it is a box and not a click. */
+  box: { id: number; x0: number; y0: number; x1: number; y1: number; remove: boolean; active: boolean; touch: boolean } | null = null;
   /** The screen boxes of the selected formations' elements in the frame drawn (`drawFormationTags`), per copy of the map. */
   private selectionBoxes: [number, number, number, number][] = [];
   /** The selection's marks drawn in the last frame, CSS px (tests): a frame around a T1 marker, a ring where none is drawn, a frame around the elements close in. */
@@ -2112,6 +2189,63 @@ export class MapView {
     this.controller.follow(on ? () => this.followPoint() : null);
   }
 
+  /** Whether a selection box can be drawn: the player plays a nation, and the game takes boxes. */
+  private boxable(): boolean {
+    return this.onBoxSelect !== null && this.selectionNation !== 0;
+  }
+
+  /**
+   * The player's formations in a box of the screen (CSS px), for a box select: those drawn in it
+   * (their place where they are drawn, on every copy of a looping map) and, far out, every one
+   * a T1 marker in it stands for (a stack's). Land formations alone where there is one; else
+   * fleets; never wings (a click orders a march). Ascending ids.
+   */
+  formationsInBox(ax: number, ay: number, bx: number, by: number, nation: number): number[] {
+    const [x0, x1] = ax < bx ? [ax, bx] : [bx, ax];
+    const [y0, y1] = ay < by ? [ay, by] : [by, ay];
+    const cam = this.controller.cam;
+    const w = this.canvas.clientWidth;
+    const h = this.canvas.clientHeight;
+    const found = new Set<number>();
+    for (let i = 0; i < this.formIds.length; i++) {
+      if (this.formNation[i] !== nation) continue;
+      const [fx, fy] = this.drawnAt(i);
+      for (const off of wrapOffsets(cam, this.geo, w, SEAM_MARGIN)) {
+        const [px, py] = worldToScreen(cam, fx + off, fy, w, h);
+        if (px >= x0 && px <= x1 && py >= y0 && py <= y1) found.add(this.formIds[i]!);
+      }
+    }
+    for (const m of this.markerRects) {
+      if (m.alpha <= 0.01 || m.x > x1 || m.x + m.w < x0 || m.y > y1 || m.y + m.h < y0) continue;
+      for (const id of m.members) found.add(id);
+    }
+    return this.orderable([...found].filter((id) => this.formNation[this.formIds.indexOf(id)] === nation));
+  }
+
+  /** Of `ids`, those a click can order to march: the land formations where there is one, else the fleets; never wings. Ascending. */
+  orderable(ids: readonly number[]): number[] {
+    const domain = (id: number): number => this.templates[this.formTemplate[this.formIds.indexOf(id)]!]?.domain ?? 0;
+    const land = ids.filter((id) => domain(id) === 0);
+    return (land.length > 0 ? land : ids.filter((id) => domain(id) === 1)).sort((a, b) => a - b);
+  }
+
+  /** Draws the selection box while it is drawn: gold, or red for one that takes out of the selection. */
+  private drawBox(): void {
+    const b = this.box;
+    if (!b?.active) return;
+    const ctx = this.overlay.getContext('2d')!;
+    const [x0, x1] = b.x0 < b.x1 ? [b.x0, b.x1] : [b.x1, b.x0];
+    const [y0, y1] = b.y0 < b.y1 ? [b.y0, b.y1] : [b.y1, b.y0];
+    ctx.save();
+    ctx.fillStyle = b.remove ? 'rgba(255, 140, 120, 0.12)' : 'rgba(255, 226, 138, 0.12)';
+    ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+    ctx.setLineDash([5, 3]);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = b.remove ? '#ff9a8a' : SELECTION_GOLD;
+    ctx.strokeRect(x0 + 0.5, y0 + 0.5, x1 - x0, y1 - y0);
+    ctx.restore();
+  }
+
   /** Formations of `nation` in the last snapshot. */
   formationsOf(nation: number): number[] {
     const out: number[] = [];
@@ -2479,6 +2613,7 @@ export class MapView {
     this.drawFlags(cam, now);
     this.drawCityLayer(cam, dpr, now);
     this.drawSelection(cam);
+    this.drawBox();
     // A nuclear burst's flash, shockwave and cloud (PLAN 6.6b): over all of the overlay, the
     // formations' tags too, at every tier.
     this.nukeFx.draw(this.overlay.getContext('2d')!, cam, this.geo, this.canvas.clientWidth, this.canvas.clientHeight, now);

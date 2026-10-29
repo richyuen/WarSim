@@ -24649,3 +24649,9 @@ No rule changed and nothing on screen changed. One task came out of it.
   every profile name after it is off by one.
 - **UI commit:** the AI assist boxes at the top of the Actions tab (`act-assist-*`); `playerActions1938` unticks them
   through the boxes.
+
+## 2026-10-29 — Outside the loop (the user's request): box select
+
+- Shift-drag adds the played nation's formations in a box, Ctrl+Shift-drag takes them out, a long press then drag on
+  touch draws one, Ctrl+A selects all; land first, else fleets, never wings; the camera stays. e2e: `player1938.spec.ts`
+  "box select".

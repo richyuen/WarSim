@@ -10,7 +10,9 @@
  * a paradrop of the selected formations (PLAN 5.8v2, `dropArmed`): each is dropped there.
  *
  * A click that selects a formation has the camera follow the selection (`MapView.followSelection`)
- * until the user pans, or the selection is empty.
+ * until the user pans, or the selection is empty. A box (a Shift-drag, a long press's drag:
+ * `boxSelect`) adds its formations, Ctrl+Shift takes them out, and Ctrl+A selects all
+ * (`selectAll`); both leave the camera where it is.
  *
  * A right-click on another nation's ground opens its menu (`menu`): declare war on it, or offer
  * peace in the war with it, and propose an alliance; the same commands as the Actions tab's. The
@@ -135,12 +137,27 @@ export class PlayerControl {
     this.view.requestDraw();
   }
 
-  /** Selects all formations of the controlled nation. */
+  /** Selects all formations of the controlled nation that a click orders (Ctrl+A): its land formations, else its fleets. The camera stays. */
   selectAll(): void {
     const n = this.nation.value;
     if (n === 0) return;
-    for (const id of this.view.formationsOf(n)) this.view.selectedFormations.add(id);
+    this.view.selectedFormations.clear();
+    for (const id of this.view.orderable(this.view.formationsOf(n))) this.view.selectedFormations.add(id);
+    this.view.followSelection(false);
     this.selectedCount.value = this.view.selectedFormations.size;
+    this.view.requestDraw();
+  }
+
+  /** A selection box's formations (`MapView.formationsInBox`): added, or taken out (`remove`). The camera stays. */
+  boxSelect(ids: readonly number[], remove: boolean): void {
+    if (this.nation.value === 0) return;
+    const sel = this.view.selectedFormations;
+    for (const id of ids) {
+      if (remove) sel.delete(id);
+      else sel.add(id);
+    }
+    this.view.followSelection(false);
+    this.selectedCount.value = sel.size;
     this.view.requestDraw();
   }
 
