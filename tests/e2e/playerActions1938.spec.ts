@@ -23,6 +23,8 @@ test('player actions: build a formation, declare war, offer peace, propose an al
   await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
   await expect(page.getByTestId('tab-actions')).toHaveCount(0); // only for the controlled nation
   await page.getByTestId('take-control').click();
+  // Poland's AI boxes unticked (ADR-759: control leaves them on): the counts below are the player's builds alone.
+  await page.evaluate(() => window.__warsim!.sim.command({ kind: 'setPlayerAi', layers: 0 }, true));
   await page.getByTestId('tab-actions').click();
   await expect(page.getByTestId('panel-actions')).toBeVisible();
 

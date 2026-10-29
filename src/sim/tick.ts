@@ -20,7 +20,9 @@ import { forceRevolt, spawnNation } from './systems/revolts';
 import { importLayer, paint, redoEdit, undoEdit } from './editor';
 import { decodeRuns, decodeRunsU32 } from '../shared/mapImport';
 import { FLAG_H, FLAG_W } from '../shared/flagPixels';
-import { Domain, navOf, type World } from './world';
+import { Domain, navOf, PlayerOrderKind, type World } from './world';
+import { PLAYER_AI_DEFAULT } from './ai/layers';
+import { PLAYER_MISSION_HOURS } from './systems/playerOrders';
 import { launchNuke, meansHeld, tellMeansLost, WARHEAD_MAX, detonate } from './systems/nuclear';
 import { grantTechs, techClosure } from './tech';
 import { placeFleet, placeWing } from './placeForces';
@@ -109,7 +111,7 @@ function applyCommand(world: World, cmd: Command): Refusal {
     }
     case 'spawnFleet':
     case 'spawnWing':
-      return whyNotNation(world, cmd.nation) || (cmd.kind === 'spawnFleet' ? placeFleet : placeWing)(world, cmd.nation, cmd.template, cmd.x, cmd.y);
+      return whyNotNation(world, cmd.nation) || (cmd.kind === 'spawnFleet' ? placeFleet(world, cmd.nation, cmd.template, cmd.x, cmd.y, cmd.free !== true) : placeWing(world, cmd.nation, cmd.template, cmd.x, cmd.y));
     case 'removeFormation':
       if (!world.formations.has(cmd.id)) return Refusal.NoSuch;
       destroyFormation(world, cmd.id); // with its elements and cached path
@@ -125,8 +127,11 @@ function applyCommand(world: World, cmd: Command): Refusal {
     case 'wingRebase':
       // A player's order names its nation, as a march's (PLAN 2.16Rk).
       if (cmd.nation !== undefined && (!world.formations.has(cmd.id) || world.formations.cols.nation[cmd.id] !== cmd.nation)) return Refusal.NoSuch;
-      if (cmd.kind === 'wingMission') orderMission(world, cmd.id, cmd.mission, cmd.x, cmd.y);
-      else orderRebase(world, cmd.id, cmd.x, cmd.y);
+      {
+        const given = cmd.kind === 'wingMission' ? orderMission(world, cmd.id, cmd.mission, cmd.x, cmd.y) === 0 : orderRebase(world, cmd.id, cmd.x, cmd.y) === 0;
+        // The player's (ADR-759): the AI leaves the wing alone, a mission for a day, a rebase until it lands.
+        if (given && cmd.nation !== undefined) world.playerOrders.set(cmd.id, cmd.kind === 'wingMission' ? { kind: PlayerOrderKind.mission, until: world.tick + PLAYER_MISSION_HOURS, through: false } : { kind: PlayerOrderKind.rebase, until: 0, through: false });
+      }
       return Refusal.None;
     case 'moveFormation':
       // A player's order names its nation: the id may be another nation's formation by now (PLAN 2.16Rk).
@@ -135,7 +140,12 @@ function applyCommand(world: World, cmd: Command): Refusal {
       if (world.formations.has(cmd.id) && world.formations.cols.retreat[cmd.id]! > 0) return Refusal.OnRetreat;
       // A player's order: over the sea from inland by way of a port with transports (PLAN 4.9b).
       // A fleet the editor placed holds its place until so ordered away (PLAN 7.22c).
-      if (orderMove(world, cmd.id, cmd.x, cmd.y, undefined, true)) world.station.delete(cmd.id);
+      if (orderMove(world, cmd.id, cmd.x, cmd.y, undefined, true)) {
+        world.station.delete(cmd.id);
+        // The player's (ADR-759): the AI leaves it alone until it arrives. Given in a fight, it
+        // marches in contact (a fighting withdrawal, or a push on) until it is first out of it.
+        if (cmd.nation !== undefined) world.playerOrders.set(cmd.id, { kind: PlayerOrderKind.march, until: 0, through: world.formations.cols.engaged[cmd.id] === 1 });
+      }
       return Refusal.None;
     case 'setSetting':
       if (cmd.key === 'winnerTakesAll') world.settings.winnerTakesAll = cmd.value;
@@ -332,11 +342,20 @@ function applyCommand(world: World, cmd: Command): Refusal {
       const prev = world.settings.player;
       const why = cmd.nation === 0 ? Refusal.None : whyNotNation(world, cmd.nation);
       if (why) return why;
+      // Control does not switch the AI off (ADR-759): its layers act as the player's boxes say,
+      // every one but nuclear strikes at first. Released, a nation has all its AI back (a save
+      // from before ADR-759 has the AI of the nation played off).
       if (prev !== 0 && world.nations.has(prev)) nc.aiOff[prev] = 0;
-      if (cmd.nation !== 0) nc.aiOff[cmd.nation] = 1;
+      if (cmd.nation !== prev) {
+        world.playerAi = PLAYER_AI_DEFAULT;
+        world.playerOrders.clear();
+      }
       world.settings.player = cmd.nation;
       return Refusal.None;
     }
+    case 'setPlayerAi':
+      world.playerAi = cmd.layers;
+      return Refusal.None;
     case 'spawnCity':
       return done(spawnCity(world, cmd.x, cmd.y, cmd.name, cmd.size) !== 0);
     case 'removeCity':

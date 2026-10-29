@@ -62,6 +62,7 @@ export { fleetPower };
 import { orderSail } from '../systems/sail';
 import { blocOf } from '../systems/supply';
 import { portSeaOf, seaOf, seaRangeOf, type World } from '../world';
+import { AiLayer, aiRuns, playerHeld } from './layers';
 
 // The waters a nation's ships sail between (PLAN 7.35d2d2) live with `basinAt`, read by `nearestOwnPort` too (PLAN 7.35d2d3a).
 export { keyAt, waterKeys };
@@ -133,9 +134,10 @@ export function navalAi(world: World): void {
   // The fleets the editor placed (`World.station`) of nations at war, that act today (PLAN 7.59).
   const placed = new Map<number, number[]>();
   f.forEach((id) => {
-    if (!world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(world, id) !== undefined) return;
+    if (!world.isFleet(id) || c.moving[id] === 1 || c.engaged[id] === 1 || seaRangeOf(world, id) !== undefined || playerHeld(world, id)) return;
     const n = c.nation[id]!;
-    if (nc.living[n] !== 1 || nc.aiOff[n] === 1 || (day + n) % STAGGER !== 0) return;
+    // The navy's layer of the AI (ADR-759); not a fleet on a player's order (above).
+    if (nc.living[n] !== 1 || !aiRuns(world, n, AiLayer.navy) || (day + n) % STAGGER !== 0) return;
     const at = world.station.get(id);
     if (at) {
       // Placed by the editor: at war it holds its sea (`plan`, PLAN 7.59); at peace, back to its

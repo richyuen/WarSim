@@ -21,6 +21,7 @@ import { seaKm } from './navalCombat';
 import { Leg, patrolHours, sortieAt, sortieEnd } from './sorties';
 import { blocOf } from './supply';
 import { airOf, type World } from '../world';
+import { AiLayer, aiRuns, playerHeld } from '../ai/layers';
 
 export function airSystem(world: World): void {
   repairSystem(world);
@@ -81,9 +82,9 @@ export function airSystem(world: World): void {
       c.x[id] = c.x[-base]!;
       c.y[id] = c.y[-base]!;
       // Its fleet in a sea battle (PLAN 7.145, ADR-738): an AI's wing ends its mission and strikes for
-      // the fleet (PLAN 5.4d); one aloft flies its sortie out. A player's order stands.
+      // the fleet (PLAN 5.4d); one aloft flies its sortie out. A player's order stands (ADR-759: while it is kept).
       const n = c.nation[id]!;
-      if (world.settings.aiEnabled && world.nations.cols.aiOff[n] !== 1 && world.wingMission.has(id) && (battling ??= inSeaBattle(world)).has(-base)) world.wingMission.delete(id);
+      if (world.settings.aiEnabled && aiRuns(world, n, AiLayer.air) && !playerHeld(world, id) && world.wingMission.has(id) && (battling ??= inSeaBattle(world)).has(-base)) world.wingMission.delete(id);
     }
     schedule(world, id, relayOf);
   }

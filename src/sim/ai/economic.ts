@@ -141,6 +141,7 @@ import { fleetPower } from '../systems/seaControl';
 import { DAYS_PER_MONTH, researchBudget } from '../systems/research';
 import { knowsTechs } from '../tech';
 import { Domain, navBuilt, navOf, portSeaOf, seaOf, seaRangeOf, type World } from '../world';
+import { AiLayer, aiRuns, playerHeld } from './layers';
 
 export const DEBT_PAYBACK = 1 / 12;
 /**
@@ -433,7 +434,8 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       const peace = peaceShare(nc.aggression[n]!) * income;
       // A nation without AI: the research budget and the refills alone, which are rules and not
       // choices (steps 4 and 3a).
-      if (!world.settings.aiEnabled || nc.aiOff[n] === 1) {
+      // The economy's layer of the AI (ADR-759): for the nation played, while its box is ticked.
+      if (!world.settings.aiEnabled || !aiRuns(world, n, AiLayer.economy)) {
         if (!world.rules) return;
         nc.research[n] = researchBudget(world.rules, nc.gold[n]!, income, balance, need, RUNWAY_MONTHS);
         balance -= nc.research[n]! * DAYS_PER_MONTH + (training.get(n) ?? 0);
@@ -453,7 +455,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           balance += WARHEAD_UPKEEP;
         }
         let laid = 0;
-        const standing = (fleets.get(n) ?? []).filter((id) => f.moving[id] !== 1 && f.engaged[id] !== 1 && seaRangeOf(world, id) === undefined && !world.station.has(id)).sort((a, b) => upkeepOf(world, b) - upkeepOf(world, a) || a - b);
+        const standing = (fleets.get(n) ?? []).filter((id) => f.moving[id] !== 1 && f.engaged[id] !== 1 && seaRangeOf(world, id) === undefined && !world.station.has(id) && !playerHeld(world, id)).sort((a, b) => upkeepOf(world, b) - upkeepOf(world, a) || a - b);
         for (const id of standing) {
           if (balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance) || (navy.get(n) ?? 0) <= NAVY_SHARE * income) break;
           const u = upkeepOf(world, id);
@@ -465,7 +467,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
           laid++;
         }
         if (laid > 0) world.out.emit(world.tick, EventKind.FleetsLaidUp, n, laid, NaN, NaN);
-        const idle = (own.get(n) ?? []).filter((id) => f.engaged[id] !== 1).sort((a, b) => armourOf(a) - armourOf(b) || f.strength[a]! - f.strength[b]! || a - b);
+        const idle = (own.get(n) ?? []).filter((id) => f.engaged[id] !== 1 && !playerHeld(world, id)).sort((a, b) => armourOf(a) - armourOf(b) || f.strength[a]! - f.strength[b]! || a - b);
         let cut = 0;
         for (const id of idle) {
           if (balance >= need || nc.gold[n]! >= RUNWAY_MONTHS * (need - balance)) break;

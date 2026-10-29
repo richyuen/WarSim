@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-759 · 2026-10-29 · accepted (the user's decision) — control leaves the AI on, layer by layer; the player's direct orders are left alone until done; a player's march that meets the enemy stops and fights, and an order given in a fight marches through it
+
+- **Context.** Take control switched the nation's AI off (PLAN 1.33a): its fronts went still the hour the player took
+  it, and God-placed units stood idle. The user: "all fighting can't instantly stop just because the user takes
+  control"; the player's direct order is the one thing the AI must not override.
+- **Decision** (the user's, after options were put to them):
+  - Control leaves the AI on. Each layer acts for the nation played while its box is ticked (`World.playerAi`, command
+    `setPlayerAi`): army (fronts, invasions, merging hollow divisions), navy, air, diplomacy, economy; all ticked when
+    a nation is taken; nuclear strikes a box of its own, unticked. God Mode's AI switch (`aiOff`) stays "every layer".
+  - A direct order (`World.playerOrders`) keeps every layer's hands off its formation until done: a march or a fleet's
+    move until it arrives, a wing's rebase until it lands, a wing's mission 24 h. Then the AI has it back, and may
+    undo it at once (no wait: not "hold for N days"). God placement is not an order: the AI has a placed unit at
+    once (a fleet so placed holds no station, `spawnFleet.free`).
+  - A player's march that comes into contact is cancelled, told (`RejectReason.Contact`), and the formation stands and
+    fights. An order given in a fight marches in contact at `WITHDRAW_SPEED` 0.5, firing and fired on (a fighting
+    withdrawal, or a push on: the user chose the same rule for both), until first out of contact.
+  - The boxes at the top of the Actions tab.
+- **Consequences.** New state, saved only while not the default or empty (`world.playerAi`, `world.playerOrders`): the
+  pin of seed 99 holds (`b22bcdd1`, re-run by hand). A system after combat (`playerOrderSystem`, 32 systems). A save
+  from before has the nation played with `aiOff` on: as saved, every layer off, until released. Tests: `playerAssist`
+  (new); `godMode`, `research`, `serverOrderNews`, `playerActions1938` set the boxes they were written for (no AI for
+  the nation played) or assert the new rule; `headless` counts 32 systems. Not done: an order of the AI's own pauses
+  in a fight as before.
+
 ### ADR-758 · 2026-10-29 · accepted (the user's decision) — outside PLAN: God placement, war from the map, the selection followed and seen
 
 - **Context.** The user asked, outside the loop, for: placing any unit of a controlled nation at once under a God

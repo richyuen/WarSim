@@ -24637,3 +24637,14 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Follow-up (the user's report):** zoomed in, a moving unit had no order arrow (the markers drew the arrows, and are
   gone at T2/T3). The arrows are drawn at T2 and T3 too, from where the unit is drawn, with a dark edge. e2e:
   `player1938.spec.ts` checks the line close in; `orderLines1938.spec.ts` still green.
+
+## 2026-10-29 — Outside the loop (the user's decision, ADR-759): the AI assists the player
+
+- **Sim commit:** control leaves the nation's AI on, per layer (`ai/layers.ts`: army, navy, air, diplomacy, economy on;
+  nuclear strikes off); a direct order is left alone by every layer until done (`systems/playerOrders.ts`); a player's
+  march that meets the enemy is cancelled and told; an order given in a fight marches through it at half pace. Pin of
+  seed 99 held (`b22bcdd1`): the new state is saved only while not the default or empty. Unit: `playerAssist.test.ts`
+  (7); four tests set the boxes they were written for; `headless` counts 32 systems; e2e taking control all green.
+- **Gotcha:** `SYSTEM_NAMES_1938` in `sim.ts` is a hand list beside the systems: a new system needs its name there, or
+  every profile name after it is off by one.
+- **Next:** the AI assist boxes in the Actions tab.

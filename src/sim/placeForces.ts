@@ -37,15 +37,17 @@ function make(world: World, nation: number, t: number, x: number, y: number): nu
  * the map's size) that is of a sea zone, at its water point (`World.seaPoint`): the click may fall
  * on the coast beside it. Refused for a template not of the sea and for a place with no such water.
  */
-export function placeFleet(world: World, nation: number, t: number, x: number, y: number): Refusal {
+export function placeFleet(world: World, nation: number, t: number, x: number, y: number, hold = true): Refusal {
   if (!ofDomain(world, t, Domain.sea)) return Refusal.NoSuch;
   const { w, h } = world.cells;
   const zone = seaOf(world).zoneOf;
   const cell = nearestCellWhere((c) => zone[c] !== 0 && world.seaPoint(c) !== null, x, y, w, h, Math.ceil(world.atSize(BASE_PICK_CELLS)), world.settings.loopingMap);
   if (cell < 0) return Refusal.NotAtSea;
   const [px, py] = world.seaPoint(cell)!;
-  // It holds its place (PLAN 7.22c; critic run 8: "placed fleets wander away at once").
-  world.station.set(make(world, nation, t, px, py), [px, py]);
+  // It holds its place (PLAN 7.22c; critic run 8: "placed fleets wander away at once"), but one
+  // placed by God Mode for the nation played (`hold` false, ADR-759): its AI has it at once.
+  const id = make(world, nation, t, px, py);
+  if (hold) world.station.set(id, [px, py]);
   return Refusal.None;
 }
 

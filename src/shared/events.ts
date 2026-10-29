@@ -220,6 +220,8 @@ export const RejectReason = {
   NoAirlift: 12,
   /** The AI's order (PLAN 1.42h, ADR-422): the way there is several times the straight line (`LONG_WAY`). */
   LongWay: 13,
+  /** A player's march that met the enemy on its way (ADR-759): cancelled, and the formation stands and fights. */
+  Contact: 14,
 } as const;
 export type RejectReason = (typeof RejectReason)[keyof typeof RejectReason];
 

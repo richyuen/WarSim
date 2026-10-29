@@ -262,18 +262,24 @@ describe('player diplomacy (PLAN 1.33b)', () => {
 
 // Review after PLAN 1.33: player control is sim state, so a load keeps it (the AI-off flag was
 // saved while the player link lived only in the UI, leaving an AI-less nation after a reload).
+// ADR-759 (the user's decision): control no longer switches the AI off; its layers act as the
+// player's boxes say (`playerAssist.test.ts`). Releasing still turns a nation's AI back on, for
+// a save from before ADR-759, where the nation played has it off.
 describe('player control state', () => {
-  it('setPlayer turns AI off, switching restores the previous one, and save/load keeps it', () => {
+  it('setPlayer leaves the AI on, switching hands control over, and save/load keeps it', () => {
     const s = new Sim({ scenario: '1938', seed: 1, assets: assets1938(W) });
     const nc = s.world.nations.cols;
     s.command({ kind: 'setPlayer', nation: POL! });
     s.step(1);
     expect(s.world.settings.player).toBe(POL);
-    expect(nc.aiOff[POL!]).toBe(1);
+    expect(nc.aiOff[POL!]).toBe(0);
+    // A save from before ADR-759: the nation played with its AI off.
+    nc.aiOff[POL!] = 1;
     s.command({ kind: 'setPlayer', nation: GER! });
     s.step(1);
-    expect(nc.aiOff[POL!]).toBe(0);
-    expect(nc.aiOff[GER!]).toBe(1);
+    expect(nc.aiOff[POL!], 'the nation handed back has its AI').toBe(0);
+    expect(nc.aiOff[GER!]).toBe(0);
+    expect(s.world.settings.player).toBe(GER);
     const t = new Sim({ scenario: '1938', seed: 2, assets: assets1938(W) });
     t.load(s.save());
     expect(t.world.settings.player).toBe(GER);

@@ -1,3 +1,4 @@
+import { AiLayer, aiRuns, PLAYER_AI_DEFAULT } from '../../src/sim/ai/layers';
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
 import { BUILD_MIX_1938, ECONOMY_TABLES_1938, NATIONS_1938, RULES_1938, SIZE_1938 } from '../../src/sim/scenario1938';
@@ -172,16 +173,18 @@ describe('research (PLAN 3.1b)', () => {
   it('a nation the player has taken at tick 0 has a budget and a line in its first month, as its AI twin has', () => {
     const twin = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
     const played = new Sim({ scenario: '1938', seed: 1938, assets: assets1938(SIZE_1938.w) });
-    // Britain is played; France and Germany have their AI switched off (God Mode).
+    // Britain is played, its economy's box of the AI unticked (ADR-759: control leaves the AI on);
+    // France and Germany have their AI switched off (God Mode).
     const [ENG, FRA, GER] = [id('ENG'), id('FRA'), id('GER')];
     played.command({ kind: 'setPlayer', nation: ENG });
+    played.command({ kind: 'setPlayerAi', layers: PLAYER_AI_DEFAULT & ~AiLayer.economy });
     played.command({ kind: 'setAi', nation: FRA, enabled: false });
     played.command({ kind: 'setAi', nation: GER, enabled: false });
     twin.step(49);
     played.step(49);
     for (const n of [ENG, FRA, GER]) {
       const tag = NATIONS_1938[n - 1]!.tag;
-      expect(played.world.nations.cols.aiOff[n], tag).toBe(1);
+      expect(aiRuns(played.world, n, AiLayer.economy), tag).toBe(false);
       expect(played.world.nations.cols.research[n], tag).toBeGreaterThan(0);
       expect(played.world.nations.cols.research[n], tag).toBe(twin.world.nations.cols.research[n]);
       expect(linesOf(played.world, n).length, tag).toBeGreaterThan(0);

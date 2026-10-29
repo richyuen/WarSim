@@ -80,6 +80,7 @@ import { frontierOf, frontNeighbours, GARRISON, PRESSURE_RADIUS } from '../syste
 import { pocketOf, type MobilityId, type Passage } from '../nav/grid';
 import { CORRIDOR_REFUSAL, keepRegions, openRoute, wideJoined, wideLinked, wideNode, type CorridorRefusal } from '../nav/provinceGraph';
 import { navOf, type World } from '../world';
+import { AiLayer, aiRuns, playerHeld } from './layers';
 
 export const STAGGER = 4;
 export const SECTOR_CELLS = 4;
@@ -307,9 +308,10 @@ function planAll(world: World, armour: readonly number[]): void {
   const free = new Uint32Array(world.nations.highWater);
   world.formations.forEach((id) => {
     // A fleet is sent to no front (PLAN 4.2b): the naval AI is PLAN 4.6.
-    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0 && !world.offLand(id)) free[f.nation[id]!]!++;
+    // Not one on a player's order (ADR-759): the AI leaves it alone until the order is done.
+    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0 && !world.offLand(id) && !playerHeld(world, id)) free[f.nation[id]!]!++;
   });
-  const actors = [...fighting].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (step + n) % STAGGER === 0 && free[n]! > 0).sort((a, b) => a - b);
+  const actors = [...fighting].filter((n) => nc.living[n] === 1 && aiRuns(world, n, AiLayer.army) && (step + n) % STAGGER === 0 && free[n]! > 0).sort((a, b) => a - b);
   if (actors.length === 0) return;
   const { w, controller } = world.cells;
   // The frontier by holder, once for all of this tick's planners. Each planner reads only its own
@@ -843,7 +845,7 @@ function planNation(world: World, n: number, fighting: Set<number>, frontier: Ma
     }
     stands[k]!++;
     if (f.strength[id]! > take) holds[k]!++;
-    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0 && (ports.length === 0 || !marchingToPort(world, id, ports))) mine.push(id);
+    if (f.engaged[id] !== 1 && f.retreat[id] === 0 && f.home[id] === 0 && !playerHeld(world, id) && (ports.length === 0 || !marchingToPort(world, id, ports))) mine.push(id);
   }
   if (mine.length === 0) return;
   const dist2 = (id: number, s: Sector): number => {

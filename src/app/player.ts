@@ -185,7 +185,7 @@ export class PlayerControl {
     if (t !== null) {
       const domain = this.hud.templates.peek()[t]?.domain ?? 0;
       const at = { nation: n, x: x + 0.5, y: y + 0.5, template: t };
-      this.hud.command(domain === 1 ? { kind: 'spawnFleet', ...at } : domain === 2 ? { kind: 'spawnWing', ...at } : { kind: 'spawnFormation', ...at, strength: 0 });
+      this.hud.command(domain === 1 ? { kind: 'spawnFleet', ...at, free: true } : domain === 2 ? { kind: 'spawnWing', ...at } : { kind: 'spawnFormation', ...at, strength: 0 });
       return true;
     }
     // A wing's order armed (PLAN 5.8v1): this click is its place.

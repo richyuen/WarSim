@@ -49,6 +49,8 @@ describe('the page is told what became of a player\'s order (PLAN 4.9c)', () => 
   it('the critic\'s landing on seed 2207: thrown back off Cuxhaven, then ashore in England, both told', () => {
     const { server: s, news, run } = server(2207);
     s.handle({ type: 'cmd', cmd: { kind: 'setPlayer', nation: ENG } }, 1);
+    // Britain played with every box of its AI unticked (ADR-759): the critic's case had its AI off.
+    s.handle({ type: 'cmd', cmd: { kind: 'setPlayerAi', layers: 0 } }, 1);
     s.handle({ type: 'cmd', cmd: { kind: 'declareWar', attacker: ENG, defender: GER } }, 1);
     run(1);
     const div = 272;

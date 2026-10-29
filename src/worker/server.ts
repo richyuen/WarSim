@@ -653,7 +653,7 @@ export class SimServer {
     const news = this.newsFrom < 0 ? [] : tickerNews(world, this.newsFrom);
     const strikes = this.newsFrom < 0 ? [] : strikeRows(world, this.newsFrom, (id) => this.nameOf(id), (v) => this.cityName(v), (d) => cities1938.cities[d]?.name ?? '');
     this.newsFrom = world.history.length;
-    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, lives: this.lives.of(world), aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v), (d) => cities1938.cities[d]?.name ?? ''), news, strikes, world: this.worldNo, wings: playerWings(world) }, []);
+    this.post({ type: 'nationStats', tick: world.tick, nations, wars, dead, lives: this.lives.of(world), aiEnabled: world.settings.aiEnabled, nukesEnabled: world.settings.nukesEnabled, rules: { winnerTakesAll: world.settings.winnerTakesAll, revoltMode: world.settings.revoltMode, ceMode: world.settings.ceMode }, player: world.settings.player, playerAi: world.playerAi, edits: { undo: world.edits.undo.length, redo: world.edits.redo.length }, ticker: tickerRows(world, (id) => this.nameOf(id), (v) => this.cityName(v), (d) => cities1938.cities[d]?.name ?? ''), news, strikes, world: this.worldNo, wings: playerWings(world) }, []);
   }
 
   /**
@@ -1037,6 +1037,8 @@ export class SimServer {
       tick: world.tick,
       seed: world.seed,
       settings: { ...world.settings },
+      playerAi: world.playerAi,
+      playerOrders: [...world.playerOrders.keys()].sort((a, b) => a - b),
       nations,
       wars,
       alliances: world.alliances.list.map((a) => ({ id: a.id, name: a.nameKey, leader: a.leader, members: [...a.members], unity: a.unity })),

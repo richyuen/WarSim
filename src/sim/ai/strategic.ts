@@ -42,6 +42,7 @@ import { transportGroupsAtPort } from '../systems/amphibious';
 import { keyAt, waterKeys } from '../systems/navalCombat';
 import { forceMen, seaHolder } from '../systems/seaControl';
 import { navOf, portSeaOf, seaOf, type World } from '../world';
+import { AiLayer, aiRuns } from './layers';
 
 export const STAGGER = 7;
 /** Nations below this aggression never start wars (they still defend, ally and make peace). */
@@ -241,7 +242,6 @@ function peerWarInCommon(world: World, a: number, b: number, greats: Set<number>
 /** Monthly (PLAN 7.53b): the great powers of an alliance but its first lose RIVAL_LOYALTY while they fight no great power together with it. */
 export function rivalsApart(world: World, str: Float64Array, greats: Set<number>): void {
   if (!rivalsPart(world)) return;
-  const nc = world.nations.cols;
   for (const a of [...world.alliances.list]) {
     const mine = a.members.filter((m) => greats.has(m));
     if (mine.length < 2) continue;
@@ -249,7 +249,7 @@ export function rivalsApart(world: World, str: Float64Array, greats: Set<number>
     const leaving: number[] = [];
     for (let i = 0; i < a.members.length; i++) {
       const m = a.members[i]!;
-      if (m === first || !greats.has(m) || nc.aiOff[m] === 1 || peerWarInCommon(world, m, first, greats)) continue;
+      if (m === first || !greats.has(m) || !aiRuns(world, m, AiLayer.diplomacy) || peerWarInCommon(world, m, first, greats)) continue;
       a.loyalty[i] = Math.max(0, a.loyalty[i]! - RIVAL_LOYALTY);
       if (a.loyalty[i]! < LEAVE_LOYALTY) leaving.push(m);
     }
@@ -323,7 +323,8 @@ export function strategicAi(world: World): void {
   }
   const actors: number[] = [];
   world.nations.forEach((n) => {
-    if (nc.living[n] === 1 && nc.aiOff[n] !== 1 && nc.overlord[n] === 0 && (day + n) % STAGGER === 0) actors.push(n);
+    // The diplomacy's layer of the AI (ADR-759).
+    if (nc.living[n] === 1 && aiRuns(world, n, AiLayer.diplomacy) && nc.overlord[n] === 0 && (day + n) % STAGGER === 0) actors.push(n);
   });
   if (actors.length === 0 && !isMonthStart(world.startDay, world.tick)) return;
   const nb = neighbourMap(world);

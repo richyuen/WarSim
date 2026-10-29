@@ -58,6 +58,7 @@ import { orderSail } from '../systems/sail';
 import { seaHolder } from '../systems/seaControl';
 import { beachReach } from '../systems/seaSupply';
 import { basinOf, navOf, portSeaOf, seaOf, type World } from '../world';
+import { AiLayer, aiRuns, playerHeld } from './layers';
 import { DEPLOY_RANGE_CELLS, groundReader, reachOnLand, reachesOnLand } from './operational';
 import { STAGGER } from './strategic';
 
@@ -66,7 +67,7 @@ export function invasionAi(world: World): void {
   if (!world.settings.aiEnabled || !isDayStart(world.tick) || world.wars.list.length === 0 || !world.rules) return;
   const nc = world.nations.cols;
   const day = world.tick / 24;
-  const actors = [...world.wars.nations()].filter((n) => nc.living[n] === 1 && nc.aiOff[n] !== 1 && (day + n) % STAGGER === 0).sort((a, b) => a - b);
+  const actors = [...world.wars.nations()].filter((n) => nc.living[n] === 1 && aiRuns(world, n, AiLayer.army) && (day + n) % STAGGER === 0).sort((a, b) => a - b);
   if (actors.length === 0) return;
   // The enemies each actor has a land front with today, and the nations with a formation aboard.
   const { w, h, controller } = world.cells;
@@ -127,7 +128,8 @@ export function invasionAi(world: World): void {
     const front = frontCells.get(n) ?? [];
     const ferried = front.length > 0 ? front : (allyFront.get(n) ?? []);
     let groups: ReturnType<AtPorts> | undefined;
-    const atPorts: AtPorts = () => (groups ??= transportGroupsAtPort(world, n));
+    // Not a group on a player's order (ADR-759).
+    const atPorts: AtPorts = () => (groups ??= transportGroupsAtPort(world, n).filter((g) => !playerHeld(world, g.fleet)));
     if (landing.has(n)) {
       FERRY_PROBE.skip?.(n, 'aboard');
       LANDING_PROBE.turn?.(n, 'aboard');
@@ -651,10 +653,10 @@ function sailToMost(world: World, fleet: number, from: number, army: readonly nu
   return sailToArmy(world, fleet, from, by.map(([, , id]) => id), pass, scan);
 }
 
-/** Whether land formation `id` of nation `n` is free to be shipped: on land, standing, in no fight, not retreating or going home. */
+/** Whether land formation `id` of nation `n` is free to be shipped: on land, standing, in no fight, not retreating or going home, on no player's order (ADR-759). */
 function standing(world: World, id: number, n: number): boolean {
   const c = world.formations.cols;
-  return !world.offLand(id) && c.nation[id] === n && c.moving[id] !== 1 && c.engaged[id] !== 1 && c.retreat[id] === 0 && c.home[id] === 0;
+  return !world.offLand(id) && c.nation[id] === n && c.moving[id] !== 1 && c.engaged[id] !== 1 && c.retreat[id] === 0 && c.home[id] === 0 && !playerHeld(world, id);
 }
 
 /**

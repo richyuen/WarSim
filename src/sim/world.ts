@@ -28,6 +28,7 @@ import { StatSeries } from './stats';
 import { EditStack } from './editor';
 import { CE_MODES, type CeMode } from './systems/efficiency';
 import { Wars } from './wars';
+import { PLAYER_AI_DEFAULT } from './ai/layers';
 import { LandCounts } from './landCounts';
 import { borderChanged, scanBorder } from './border';
 import type { TechMask, TechRule } from './tech';
@@ -432,6 +433,9 @@ class WorldCore implements Stateful {
       ...(w.supplyBeach.size === 0 ? [] : [{ name: 'world.supplyBeach', dtype: 'i32' as const, data: Int32Array.from([...w.supplyBeach].sort((a, b) => a[0] - b[0]).flat()) }]),
       // The formations waiting after a refused march from afar (PLAN 7.117): [id, day] each, only while there is one.
       ...(w.farWait.size === 0 ? [] : [{ name: 'world.farWait', dtype: 'i32' as const, data: Int32Array.from([...w.farWait].sort((a, b) => a[0] - b[0]).flat()) }]),
+      // The player's AI assist and direct orders (ADR-759): only while not the default, not empty.
+      ...(w.playerAi === PLAYER_AI_DEFAULT ? [] : [{ name: 'world.playerAi', dtype: 'i32' as const, data: Int32Array.from([w.playerAi]) }]),
+      ...(w.playerOrders.size === 0 ? [] : [{ name: 'world.playerOrders', dtype: 'f64' as const, data: Float64Array.from([...w.playerOrders].sort((a, b) => a[0] - b[0]).flatMap(([id, o]) => [id, o.kind, o.until, o.through ? 1 : 0])) }]),
       ...(w.station.size === 0 ? [] : [{ name: 'world.station', dtype: 'f64' as const, data: Float64Array.from([...w.station].sort((a, b) => a[0] - b[0]).flatMap(([id, [x, y]]) => [id, x, y])) }]),
       ...(w.embarked.size === 0 ? [] : [{ name: 'world.embarked', dtype: 'f64' as const, data: Float64Array.from([...w.embarked].sort((a, b) => a[0] - b[0]).flatMap(([id, e]) => [id, e.fleet, e.land, e.water, e.target])) }]),
       // Sea control (PLAN 4.4a): [zones + 1, holders..., days...], only while a zone is held.
@@ -550,6 +554,10 @@ class WorldCore implements Stateful {
     for (let at = 0; waits && at < waits.length; at += 2) w.farWait.set(waits[at]!, waits[at + 1]!);
     const stations = sections.find((s) => s.name === 'world.station')?.data as Float64Array | undefined;
     for (let at = 0; stations && at < stations.length; at += 3) w.station.set(stations[at]!, [stations[at + 1]!, stations[at + 2]!]);
+    w.playerAi = (sections.find((s) => s.name === 'world.playerAi')?.data as Int32Array | undefined)?.[0] ?? PLAYER_AI_DEFAULT;
+    w.playerOrders = new Map();
+    const orders = sections.find((s) => s.name === 'world.playerOrders')?.data as Float64Array | undefined;
+    for (let at = 0; orders && at < orders.length; at += 4) w.playerOrders.set(orders[at]!, { kind: orders[at + 1]! as PlayerOrderKind, until: orders[at + 2]!, through: orders[at + 3] === 1 });
     w.embarked = new Map();
     const emb = sections.find((s) => s.name === 'world.embarked')?.data as Float64Array | undefined;
     for (let at = 0; emb && at < emb.length; at += 5) w.embarked.set(emb[at]!, { fleet: emb[at + 1]!, land: emb[at + 2]!, water: emb[at + 3]!, target: emb[at + 4]! });
@@ -765,6 +773,21 @@ export function provinceCellsOf(world: World): { start: Int32Array; cells: Int32
  */
 export type { SeaControl } from './systems/seaControl';
 import type { SeaControl } from './systems/seaControl';
+
+/** What a player's direct order is (ADR-759): a march (a formation's or a fleet's move), a wing's rebase, a wing's mission. */
+export const PlayerOrderKind = { march: 0, rebase: 1, mission: 2 } as const;
+export type PlayerOrderKind = (typeof PlayerOrderKind)[keyof typeof PlayerOrderKind];
+
+/**
+ * A player's direct order to a formation (ADR-759): its kind; for a mission, the tick it is kept
+ * to; for a march, `through` while it was given in a fight and the formation has not yet been
+ * out of contact since (a fighting withdrawal, or a push on: it marches in contact).
+ */
+export interface PlayerOrder {
+  kind: PlayerOrderKind;
+  until: number;
+  through: boolean;
+}
 import type { Embarked } from './systems/amphibious';
 
 /**
@@ -1287,6 +1310,16 @@ export class World {
    * it breaks off beaten (`breakOff`). State, saved while not empty.
    */
   station = new Map<number, [number, number]>();
+  /**
+   * The player's AI assist (ADR-759): the layers of the AI (`AiLayer`) that act for the nation the
+   * player controls. State, saved while not the default.
+   */
+  playerAi: number = PLAYER_AI_DEFAULT;
+  /**
+   * The player's direct orders (ADR-759), by formation id: the AI leaves such a formation alone
+   * until the order is done (`playerOrderSystem`). State, saved while not empty.
+   */
+  playerOrders = new Map<number, PlayerOrder>();
   /**
    * The formations whose march from afar (or to spare) was refused (PLAN 7.117, ADR-703), by id: the
    * day (tick / 24) before which the operational AI gives it no such march again. State, saved while

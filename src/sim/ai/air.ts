@@ -59,6 +59,7 @@ import { deployOf, elementIndex, slotCount, withFreshDeployments, wrapDx } from 
 import { hypot } from '../core/dmath';
 import { AIR_HELD, airSuperiority } from '../systems/airSuperiority';
 import { airOf, navOf, type World } from '../world';
+import { AiLayer, aiRuns, playerHeld } from './layers';
 import { carriesNuke, nuclearReserve } from '../systems/nuclear';
 
 /** A strategic bomber group bombs industry only in an air zone its nation's superiority is this or more in. */
@@ -91,7 +92,8 @@ export function airAi(world: World): void {
     if (base === 0 || !world.formations.has(id) || carriesNuke(world, id) || world.wingFerry.has(id)) continue;
     if (base < 0 && (!world.formations.has(-base) || battling.has(-base))) continue;
     const n = c.nation[id]!;
-    if (nc.living[n] !== 1 || nc.aiOff[n] === 1) continue;
+    // The air's layer of the AI (ADR-759); not a wing on a player's order.
+    if (nc.living[n] !== 1 || !aiRuns(world, n, AiLayer.air) || playerHeld(world, id)) continue;
     let list = wings.get(n);
     if (!list) wings.set(n, (list = []));
     list.push(id);
@@ -242,7 +244,7 @@ function paradrops(world: World, wings: Map<number, number[]>, engaged: readonly
   for (const id of [...world.formations.ids()].sort((a, b) => a - b)) {
     const n = c.nation[id]!;
     const front = fronts.get(n);
-    if (!front || !wings.has(n) || !atWar.has(n) || world.offLand(id) || c.engaged[id] === 1) continue;
+    if (!front || !wings.has(n) || !atWar.has(n) || world.offLand(id) || c.engaged[id] === 1 || playerHeld(world, id)) continue;
     if (rules.templates[c.template[id]!]!.elements.some((e) => rules.units[e.unit]!.cls !== 'inf')) continue;
     let best = -1;
     let bd = Infinity;

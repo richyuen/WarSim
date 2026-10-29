@@ -442,7 +442,7 @@ export type FromWorker =
   /** Nation label curves (PLAN 1.29; LABEL_STRIDE records) and per-label names (i18n key, or '=' + literal). */
   | { type: 'labels'; data: Float64Array; names: string[] }
   /** Per-nation panel data and active wars (PLAN 1.31), at most once a second while ticks advance; the ticker's rows (PLAN 3.12c), the kinds of every major event since the message before (`news`, PLAN 3.12Rh2: the ticker's rows are the last five), and the number of the worker's world, which a new game or a load changes (PLAN 3.12d). */
-  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; lives: NationLife[]; aiEnabled: boolean; nukesEnabled: boolean; rules: WorldRules; player: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; strikes: TickerRow[]; world: number; wings: PlayerWing[] };
+  | { type: 'nationStats'; tick: number; nations: NationStat[]; wars: WarStat[]; dead: { id: number; name: string; color: number }[]; lives: NationLife[]; aiEnabled: boolean; nukesEnabled: boolean; rules: WorldRules; player: number; playerAi: number; edits: { undo: number; redo: number }; ticker: TickerRow[]; news: number[]; strikes: TickerRow[]; world: number; wings: PlayerWing[] };
 
 /** A buildable land template for the production UI (PLAN 1.33b). */
 export interface TemplateInfo {
@@ -702,6 +702,9 @@ export interface Inspection {
   /** World seed (PLAN 1.39a). */
   seed: number;
   settings: { winnerTakesAll: boolean; revoltMode: string; ceMode: string; aiEnabled: boolean; player: number; loopingMap: boolean; nukesEnabled: boolean };
+  /** The player's AI assist (ADR-759, `AiLayer` mask) and the formations on a player's direct order, ascending. */
+  playerAi: number;
+  playerOrders: number[];
   /** Every nation ever created (dead ones too), with its display name key ('=' + literal). */
   nations: (NationStat & { living: boolean })[];
   wars: WarStat[];

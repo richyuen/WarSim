@@ -3,11 +3,13 @@ import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import type { Command } from '../../src/shared/commands';
+import { PLAYER_AI_DEFAULT } from '../../src/sim/ai/layers';
 import { NATIONS_1938, TEMPLATES_LAND } from '../../src/sim/scenario1938';
 
 // PLAN 1.33a AT: take control of Poland, order a move, and the formation moves. Selection is by a
-// real click on the formation's marker and the order by a real click on the map; the player's
-// nation has its AI off, so its other formations stay where they are.
+// real click on the formation's marker and the order by a real click on the map. Since ADR-759
+// control leaves the nation's AI on (the player's boxes, all but nuclear strikes at first); at
+// peace its army's AI sends nothing, so Poland's other formations stay where they are.
 
 const POL = NATIONS_1938.findIndex((n) => n.tag === 'POL') + 1;
 const GER = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
@@ -25,7 +27,11 @@ test('take control of Poland, select a formation, order a move: it marches', asy
   await page.getByTestId('take-control').click();
   await expect(page.getByTestId('release-control')).toBeVisible();
   await expect(page.getByTestId('player-label')).toContainText('Poland');
-  await expect.poll(async () => (await page.evaluate(() => window.__warsim!.sim.inspect())).nations.find((n) => n.id === POL)!.aiOff).toBe(true);
+  const assist = async () => {
+    const i = await page.evaluate(() => window.__warsim!.sim.inspect());
+    return { aiOff: i.nations.find((n) => n.id === POL)!.aiOff, player: i.settings.player, playerAi: i.playerAi };
+  };
+  await expect.poll(assist).toEqual({ aiOff: false, player: POL, playerAi: PLAYER_AI_DEFAULT });
 
   // Centre the camera on one Polish formation and click its marker.
   const ids = await page.evaluate((p) => window.__warsim!.view!.formationsOf(p), POL);
@@ -56,7 +62,7 @@ test('take control of Poland, select a formation, order a move: it marches', asy
   mkdirSync(out, { recursive: true });
   await page.screenshot({ path: path.join(out, 'player-order.png') });
 
-  // Run two days: the ordered formation approaches the target; the others stay put (AI off).
+  // Run two days: the ordered formation approaches the target; the others stay put (at peace).
   await page.evaluate(() => window.__warsim!.sim.step(48));
   await page.waitForFunction((t) => window.__warsim!.view!.lastTick >= t, 48, { timeout: 30_000 });
   const after = (await page.evaluate((id) => window.__warsim!.view!.formationPos(id), picked))!;
@@ -85,7 +91,7 @@ test('take control of Poland, select a formation, order a move: it marches', asy
   await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
   await page.getByTestId('release-control').click();
   await expect(page.getByTestId('player-label')).toHaveCount(0);
-  await expect.poll(async () => (await page.evaluate(() => window.__warsim!.sim.inspect())).nations.find((n) => n.id === POL)!.aiOff).toBe(false);
+  await expect.poll(assist).toEqual({ aiOff: false, player: 0, playerAi: PLAYER_AI_DEFAULT });
 });
 
 // PLAN 2.16Rk (from 2.16Ri): a table gives a freed id to the next row made, and the selection
@@ -282,7 +288,8 @@ test('a selected formation is marked at every zoom, and the camera follows it un
   await page.evaluate(([id, x, y, n]) => window.__warsim!.sim.command({ kind: 'moveFormation', id: id!, x: x! - 8, y: y!, nation: n! }), [picked, at[0], at[1], POL]);
   await page.evaluate(() => window.__warsim!.sim.step(24));
   await page.waitForFunction(() => window.__warsim!.view!.lastTick >= 24, null, { timeout: 30_000 });
-  await expect.poll(offMiddle, { timeout: 5_000 }).toBeLessThan(1);
+  expect(await page.evaluate(() => window.__warsim!.view!.controller.following), 'still following after the march').toBe(true);
+  await expect.poll(offMiddle, { timeout: 10_000 }).toBeLessThan(1);
   const after = await page.evaluate(() => [window.__warsim!.view!.controller.cam.cx, window.__warsim!.view!.controller.cam.cy]);
   expect(Math.hypot(after[0]! - before[0]!, after[1]! - before[1]!), 'the camera moved with the march, cells').toBeGreaterThan(0.5);
   // Close in, its order arrow is drawn too (the markers draw it far out), from where it is drawn.

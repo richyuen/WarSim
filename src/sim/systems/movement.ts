@@ -599,11 +599,23 @@ export function repatriationSystem(world: World): void {
   });
 }
 
-/** Land formation `id`'s pace on the march, km an hour on ground of cost 1 (its fuel and its buffs). */
+/** A march through a fight (ADR-759: the player's order given in contact) goes at this share of its pace while in contact. */
+export const WITHDRAW_SPEED = 0.5;
+
+/**
+ * Whether land formation `id` holds in its fight (PLAN 1.13): in contact, and not on a player's
+ * order given in that fight (ADR-759: a fighting withdrawal, or a push on, marches in contact).
+ */
+function holdsInFight(world: World, id: number): boolean {
+  return world.formations.cols.engaged[id] === 1 && world.playerOrders.get(id)?.through !== true;
+}
+
+/** Land formation `id`'s pace on the march, km an hour on ground of cost 1 (its fuel and its buffs; in contact, WITHDRAW_SPEED of it). */
 function marchKmPerHour(world: World, id: number, rule: TemplateRule): number {
   const c = world.formations.cols;
   const fuelled = rule.mobility === Mobility.foot ? 1 : DRY_SPEED + (1 - DRY_SPEED) * c.supply[id]!;
-  return rule.speedKmh * MARCH_DUTY * fuelled * Math.max(0.05, 1 + world.buffs.sum('speed', 'nation', c.nation[id]!) + world.buffs.sum('speed', 'formation', id));
+  const fight = c.engaged[id] === 1 ? WITHDRAW_SPEED : 1;
+  return rule.speedKmh * MARCH_DUTY * fuelled * fight * Math.max(0.05, 1 + world.buffs.sum('speed', 'nation', c.nation[id]!) + world.buffs.sum('speed', 'formation', id));
 }
 
 /**
@@ -615,7 +627,7 @@ function marchKmPerHour(world: World, id: number, rule: TemplateRule): number {
 export function marchHoursLeft(world: World, id: number): number {
   const c = world.formations.cols;
   if (c.moving[id] !== 1) return 0;
-  if (c.engaged[id] === 1) return Infinity;
+  if (holdsInFight(world, id)) return Infinity;
   const path = world.paths.get(id);
   const rule = world.rules?.templates[c.template[id]!];
   if (!path || !rule) return Infinity;
@@ -650,7 +662,7 @@ export function movementSystem(world: World): void {
   const nav = navOf(world);
   const w = world.cells.w;
   f.forEach((id) => {
-    if (c.moving[id] !== 1 || c.engaged[id] === 1) return; // in contact: holds and fights (PLAN 1.13)
+    if (c.moving[id] !== 1 || holdsInFight(world, id)) return; // in contact: holds and fights (PLAN 1.13), but on a player's order given in the fight (ADR-759)
     if (world.isFleet(id)) {
       sailStep(world, id);
       return;

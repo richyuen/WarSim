@@ -13,7 +13,8 @@ export type Command =
    */
   | { kind: 'spawnFormation'; nation: number; x: number; y: number; strength: number; template?: number }
   /** The editor's fleet and air wing (PLAN 7.13a): of a sea or air template, at the water or the airbase by the place. */
-  | { kind: 'spawnFleet'; nation: number; x: number; y: number; template: number }
+  /** `free` (God placement, ADR-759): the fleet does not hold its place (`World.station`), its nation's AI has it at once. */
+  | { kind: 'spawnFleet'; nation: number; x: number; y: number; template: number; free?: boolean }
   | { kind: 'spawnWing'; nation: number; x: number; y: number; template: number }
   | { kind: 'removeFormation'; id: number }
   /** Queue a formation of scenario template `template` (index) for `nation` (PLAN 1.10). */
@@ -106,6 +107,8 @@ export type Command =
   | { kind: 'proposeAlliance'; from: number; to: number }
   /** PLAN 1.33: the player takes control of `nation` (0 = release): its AI goes off, the previous one's back on. */
   | { kind: 'setPlayer'; nation: number }
+  /** The player's AI assist (ADR-759): the mask of the AI's layers (`AiLayer`, 0–63) that act for the nation played. */
+  | { kind: 'setPlayerAi'; layers: number }
   /**
    * PLAN 1.35 editor: paint `value` (nation id, 0 = unowned; or a land terrain class) with a tool;
    * `x2, y2` end a line; `mask` limits it to cells of one terrain or nation. Undoable.
@@ -194,6 +197,7 @@ export const COMMAND_KINDS: Record<Command['kind'], true> = {
   offerPeace: true,
   proposeAlliance: true,
   setPlayer: true,
+  setPlayerAi: true,
   editPaint: true,
   importLayer: true,
   editUndo: true,
@@ -340,6 +344,8 @@ export function inRange(cmd: Command, w: number, h: number): boolean {
       return cmd.amount >= 0;
     case 'spawnNation':
       return Number.isInteger(cmd.size) && cmd.size >= 1 && cmd.size <= SPAWN_NATION_MAX;
+    case 'setPlayerAi':
+      return Number.isInteger(cmd.layers) && cmd.layers >= 0 && cmd.layers <= 63;
     case 'createAlliance':
       return Array.isArray(cmd.members) && cmd.members.every(id) && new Set([cmd.leader, ...cmd.members]).size === cmd.members.length + 1;
     default:

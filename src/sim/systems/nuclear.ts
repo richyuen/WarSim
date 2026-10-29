@@ -167,6 +167,7 @@ import { unproject } from '../data/projection';
 import { knowsTechs, techMask } from '../tech';
 import type { War } from '../wars';
 import { airOf, ARM_ARMOUR, ARM_ARTILLERY, ARM_AT, navOf, type NukeLaunch, type World } from '../world';
+import { AiLayer, aiRuns } from '../ai/layers';
 import { basePlace, wingRange } from './air';
 import { applyLoss, cellX, elementIndex, settleFormation, wrapDx } from './elements';
 import { airSuperiority } from './airSuperiority';
@@ -1502,10 +1503,10 @@ export function avengingOf(world: World, n: number): boolean {
   });
 }
 
-/** Whether nation `n` weighs strikes today (PLAN 6.4b): a warhead, living, its AI on, no overlord, nukes allowed. */
+/** Whether nation `n` weighs strikes today (PLAN 6.4b): a warhead, living, its AI on (for the nation played, its box of strikes ticked: ADR-759), no overlord, nukes allowed. */
 export function weighsStrikes(world: World, n: number): boolean {
   const nc = world.nations.cols;
-  return warheadsOf(world, n) >= 1 && nc.living[n] === 1 && nc.aiOff[n] !== 1 && nc.overlord[n] === 0 && nukesAllowed(world, n);
+  return warheadsOf(world, n) >= 1 && nc.living[n] === 1 && aiRuns(world, n, AiLayer.nukes) && nc.overlord[n] === 0 && nukesAllowed(world, n);
 }
 
 /** Whether `n` on `side` of `war`, avenging or not, weighs it today (PLAN 6.12b). */
@@ -1607,7 +1608,7 @@ export function restraintOf(world: World, n: number, war: War, side: number, ind
   const nc = world.nations.cols;
   if (side < 0 || warheadsOf(world, n) < 1 || nc.living[n] !== 1) return out;
   if (!weighsStrikes(world, n)) {
-    out.reason = nc.overlord[n] !== 0 ? 'puppet' : nc.aiOff[n] === 1 ? 'aiOff' : 'nukesOff';
+    out.reason = nc.overlord[n] !== 0 ? 'puppet' : !aiRuns(world, n, AiLayer.nukes) ? 'aiOff' : 'nukesOff';
     return out;
   }
   const avenging = avengingOf(world, n);

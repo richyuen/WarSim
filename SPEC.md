@@ -1437,7 +1437,13 @@ bombardment) participants join through their missions.
   - Elements are a saved table: formation, slot, unit, strength, wound carry, target, cooldown.
   - Formation strength (men) is Σ element strength × men per unit.
   - Engagement: formations of nations at war within 1.5 cells are in contact. Contacts are joined
-    into battles each tick (derived), and engaged formations pause their march.
+    into battles each tick (derived), and engaged formations pause their march. But a player's
+    (ADR-759, `systems/playerOrders.ts`): a march of the player's that comes into contact is
+    cancelled (`MoveRejected`, `RejectReason.Contact`: told in the ticker), and the formation
+    stands and fights; a march ordered by the player to a formation in contact goes on in the
+    fight at WITHDRAW_SPEED (0.5) of its pace, firing and fired on (a fighting withdrawal, or a
+    push on: enemy-held ground is still entered only once it flips), until it is first out of
+    contact, after which a new contact cancels it as any.
   - Wars are a saved pair set, seeded from `diplomacy.json`.
 - *Targeting:*
   - Weight = eff × target health (strength × hpPerUnit) × proximity, drawn by
@@ -2990,11 +2996,22 @@ on screen.
   the editor's), a side of a war not 0 or 1, an alliance with a member twice. Ally with a nation in an alliance is refused; "Leave alliance" is
   the button for that.
 - **Player control** (PLAN 1.33a, `src/app/player.ts`): "Take control" in the nation panel
-  (`setPlayer`, saved as `settings.player`, so loads and resumed autosaves keep it) turns that
-  nation's AI off (strategic, operational and economic AI all skip it) and makes map
-  clicks player orders. A click on an own formation selects it (Shift toggles, Esc clears;
+  (`setPlayer`, saved as `settings.player`, so loads and resumed autosaves keep it) makes map
+  clicks player orders. Its AI stays on (ADR-759, the user's decision; `ai/layers.ts`): each
+  layer acts for it while its box is ticked (`World.playerAi`, `setPlayerAi`, saved while not
+  the default): army (fronts, invasions, merging hollow divisions), navy, air, diplomacy (war,
+  peace, alliances), economy (building, research, lay-up), all ticked when a nation is taken, and
+  nuclear strikes, not. God Mode's AI switch (`aiOff`) is still every layer. A direct order of
+  the player's (`World.playerOrders`: a march or a fleet's move, a wing's rebase or mission)
+  keeps every layer's hands off its formation until it is done: a march until it arrives (or
+  ends, or the formation retreats), a rebase until the wing is at its base, a mission for 24 h.
+  The AI then has it back and may undo the order at once. A formation or a wing placed by God
+  Mode is the AI's at once (a fleet so placed holds no station: `spawnFleet.free`).
+  A click on an own formation selects it (Shift toggles, Esc clears;
   rings on the overlay); a click elsewhere orders the selection to march there (into enemy land
-  = attack). "Release control" turns the AI back on. The bottom bar shows the nation and count.
+  = attack). "Release control" hands the nation back to its whole AI (and its God Mode switch on,
+  for a save from before ADR-759, where the nation played had it off); the boxes go back to the
+  default and the player's orders are forgotten. The bottom bar shows the nation and count.
   The selection is of the played nation (ADR-116): each snapshot takes out of it an id that
   is gone or is another nation's by now (`MapView.selectionNation`), the bar's count
   follows, and a load empties it.
