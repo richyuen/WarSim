@@ -91,6 +91,8 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     const p = new PlayerControl(hud, view);
     player = p;
     view.onPick = (x, y, sx, sy, shift) => {
+      // God Mode's placing armed: the click is the place, on a formation too (no panel opens).
+      if (p.placing.value !== null) return p.click(x, y, sx, sy, shift);
       if (hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y), view.cityNear(x, y))) return true;
       // A formation under the click opens its panel (PLAN 2.14b), the player's own too (which
       // the click also selects for orders); a click anywhere else closes the panel, and goes on
@@ -102,6 +104,10 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
     // A right-click on another nation's ground opens its menu for the player (declare war, peace,
     // alliance); a press of any button on the map or a wheel turn closes it.
     view.onContextClick = (nation, _sx, _sy, cx, cy) => p.openMenu(nation, cx, cy);
+    // God Mode's placing is God Mode's: it goes with it, and with a God tool armed.
+    effect(() => {
+      if (!hud.godMode.value || hud.godTool.value !== null) p.stopPlacing();
+    });
     canvas.addEventListener('pointerdown', () => p.closeMenu());
     canvas.addEventListener('wheel', () => p.closeMenu(), { passive: true });
     // The editor's brush and line paint on a left-drag (PLAN 1.44); the cursor says so.
@@ -114,6 +120,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       // Escape (PLAN 7.4f1): the player's selection or armed order first, else the nearest panel.
       if (e.key === 'Escape') {
         if (p.menu.value !== null) p.closeMenu();
+        else if (p.placing.value !== null) p.stopPlacing();
         else if (p.selectedCount.value > 0 || p.wingOrder.value !== null || p.dropArmed.value) p.clearSelection();
         else hud.escape();
       }

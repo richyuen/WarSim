@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
-import type { Command } from '../shared/commands';
+import type { Command, Refusal } from '../shared/commands';
 import type { NationStat, PlayerWing, TemplateInfo, WarStat } from '../shared/protocol';
+import { REFUSAL_KEY } from './GodTab';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
 
@@ -20,6 +21,11 @@ export interface ActionsTabProps {
   selected: number;
   dropArmed: boolean;
   onArmDrop: () => void;
+  /**
+   * God Mode's placing (on only with God Mode): the template armed, the arming of one, and why
+   * the sim did not carry out the last command (`Refusal`, 0 = it did). Null: God Mode is off.
+   */
+  place?: { armed: number | null; onArm: (template: number) => void; refusal: number } | null;
 }
 
 /** A wing's order at a place (PLAN 5.8v1); `WingOrder` of the page's player control. */
@@ -35,7 +41,7 @@ const num = (v: number): string => Math.round(v).toLocaleString('en-US');
  * on the map (patrol, strike, supply for a transport, rebase); and a paradrop of the formations
  * selected, the same way (PLAN 5.8v2).
  */
-export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing, selected, dropArmed, onArmDrop }: ActionsTabProps) {
+export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing, selected, dropArmed, onArmDrop, place }: ActionsTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   const [target, setTarget] = useState(0);
@@ -79,6 +85,33 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
           </div>
         );
       })}
+
+      {place ? (
+        <>
+          <div class="panel-sub" title={t('act.placeHint')}>
+            {t('act.place')}
+          </div>
+          <div class="panel-note">{t('act.placeHint')}</div>
+          {place.armed !== null ? (
+            <div class="panel-note" data-testid="act-place-armed">
+              {t('act.placeArmed', { name: t((templates[place.armed]?.nameKey ?? 'template.infantry_div') as MessageKey) })}
+            </div>
+          ) : null}
+          {place.armed !== null && place.refusal !== 0 && REFUSAL_KEY[place.refusal as Exclude<Refusal, 0>] ? (
+            <div class="panel-warn" data-testid="act-place-refusal" role="status">
+              {t(REFUSAL_KEY[place.refusal as Exclude<Refusal, 0>])}
+            </div>
+          ) : null}
+          {templates.map((tp, i) => (
+            <div class="god-row act-template" key={i}>
+              <span class="god-war-name">{t(tp.nameKey as MessageKey)}</span>
+              <button type="button" class={place.armed === i ? 'god-btn active' : 'god-btn'} data-testid={`act-place-${i}`} onClick={() => place.onArm(i)}>
+                {t('act.placeButton')}
+              </button>
+            </div>
+          ))}
+        </>
+      ) : null}
 
       {wings.length > 0 ? (
         <>

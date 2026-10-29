@@ -3050,6 +3050,15 @@ on screen.
   nothing on another nation's tab; a selected nation that the statistics list among the dead
   is deselected, and with no nation selected an armed territory brush is switched off
   (ADR-126).
+  God Mode's placing (the user's request of 2026-10-29, `PlayerControl.placing`): with God Mode
+  on, the played nation's Actions tab lists every template, of land, sea and air, researched or
+  not, each with Place. One armed, each map click puts one of the played nation's there at once,
+  with no gold and no training: `spawnFormation` (any land, the enemy's too), `spawnFleet` (the
+  water by the click; it holds its place until ordered away), `spawnWing` (an airbase of its with
+  room). The click is the place on a formation too. It stays armed until Escape, the same
+  button, another order or God tool armed, a change of the nation played, or God Mode off. A
+  refusal is told in words under the armed note. Nothing new is saved: the commands are those of
+  the editor and the God tools.
 - **God Mode**: rename; force war, peace, alliance or collapse; spawn a nation, revolt or battle;
   grant buffs; take control of a nation; disable AI globally or per nation; toggle nukes
   globally or per nation; grant warheads; force a strike. All of these are Commands.

@@ -24630,3 +24630,7 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Second commit:** a right-click on another nation's ground opens its menu while playing: Declare war (or Offer
   peace at war), Propose alliance; a refusal is told where it was. e2e: `playerActions1938.spec.ts` "a right-click on a
   nation's ground".
+- **Third commit:** God Mode's placing: with God Mode on, the played nation's Actions tab places any template at once
+  (no gold, training or research) at each map click; a refusal is told. e2e: `playerActions1938.spec.ts` "God Mode
+  places any unit". The pin of seed 99 is untouched by all three (no sim input changed).
+- **Gotcha:** `sim.inspect()` lists formations only with `full` (`inspect(true)`).

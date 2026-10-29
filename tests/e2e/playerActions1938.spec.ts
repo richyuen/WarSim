@@ -163,3 +163,101 @@ test('a right-click on a nation\'s ground: declare war from its menu, and a refu
   await expect(page.getByTestId('nation-menu-notice')).toContainText('truce');
   expect((await pol(page)).enemies).not.toContain(LIT);
 });
+
+// The user's request of 2026-10-29: with God Mode on, the played nation's Actions tab places any
+// unit at once, researched or not, for no gold: a division on its land and on another's, a fleet
+// on the water by the click, a wing at an airbase of its. A fleet where no sea is near is refused
+// in words. Escape disarms; God Mode off takes the section away.
+test('God Mode places any unit of the played nation at once: a division, a fleet, a wing', async ({ page }, info) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null && window.__warsim!.hud.templates.value.length > 0, null, { timeout: 60_000 });
+  await page.waitForFunction((p) => window.__warsim!.view!.formationsOf(p).length > 3, POL, { timeout: 60_000 });
+  await page.evaluate(() => window.__warsim!.sim.command({ kind: 'setSetting', key: 'aiEnabled', value: false }, true));
+  await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
+  await page.getByTestId('take-control').click();
+  await page.getByTestId('tab-actions').click();
+  const names = await page.evaluate(() => window.__warsim!.hud.templates.value.map((t) => t.nameKey));
+  const panzer = names.indexOf('template.panzer_div');
+  const destroyers = names.indexOf('template.destroyer_flotilla');
+  const fighters = names.indexOf('template.fighter_group');
+  expect([panzer, destroyers, fighters].every((i) => i >= 0)).toBe(true);
+  // Without God Mode there is no placing.
+  await expect(page.getByTestId(`act-place-${panzer}`)).toHaveCount(0);
+  await page.getByTestId('god-btn').click();
+  await page.getByTestId('tab-actions').click();
+  await expect(page.getByTestId(`act-place-${panzer}`)).toBeVisible();
+
+  // Poland's ground, Germany's, the Baltic, and Polish ground far from the sea, on the screen.
+  const at = (await page.evaluate((p) => window.__warsim!.view!.formationPos(window.__warsim!.view!.formationsOf(p)[0]!), POL))!;
+  await page.evaluate(([x, y]) => window.__warsim!.view!.controller.set({ cx: x - 4, cy: y - 6, scale: 12 }), at);
+  await page.waitForTimeout(300);
+  const spots = await page.evaluate(([pol, ger]) => {
+    const v = window.__warsim!.view!;
+    const pts: [number, number, number][] = [];
+    for (let y = 120; y <= 680; y += 16) for (let x = 360; x <= 1100; x += 16) pts.push([x, y, v.nationAt(x, y)]);
+    const sea = pts.filter((p) => p[2] === 0);
+    const near = (p: [number, number, number]): number => Math.min(...sea.map((s) => Math.hypot(s[0] - p[0], s[1] - p[1])));
+    const of = (n: number) => pts.filter((p) => p[2] === n);
+    const polish = of(pol).sort((a, b) => near(b) - near(a));
+    const coast = of(pol).sort((a, b) => near(a) - near(b))[0];
+    const seaSpot = coast ? sea.sort((a, b) => Math.hypot(a[0] - coast[0], a[1] - coast[1]) - Math.hypot(b[0] - coast[0], b[1] - coast[1]))[0] : undefined;
+    return { inland: polish[0], german: of(ger)[0], sea: seaSpot, own: polish[Math.floor(polish.length / 2)] };
+  }, [POL, id('GER')] as const);
+  expect(spots.inland && spots.german && spots.sea && spots.own, JSON.stringify(spots)).toBeTruthy();
+  const polish = async () => (await page.evaluate(() => window.__warsim!.sim.inspect(true))).formations.filter((f) => f.nation === POL);
+  const gold = (await pol(page)).gold;
+  const before = (await polish()).length;
+
+  // A division not researched (the panzer division), on Polish ground and on German ground.
+  await page.getByTestId(`act-place-${panzer}`).click();
+  await expect(page.getByTestId('act-place-armed')).toContainText('Armoured division');
+  await page.mouse.click(spots.own![0], spots.own![1]);
+  await expect.poll(async () => (await polish()).length).toBe(before + 1);
+  await page.mouse.click(spots.german![0], spots.german![1]);
+  await expect.poll(async () => (await polish()).length).toBe(before + 2);
+  const placed = (await polish()).slice(-2);
+  const cellOf = (s: readonly [number, number, number]) => page.evaluate(([x, y]) => window.__warsim!.view!.cellAt(x, y)!, [s[0], s[1]] as const);
+  const [gx, gy] = await cellOf(spots.german!);
+  expect(placed.some((f) => Math.hypot(f.x - gx - 0.5, f.y - gy - 0.5) < 2), 'a division on German ground').toBe(true);
+  expect(placed.every((f) => f.elements > 0 && f.strength > 0), 'with its elements').toBe(true);
+
+  // A fleet: refused where no sea is near (told in words), placed on the water by the coast.
+  await page.getByTestId(`act-place-${destroyers}`).click();
+  await page.mouse.click(spots.inland![0], spots.inland![1]);
+  await expect(page.getByTestId('act-place-refusal')).toContainText('no water of a sea');
+  await page.mouse.click(spots.sea![0], spots.sea![1]);
+  await expect.poll(async () => (await polish()).length).toBe(before + 3);
+  await expect(page.getByTestId('act-place-refusal')).toHaveCount(0);
+
+  // A wing, at a Polish airbase with room.
+  await page.getByTestId(`act-place-${fighters}`).click();
+  await page.mouse.click(spots.own![0], spots.own![1]);
+  await expect.poll(async () => (await polish()).filter((f) => f.wing).length).toBeGreaterThan(0);
+  expect((await polish()).length).toBe(before + 4);
+
+  // No gold was spent; the queue is empty.
+  expect((await pol(page)).gold).toBeCloseTo(gold, 3);
+  const out = info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.screenshot({ path: path.join(out, 'god-placed.png') });
+
+  // Escape disarms: a click on ground places nothing.
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('act-place-armed')).toHaveCount(0);
+  await page.mouse.click(spots.own![0], spots.own![1]);
+  await page.waitForTimeout(300);
+  expect((await polish()).length).toBe(before + 4);
+  // God Mode off: no placing. (The click above selected a formation and opened its panel: closed first.)
+  await page.evaluate((p) => {
+    window.__warsim!.hud.selectFormation(0);
+    window.__warsim!.view!.select(p);
+  }, POL);
+  await page.getByTestId('tab-actions').click();
+  await page.getByTestId(`act-place-${panzer}`).click();
+  await expect(page.getByTestId('act-place-armed')).toBeVisible();
+  await page.getByTestId('god-btn').click();
+  await expect(page.getByTestId(`act-place-${panzer}`)).toHaveCount(0);
+  expect(await page.evaluate(() => window.__warsim!.player!.placing.value)).toBeNull();
+});
