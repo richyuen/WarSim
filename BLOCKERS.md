@@ -5,6 +5,17 @@ entries are kept and marked **RESOLVED** with the date and fix.
 
 ## Open
 
+### PLAN 7.158: the plans of a shared front made cheaper; the AT missed after a pure speed-up (ADR-756, waits on the user)
+- **The bar:** on 2539 y28's month-1 save, the operational AI ≤ 0.75 × HEAD's, paired; then pinned ≤ 5.5 ms on 1461 y29,
+  2539 y28, 1307 y30, 1468 y25 and y26.
+- **What moved** (`docs/evidence/7.158/at.md`, `d551fc60`, no rule moved): the plans' range scans by the buckets'
+  columns, the allotment's count by formation, one threat order a shape, flat bucket arrays, inner-cell offsets in
+  `walkGroup` and `findPath`. Paired 0.83–0.85 ×; pinned 1461 y29 6.05, 2539 y28 5.91, 1307 y30 5.77, 1468 y25 5.57,
+  y26 5.60: the year's operational AI 0–7 % lower, within the reads' drift.
+- **Left:** the reach walks (`pocketOf`, `walkGroup`) and the route searches, ~32 % of the operational AI; keeping the
+  pocket marks past a passage is a rule change (`pocketOf`'s answers depend on the asks' order). Not filed as a task
+  while ADR-756 waits: its option (a) now has no pure step left. 1461 y29 at 6.05 is over option (b)'s 6.0.
+
 ### PLAN 7.157: R18-B1, late world-years over 5.5 ms; the AT missed after a pure speed-up (ADR-756, waits on the user)
 - **The bar:** pinned, ≤ 5.5 ms mean tick on the five slowest years of 1461–1470 × 30 and on the critic's 6599 y17,
   2539 y28, 1307 y30.

@@ -24593,3 +24593,20 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** PLAN 7.158 (the plans of a shared front made cheaper). ADR-756 waits on the user: (a) keep 5.5, 7.158
   next (recommended); (b) budget 6.0; (c) cap the levy's cadres. Seeds 1461–1470 spent.
 - **Next:** PLAN 7.158 while ADR-756 waits.
+
+## 2026-10-29 — PLAN 7.158: the plans of a shared front made cheaper (pure); the AT missed
+
+- **Start:** gate green on `83def07d`; critic not due. 7.157 waits on ADR-756.
+- **Read** (CPU profiles of 2539's month-1 save, 10 days, a bundle so closures keep their lines): the plans' own loops
+  ~45 % of the operational AI (range scans of every sector of the rows within the range, the allotment's count, the
+  threat's 9 bucket reads), the reach walks ~21 %, route searches ~11 %, shapes ~9 %.
+- **Change** (`d551fc60`, pure): see the commit. Hashes held (pin; month-1 10 d `6952d181`, 20 d `5dc705e1`; pinned years
+  end on 7.157's hashes).
+- **AT** (`docs/evidence/7.158/at.md`): paired 0.83–0.85 × (bar 0.75); pinned 5.57–6.05 ms on the five cases (bar 5.5).
+  Missed: BLOCKERS. The month-1 gain is not the year's: over a year the operational AI fell 0–7 %.
+- **Tried and dropped:** shapes kept from hour to hour while every holder's part is the same object (7 kept of 66 in 3
+  days).
+- **Gotchas:** `tsx` profiles put every function on line 1: bundle with esbuild and profile the plain JS
+  (`--cpu-prof-interval 100`, `--max-inlined-bytecode-size=0` to keep closures apart). Pinned to one logical CPU the
+  tick reads twice as slow; pairs on four each (0xF0, 0xF00).
+- **Next:** 7.5 waits on 7.157; both wait on ADR-756. No other open task.

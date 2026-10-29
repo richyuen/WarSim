@@ -51,6 +51,8 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   keeps the pin; a rule change moves it under its own ADR). AT: on 2539 y28's month-1 save (made by `--load
   critic/c18_ck_seed2539_y27.bin` and 730 hours), the operational AI's ms a tick ≤ 0.75 × HEAD's in a paired run (both
   at once, swapped); then pinned ≤ 5.5 ms on 1461 y29, 2539 y28, 1307 y30, 1468 y25 and y26; a stop: a year over 5.5.
+  Missed 2026-10-29 (`d551fc60`, pure: 0.83–0.85 × paired; pinned 5.57–6.05 ms, `docs/evidence/7.158/at.md`): BLOCKERS;
+  ADR-756 waits on the user.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

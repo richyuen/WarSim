@@ -190,6 +190,12 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   - **(c)** The critic's fix: cap the levy's cadres per front (a rule change against ADR-745's contact gain), with an AT
     on the same seeds.
 - **Meanwhile** the loop takes PLAN 7.158. Seeds 1461–1470 spent; next unseen 1471.
+- **Addendum 2026-10-29 (PLAN 7.158 missed, `docs/evidence/7.158/at.md`).** A pure speed-up of the plans (`d551fc60`):
+  the operational AI 0.83–0.85 × HEAD on 2539's month-1 save, but over whole pinned years 0–7 % lower, within the
+  reads' drift; 1461 y29 6.05, 2539 y28 5.91, 1307 y30 5.77, 1468 y25 5.57, y26 5.60. What is left is the reach walks
+  and route searches; keeping the pocket marks past a passage moves the pin. So: **(a)** now means a rule change (pocket
+  answers made independent of the asks' order, the marks kept from hour to hour), filed when chosen; **(b)** needs 6.1
+  ms, not 6.0, to cover 1461 y29 as read now; **(c)** unchanged.
 
 ### ADR-755 · 2026-10-28 · accepted (the user's decision) — PLAN 7.155 closed not done; the critic runs' notes leave PLAN.md
 
