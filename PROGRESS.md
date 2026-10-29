@@ -24662,3 +24662,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   `ticker1938` pick from the menu; `hud.cycleMapMode` removed (no caller left).
 - Answered, not changed: airbases and wings at their bases are not drawn on the map (SPEC: "a wing at its base is not
   drawn"); only sorties in flight are.
+
+## 2026-10-29 — PLAN 7.5: critic run 19 on c689c2e4 (blocking 1)
+
+- `npm run check:review` green before the run (3 known red: `cityNames1938` ×2, `zoomDemo1938`; 0 not known).
+- Scores (as run 18): map 7, diplomacy 7, emergent 7, God Mode 7, editor 7, stats 7, UI 7, performance 7, stability 7;
+  zoom 8, naval 8, tanks 8, aircraft 8, nukes 8. Every dimension at its bar. R18-B1 resolved (worst pinned 5.95 ms
+  under ADR-757's 6.5). Blocking 1: R19-B1, the map-mode menu clipped on a phone; filed as PLAN 7.159.
+- Evidence PNGs the review's e2e re-rendered were restored, not committed.
+- **Next:** PLAN 7.159.

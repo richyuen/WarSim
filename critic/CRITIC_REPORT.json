@@ -1,5 +1,5 @@
 {
-  "commit": "cfa73219698918700a3a6b0a8758b3315d6bc0fa",
+  "commit": "c689c2e44a729ece30117f3878b6279c99b59e7c",
   "scores": {
     "mapVisuals": 7,
     "diplomacyWarDepth": 7,
@@ -18,20 +18,16 @@
   },
   "blocking": [
     {
-      "id": "R18-B1",
-      "title": "The tick budget fails on late years after the levy (contradicts SPEC's 5.5 ms in any year, ADR-709): pinned 6599 y17 5.76/5.75 ms, 2539 y28 5.67/5.84, 1307 y30 5.33/5.55, three of the eight slowest measured years (run 17: one); same seed-year 6599 y17 2.82 ms on cfedb50a (817 formations, operational AI 1.03 ms) against 5.76 (1,061, 2.57 ms); seed 99 x 5 years 2.10 -> 2.56 ms; ADR-745's cost line (worst year 4.75 ms) not reproduced. The slowest year at Max is still 59.4 s.",
+      "id": "R19-B1",
+      "title": "On a phone the map modes cannot be chosen: the new map-mode menu (c689c2e4) is clipped by the bottom bar's overflow:auto; at 390x844 0 of 11 options are hit-testable, a tap on Terrain times out, the mode stays Political (desktop and tablet widths 768-1600 px are fine; the old button cycled on a tap).",
       "evidence": [
-        "critic/c18_perf_summary.json",
-        "critic/c18_perf_6599_y17_read1.log",
-        "critic/c18o_perf_6599_y17_read1.log",
-        "critic/c18_perf_2539_y28_read2.log",
-        "critic/c18_perf_seed99_5y_head.log",
-        "critic/c18_perf_seed99_5y_cfed.log",
-        "critic/c18_cmp_y30.txt",
-        "critic/c18_l_6599.log"
+        "critic/c19_p2_phone_menu.json",
+        "critic/shots/c19p2_phone_mapmenu_open.png",
+        "critic/shots/c19p2_phone_after_tap.png",
+        "critic/c19_p3_widths.json"
       ],
-      "fix": "Make the levy's armies cheaper to plan (fold or cap cadres per front, or a cheaper operational AI per formation); bar: pinned <= 5.5 ms on the five slowest years of ten unseen 30-year seeds."
+      "fix": "Render the menu outside the scrolling bar (portal or position:fixed at the button's rect), or cycle the mode on touch; bar: at 390x844 every option hit-testable and a tap changes the mode."
     }
   ],
-  "timestamp": "2026-10-29T03:10:00Z"
+  "timestamp": "2026-10-29T15:30:00Z"
 }

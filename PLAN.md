@@ -33,6 +33,14 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
+- [ ] 7.159 R19-B1: on a phone the map modes cannot be chosen; the map-mode menu (`c689c2e4`) is clipped by the
+  bottom bar's `overflow: auto` (at 390 × 844, 0 of 11 options hit-testable, a tap on Terrain leaves Political).
+  Evidence: `critic/c19_p2_phone_menu.json`, `critic/shots/c19p2_phone_mapmenu_open.png`, `critic/c19_p3_widths.json`.
+  Fix: draw the menu outside the scrolling bar (a portal, or fixed at the button's rect).
+  AT: an e2e at 390 × 844 opens the menu, finds 11 of 11 options hit-testable (`elementFromPoint` at each option's
+  centre is the option), and a tap on Terrain makes `mapmode-btn`'s `data-mode` `terrain`; red on `c689c2e4`; the
+  same spec green at 1280 × 800; `player1938`/`alliances1938`/`ticker1938` still green.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

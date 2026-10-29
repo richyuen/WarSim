@@ -1,293 +1,263 @@
-# Critic report, run 18
+# Critic report, run 19
 
-- **Commit:** `cfa73219698918700a3a6b0a8758b3315d6bc0fa` (HEAD at the start). Run 17 was on `cfedb50a`; 22 commits since.
-  The ones that touch the game: a save that does not fit is refused whole (ADR-744); a save's state format on the
-  autosave record, read by the title (ADR-747); the levy, two cadre divisions a month for an outnumbered nation at war
-  (ADR-745, the user's decision); a carrier's lost wing re-manned and the wings listed on its panel (ADR-746); a
-  carrier's strike out of a sea battle has a ticker row, carrier sinkings counted (PLAN 7.154a); transports sail only for
-  ports in their own waters (ADR-752); a fleet inside a canal keeps its way (ADR-753); the ticker's room beside a panel
-  (ADR-754). Decided by the user since run 17: a stable top is a valid world (ADR-750), the sea battles' fall kept
-  (ADR-751), 7.153 closed with "the next critic report judges" (ADR-749), 7.155 closed (ADR-755).
-- **Date:** 2026-10-28.
-- **Build:** `vite build --outDir critic/c18_dist`, exit 0 (`critic/c18_build.log`), served by `vite preview` on
-  127.0.0.1:**5338**. `cfedb50a` in a worktree (`critic/wt`, `node_modules` a junction) for headless runs only.
-  Chromium through Playwright, headless, 1600 × 900 (390 × 844 phone, 1280 × 720 laptop).
+- **Commit:** `c689c2e44a729ece30117f3878b6279c99b59e7c` (HEAD at the start). Run 18 was on `cfa73219`; 15 commits since.
+  What touches the game: two speed-ups of the operational AI (PLAN 7.157/7.158, `14a1b285`, `d551fc60`, claimed pure);
+  the tick budget raised from 5.5 to **6.5 ms** in any year by the user (ADR-757); and a run of the user's own requests
+  for playing a nation: control leaves the AI on, layer by layer, with the player's direct orders left alone until done
+  (ADR-759, a new `playerOrderSystem`); God Mode places any unit of the played nation (ADR-758); a right-click menu on
+  a nation's ground (war, peace, alliance); the selection framed at every zoom and followed by the camera; box select
+  (Shift-drag, Ctrl+Shift-drag, Ctrl+A, long press on touch); order arrows at T2/T3; map modes from a menu.
+- **Date:** 2026-10-29.
+- **Build:** `vite build --outDir critic/c19_dist`, exit 0 (`critic/c19_build.log`), served by `vite preview` on
+  127.0.0.1:**5339**. `cfa73219` in a worktree (`critic/wt`, `node_modules` a junction) for paired timing only.
+  Chromium through Playwright, headless, 1600 × 900 (390 × 844 phone with touch, 1280 × 720, and five other widths for
+  the map-mode menu).
+- **The machine was shared.** From about 14:24 another session's loop (a Playwright capture job and `vite build` of
+  another repo) used up to ~16 cores at intervals. Run 18's method (pinned reads alone) could not be kept: I timed
+  HEAD and `cfa73219` **at the same time on two cores, swapped** (`c19_pair.sh`, the ratio is the comparison), and took
+  0xFFFF-pinned reads only when a 3-s sample of all other processes was quiet, with the load sampled during each read
+  (`c19_perf_quiet.sh`, `critic/c19_perfq.log`). The batch figures below are contended and are trend only.
 - **Runs:**
-  - Unaided 1938 worlds × 30 years on HEAD (`critic/scripts/c18_batch.sh`, `c18_headless.ts` = run 17's script plus the
-    `CarrierSunk` ships): **29 of run 17's seeds**, paired against run 17's `c17_*` files (`cfedb50a`), and **8 new
-    seeds** (1801, 2441, 3109, 3923, 5003, 6599, 7451, 8761) on **both** commits (`c18o_*` = `cfedb50a`), run
-    side by side. The batch was planned for 47 of run 17's seeds; I stopped it after wave 5 (29 complete) to free the
-    machine for pinned timing. Partial files of wave 6 (`c18_headless_3491.json` and its wave) are under 30 years and
-    excluded. Paired comparison with the standard error of the mean difference: `critic/c18_cmp_y30.json`,
-    `critic/c18_cmp_y30.txt` (`c18_cmp.py`).
-  - Year-20 saves read on their own commit, 61 days each (`c18_engmen.ts`: engaged land formations and their men, the
-    seven 10-day samples of R17-B2's bar; `c18_decks.ts`: carriers, wings aboard and aircraft): `critic/c18_y20_reads.json`
-    (from `c18_engmen_*`/`c18_decks_*` files). Old saves stepped in `critic/wt`.
-  - Pinned timing after the batch, alone (`c18_perf.sh`, `--affinity 0xFFFF`): seed 99 × 5 years on both commits; HEAD's
-    six slowest contended world-years and four seed-years of the new seeds on both commits, each twice.
-    `critic/c18_perf_summary.json`.
-  - In the page: R17-B1's old-save case three ways; run 17's probes re-run (God tools, nukes by God, Breakthrough at
-    peace and at war, phone/laptop, playing Poland, editor fleets and armed Poland, the North Sea standoff, the
-    rowless carrier strike, a fleet's and a formation's "To its fight", dense-fight tags, zoom, armour 3,000–10 m/px,
-    keys and modes, a new seed's two years, history, export, restraint lines, determinism, the slowest year at Max).
-    **New:** carrier strike rows and the carrier panel (seed 99, late 4877, 3923, 7019), the ticker beside a panel at
-    three sizes (ADR-754), late worlds 60 days (7019, 4877, 2441, 1801), fleets stranded on canal cells (ADR-753).
-- **Reference:** `reference/screens/`, `reference/text/AOC_TEXT_NOTES.md`. AoC's nukes, God tools, save/load and
-  performance are known from text only; confidence there is lower.
-- **Prefix:** every path below was made in this run (`c18`; `c18o` = `cfedb50a`). Scripts in `critic/scripts/c18_*`.
+  - Unaided 1938 worlds × 30 years on HEAD (`c19_batch.sh`, `c19_headless.ts` = run 18's script): **four of run 18's
+    seeds** (6599, 2539, 1307, 7019) as an identity check, and **four new seeds** (1213, 2617, 3301, 4441). A second wave
+    of four new seeds was stopped to free the machine for timing (no partial file is used).
+  - Paired timing, HEAD against `cfa73219`, nine late seed-years and seed 99 × 5 years (`critic/c19_pair_summary.json`).
+  - In the page: every new player feature (sessions PA, PB, PF, PS, PT, P2, P3 below) and run 18's probes re-run
+    (`c19_suite1.sh`: God tools, Breakthrough, playing Poland and Offer peace, the editor, "To its fight" on land and at
+    sea, the two old-save cases, history export, the history panel, God nukes, zoom, armour close up, a new seed's two
+    years in Europe).
+- **Reference:** `reference/screens/`, `reference/text/AOC_TEXT_NOTES.md`. AoC's unit control does not exist (AoC has
+  no player-commanded units); its God tools, save/load and performance are known from text only.
+- **Prefix:** every path below was made in this run (`c19`). Scripts in `critic/scripts/c19_*`.
 
 ## Verdict
 
-**The best run yet. All three of run 17's blocking issues are fixed on their own cases: a stale autosave is refused
-with a clear message, the late land war is three times as busy, and the carriers fly with manned decks and are told in
-the ticker. The cost is the sim's speed: the late tick is a third slower and the 5.5 ms budget now fails in three
-measured years.**
+**The world is run 18's world, hash for hash, a few per cent faster, and now judged against a 6.5 ms budget it meets.
+The new work is all on the player's side: playing a nation is far better than it was (fronts no longer freeze when
+taken, orders are kept, refusals told, war from the map, God placement), and it works as specified on every case I
+tried. Its rough edges are UI: on a phone the new map-mode menu cannot be opened at all, the order arrows vanish at the
+zoom where mass orders are given, and a mass order floods the ticker with three-line refusals.**
 
-- **R17-B1 fixed:** run 17's c10 save on HEAD returns to the title with "This saved game could not be loaded…" and starts
-  nothing; a save without a format shows "from an older version… cannot be continued", no Continue.
-- **R17-B2 met on its bar, with one world short:** same 29 seeds, engaged land formations a day in years 2–30
-  **5.2 → 13.75** (higher on 29 of 29, se 0.28), **0.14 → 0.32 of year 1** (bar: a fifth); new seeds 5.0 → 12.9 (8 of 8).
-  Year-20 worlds with nobody in contact on more than two of seven 10-day samples **15 → 2 of 29**, new seeds **5 → 0 of 8**.
-  7019 y20, run 17's worst case, in the page: 0, 0, 0, 0, 2, 2, 0 → **10, 9, 8, 35, 38, 24, 39**.
-- **R17-B3 fixed:** year-20 carrier groups at war with no wing aboard **31 of 35 → 0 of 36** (same seeds) and 4 of 8 → 0
-  of 12 (new seeds); the panel lists the wings, their aircraft and mission; strikes ashore have a ticker row.
-- **The sea came back:** sea battles late 5.37 → 6.96 a world-year (higher on 25 of 29), ships sunk in them 60 → 71, plus
-  ~25 a world-year now sunk by carrier wings (counted for the first time).
-- **Slower:** pinned seed 99 × 5 years **2.10 → 2.56 ms** (+22 %); 6599's year 17 2.82 → **5.76 ms** on the same seed;
-  three of HEAD's eight measured slow years over the 5.5 ms budget (run 17: one). The player does not see it yet: the
-  slowest year at Max takes 59.4 s, as in run 17 (60.4 s).
+- **Identity:** four of run 18's seeds × 30 years on HEAD give run 18's yearly hashes on **120 of 120** world-years
+  (`critic/c19_ident.json`). Every count over seeds in run 18 (contact, sea battles, decks, nukes, idle fronts) is
+  therefore unchanged by construction; I did not re-count them, and no dynamics score moves.
+- **R18-B1 resolved, by the user's decision and by measurement:** the budget is now 6.5 ms (ADR-757). Paired with
+  `cfa73219` at the same time, HEAD is **faster on all nine late seed-years, by 0.3–8 %** (same hashes); the quiet pinned
+  reads are all under 6.5 ms (see Performance). The raised budget is a design objection, not a defect.
+- **New, blocking:** the map-mode menu (`c689c2e4`) is drawn inside the bottom bar, whose `overflow: auto` clips it on
+  a phone: no mode can be chosen there (the old button cycled modes on a tap).
 
 ## Scores
 
-| Dimension | Run 17 | Run 18 |
+| Dimension | Run 18 | Run 19 |
 |---|---|---|
 | Map visuals and readability | 7 | 7 |
 | Diplomacy, war, alliance, puppet, revolt depth | 7 | 7 |
-| Emergent world dynamics over long runs | 6 | **7** |
+| Emergent world dynamics over long runs | 7 | 7 |
 | God Mode | 7 | 7 |
 | Editor and scenarios | 7 | 7 |
 | Stats and history | 7 | 7 |
 | UI/UX and polish | 7 | 7 |
 | Performance | 7 | 7 |
-| Stability | 5 | **7** |
+| Stability | 7 | 7 |
 | Semantic zoom to unit level (needs 8) | 8 | 8 |
-| Naval warfare (needs 8) | 6 | **8** |
+| Naval warfare (needs 8) | 8 | 8 |
 | Tanks (needs 8) | 8 | 8 |
 | Aircraft (needs 8) | 8 | 8 |
 | AI nuclear use (needs 8) | 8 | 8 |
 
-## Run 17's cases re-run
+No score moved. The sim did not change (identity), and the new player features are offset by the regressions and
+rough edges they brought (each dimension below says which).
 
-| Run 17 case | On HEAD | Evidence |
+## Run 18's cases re-run
+
+| Run 18 case | On HEAD | Evidence |
 |---|---|---|
-| R17-B1: c10's 4219 y10 save through Continue opens a chimera | Record with format 1 (bytes that do not fit): Continue → `?failed=save`, the title says the saved game could not be loaded, no Continue, nothing started. Record without a format (every autosave made before ADR-747): "from an older version of WarSim and cannot be continued", no Continue. | `critic/c18_os_c10fmt1.json`, `critic/shots/c18os_c10fmt1_01_after_continue.png`, `critic/c18_os_nofmt.json`, `critic/shots/c18os_nofmt_00_title.png` |
-| (side effect) | A `cfedb50a` save (7019 y20) given format 1 **loads whole** on HEAD (27 December 1957, its wars and ranking); without the field it is refused. Every player's compatible save on Pages is refused once (ADR-747 accepts this). | `critic/c18_os_fmt1.json`, `critic/shots/c18os_fmt1_01_after_continue.png` |
-| (new, minor) | After the refusal, a fresh visit to `/` offers **Continue** for the same broken format-1 save again. | `critic/c18_os_c10fmt1.json` (step "title again") |
-| R17-B2: late contact 5.11 a day, 13 % of year 1 | Same 29 seeds `cfedb50a` → HEAD: **5.22 → 13.75** (se 0.28, higher on 29); 0.141 → **0.318** of year 1; y20 3.7 → 13.1; per war 0.79 → 1.86; land formations at war late 465 → 629. Year 1 37.8 → 44.5 (higher on 26). New seeds, both commits: 5.03 → 12.91 (8 of 8), 0.131 → 0.275. | `critic/c18_cmp_y30.json`, `critic/c18_cmp_y30.txt` |
-| R17-B2: 7019 y20 in the page 0, 0, 0, 0, 2, 2, 0 | HEAD's own 7019 y20: **10, 9, 8, 35, 38, 24, 39** of ~870 land formations (run 17's save on `cfedb50a`, headless: 0, 0, 0, 0, 2, 2, 0, matching run 17's page). 4877 y20 25, 36, 37, 21, 46, 15, 26 (run 17 0, 0, 0, 2, 3, 9, 16); new 2441 4, 13, 14, 16, 14, 12, 16; 1801 25, 25, 28, 19, 13, 18, 2. | `critic/c18_y2_7019_y20.json`, `critic/c18_y2_4877_y20.json`, `critic/c18_y2_2441_y20.json`, `critic/c18_y2_1801_y20.json`, `critic/c18_engmen_test_old.json`, `critic/shots/c18y2_7019_y20_d30_250m.png` |
-| R17-B2: nobody in contact >2 of 7 samples | Same 29 y20 saves: **15 → 2** worlds (2789, 6421), empty samples 73 → 14 of 203; new seeds **5 → 0** of 8 (27 → 1). 6421 y20 has land fronts (Soviet Union against Tannu Tuva, 748 cells, 237 formations against 4; Latvia against Argentina, 310 cells) and nobody in contact on 4 of 7. Engaged men a day 24,200 → 65,200. | `critic/c18_y20_reads.json`, `critic/c18_phantom_6421.json` |
-| R17-B3: carriers with a wing aboard y20 1.30 a world | Same seeds **0.86 → 2.72** at y20 (higher on 17, lower on 5); y10 2.48 → 4.48. Year-20 saves: wings aboard 25 of 83 carriers → **79 of 79**; carrier groups at war with none 31 of 35 → **0 of 36**. New seeds 12 of 29 → 34 of 34. But only **31 of 79** decks hold a whole wing (20+ of 24 aircraft): 1,260 aircraft on 79 decks. | `critic/c18_cmp_y30.json`, `critic/c18_y20_reads.json`, `critic/c18_decks_c18_y20_a.json` |
-| Carrier panel shows no wings | Seed 99's group 1145: "Air groups aboard (2 of 2) / 24× Naval bombers striking, in the air"; late 3923 US groups "6× / 3× Naval bombers striking". Fixed. | `critic/c18_cv_99.json`, `critic/c18_rr_3923.json`, `critic/shots/c18rr_3923_cvpanel.png` |
-| Carrier strike ashore has no row (seed 99) | Row "⚓ Carrier strike ashore: Japan on China" from hour 3; its click frames the planes over the Yellow Sea at ~1,200 m/px. Fixed. **But** several groups of one nation striking one enemy give **identical rows**: two "Japan on China" (seed 99 h77, 7019 day 4), three "United States on Iceland" (7019 y20). | `critic/c18_tk_99_1600.json`, `critic/shots/c18tk_99_1600_02_raidclick.png`, `critic/shots/c18cv_99_1_framed.png`, `critic/shots/c18y2_7019_y20_d30_3000m.png`, `critic/shots/c18c_7019_arm_0025m.png` |
-| Sea battles late 5.32 | Same seeds **5.37 → 6.96** (se 0.23, higher on 25); sunk in them 60.0 → 71.0; year 1 38.5 → 38.2 (level); carrier sinkings 0 counted → **763 ships a world** over 30 years. Transports y20 416 → 601, landings 2,517 → 4,086 a world. | `critic/c18_cmp_y30.json` |
-| Ticker beside a panel (ADR-754) | Seed 99 at 1600 × 900, 1280 × 720, 390 × 844: panel and ticker do not overlap (0 px²). On the phone the war chips cover the raid row. | `critic/c18_tk_99_1600.json`, `critic/c18_tk_99_1280.json`, `critic/c18_tk_99_390.json`, `critic/shots/c18tk_99_390_01_panel.png` |
-| Late raid rows flooding the ticker | No: 4877 y20 (no carriers left) 0 rows; 3923 y20 0–1 rows over 10 days. | `critic/c18_rr_4877.json`, `critic/c18_rr_3923.json` |
-| Performance: 9781 y24 5.85 ms pinned | HEAD's slowest contended years, pinned twice: **6599 y17 5.76 / 5.75**, **2539 y28 5.67 / 5.84**, **1307 y30 5.33 / 5.55**, 3727 y25 5.14/5.16, 8011 y26 4.87/4.86, 7451 y24 4.77/4.73. Same seed-years on `cfedb50a` (other worlds): 6599 y17 2.83, 7451 y24 2.44, 7451 y28 4.26 (HEAD 3.89), 5003 y29 4.80 (HEAD 3.27). Operational AI 1.03 → 2.57 ms in 6599 y17 (formations 817 → 1,061). Contended world-years over 5.5 ms 17 of 2,160 (run 17) → 136 of 1,110; late mean contended 3.26 → 4.34 ms (higher on 29 of 29). Seed 99 pinned 2.10 → **2.56 ms**, hash b22bcdd1 at year 1 (the pin). | `critic/c18_perf_summary.json`, `critic/c18_perf_6599_y17_read1.log`, `critic/c18o_perf_6599_y17_read1.log`, `critic/c18_perf_seed99_5y_head.log`, `critic/c18_perf_seed99_5y_cfed.log` |
-| Slowest year at Max 60.4 s | 6599's year 17 at Max in the page: **59.4 s**, 59.6 fps, longest gap 330 ms. Unchanged for the player. | `critic/c18_l_6599.log` |
-| Browser = headless (1307 mismatch once) | 1307 with no input, year 1: f9a6a2d6 both; with the probe's inputs, years 1–3 equal (f9a6a2d6, 3d48c6a6, fc8880f2); save/load twin equal. Seed 99 year 1 b22bcdd1 in the page. Not reproduced. | `critic/c18_det_1307_8760.json`, `critic/c18_h_misc_1307.log`, `critic/c18_det_99_8760.json` |
-| Ordered five 2 of 64 over 12 years | Now a design (ADR-750). HEAD 0 of 37 over 12 years (max 8); set of five over 12 years 3 of 37 (6301 21). | `critic/c18_cmp_y30.txt` (`headOnly`) |
-| Breakthrough at peace silent (2203) | Unchanged: counts identical before and after, no row. At war (7019) a corridor in state, no row. | `critic/c18_k_2203.json`, `critic/c18_k3_7019.json` |
-| God revolt told as a declared war | Unchanged: "1 January 1938 Germany declared war on Free Saxony". | `critic/c18_q_6421.json` |
-| Nukes by God (4219) | Unchanged: Paris H-bomb 3,329,000 civilians; London A-bomb 314,000. | `critic/c18_a_4219.json` |
-| Phone: God tools clipped | Unchanged: "Revo", "Spawn n", "Breakthr", "Territo", "Found c", "Raze c"; the bottom bar ends at "Stati". | `critic/shots/c18p_phone_02_GodMode.png`, `critic/shots/c18p_phone_01_world.png` |
-| Offer peace: no answer | Unchanged: Poland offers Lithuania peace; no row. | `critic/c18_pl_6011.json` |
-| History export a/b raw | Unchanged: "SeaBattle,458771,France,524312,…". | `critic/c18_dl_7019.csv` |
-| Dense fight tags (7019 day 35, 250 m/px) | 65 inputs, 45 placed, 3 left out, 12 names unplaced: identical to run 17 (the start's first weeks are unchanged by this run's rules). | `critic/c18_tg_7019.json` |
-| Editor North Sea standoff (4877) | Holds: "Germany and United Kingdom fought at sea: Germany lost 21 ships, United Kingdom 13", 2 January. | `critic/c18_g4_standoff.json`, `critic/c18_g_4877.json` |
-| Editor-armed Poland (9437) | Holds and moved: Poland strikes Germany near Coburg on day 52 (62,620 men, 0 civilians), Moscow day 91, **Prague** day 107 (134,000 civilians, 299 men). | `critic/c18_g2_9437_POL.json` |
-| Rowless carrier strike (8693) | Holds: "⚓ Carrier strike: Japan on United States's ships", framed at 225 m/px. | `critic/c18_n4_8693.json` |
-| Fleet "To its fight" | Holds (5381 destroyers at 60 m/px; 4877's British carrier group at 448 m/px, its wings "with its fleet, in the air"). | `critic/c18_fp2_5381.json`, `critic/c18_fp2_4877.json` |
-| Formation "To its fight" frames blocks apart (5381 d21) | Identical results to run 17 (same eight formations, same zooms, self off screen on 6 of 8). Unchanged. | `critic/c18_ft_5381_d21.json` |
-| Restraint lines | Consistent over 60 days on 7019 y20 (puppet, deterred, noThreat, taboo). | `critic/c18_t_7019.json` |
-| History panel | 7019 y20: 4,154 events, filters 163–170 ms, charts 1.5 s. | `critic/c18_hi_7019.json` |
-| Fleets stranded on canal cells (ADR-753) | Five HEAD y20 saves × 30 days: 0 fleet-hours on a cell of no sea zone. | `critic/c18_nozone_new.json` |
-| Not re-read | The nuclear pause from a save before a strike (run 17's save of 1129 is another world now), the Large map, editor carrier decks (code unchanged). | — |
+| R18-B1: pinned 6599 y17 5.76, 2539 y28 5.84, 1307 y30 5.55 ms (budget 5.5) | Same checkpoints, same hashes. Paired with `cfa73219` at the same time on two cores, swapped: HEAD/old **0.923, 0.940, 0.964** (3727 y25 0.966, 8011 y26 0.970); run 18's pinned × ratio = **5.32, 5.49, 5.35 ms**. Quiet pinned reads (0xFFFF): 6599 y17 **5.53 / 5.64**, 2539 y28 **5.80 / 5.95**, 1307 y30 **5.78**. All under the 6.5 ms budget now in SPEC (ADR-757); all three are still over the old 5.5. (The pinned 2539 reads sit a little above run 18's 5.67/5.84 while the same-time pair says 6 % faster: absolute reads on this shared machine carry ±3 %.) | `critic/c19_pair_summary.json`, `critic/c19_pair_6599_y17_*_*.log`, `critic/c19_perf_summary.json`, `critic/c19_perfq.log`, `critic/c19_perfq_*.log` |
+| Seed 99 × 5 years 2.56 ms pinned | Paired HEAD/old 0.989 (level); hash b22bcdd1 at year 1 and 80a8e77d at year 5 on both. | `critic/c19_pair_seed99_5y_*.log` |
+| Late contact, sea battles, decks, nukes (37 worlds) | Unchanged by construction: 4 of run 18's seeds identical for 30 years. New seeds (not compared): engaged formations a day late 11.6–15.4 (run 18: 13.75), sea battles late 5.4–9.4 a world-year (6.96), bursts 11–49 a world over 30 years. | `critic/c19_ident.json`, `critic/c19_headless_1213.json`, `…_2617.json`, `…_3301.json`, `…_4441.json` |
+| Identical carrier strike rows | Unchanged: three "⚓ Carrier strike ashore: Japan on China" rows at once (seed 5557 day 12; seed 3301 December 1939). | `critic/shots/c19pa_5557_07_ctrlA_48h.png`, `critic/shots/c19ww_3301_d720_europe.png` |
+| Breakthrough at peace silent (2203) | Unchanged: counts identical before and after, no row. | `critic/c19_k_2203.json` |
+| God revolt told as a declared war (6421) | Unchanged: "1 January 1938 Germany declared war on Free Saxony". | `critic/c19_q_6421.json` |
+| Offer peace unanswered (6011) | **Changed, not proven:** Poland offers Lithuania peace on day 20 and "21 January 1938 Poland made peace with Lithuania" follows in the same hour. With ADR-759 Poland's own diplomacy layer runs while played, so the row cannot tell an accepted offer from a peace Poland's AI made itself; the offer still has no answer of its own (accepted or refused). | `critic/c19_pl_6011.json` |
+| Phone: God tools clipped, bar cut | Unchanged: "Revolt" … "Raze city" all clipped (`scrollWidth > clientWidth`); the bar ends at "Stati". | `critic/c19_p.json`, `critic/shots/c19p_phone_03_god.png`, `critic/shots/c19p_phone_01_world.png` |
+| History export a/b raw | Unchanged: "SeaBattle,458771,France,524312,…". | `critic/c19_dl_7019.csv` |
+| Land "To its fight" frames blocks with the formation itself off screen (5381 d21) | Unchanged: self off screen on 6 of 8 presses, identical to run 18. | `critic/c19_ft_5381_d21.json` |
+| Fleet "To its fight" (4877) | Holds: the British carrier group framed at 448 m/px, its wings "with its fleet, in the air". | `critic/c19_fp2_4877.json` |
+| A broken format-1 save offered again after its refusal | Unchanged: refused with the plain message, and Continue offered again on the next visit. | `critic/c19_os_c10fmt1.json` |
+| A `cfa73219` save through Continue | Loads whole (27 December 1957, its ticker). | `critic/c19_os_c18fmt1.json` |
+| Editor fleets and the refusal on land (4877) | Holds: fleets placed, "Not done: no water of a sea is near the place." for Berlin; fleet counts by day equal to run 18's. The probe's 120-day wait timed out under the shared machine's load, twice (not a game fault). | `critic/c19_g_4877.json` |
+| Nukes by God (4219) | Unchanged: Paris H-bomb 3,329,000 civilians, "Go to" alert. | `critic/shots/c19a_4219_14_paris_h_2h.png`, `critic/c19_a_4219.json` |
+| History panel (7019 y20) | 4,154 events, opened in 115 ms. | `critic/c19_hi_7019.json` |
+| Armour close up (7019) | Unchanged: armour ranks and tracers at 25 m/px. | `critic/shots/c19c_7019_arm_0025m.png` |
+| Slowest year at Max (59.4 s, 6599 y17) | This run's slowest seed-year, 3301 y28, at Max in the page: **56.4 s**, 59.6 fps, longest gap 360 ms, none over 500 ms; two automatic pauses (nuclear alerts) resumed by the probe. | `critic/c19_l_3301.json`, `critic/c19_l_3301.log` |
+| Not re-run | Year-20 page probes (decks, raids, late fronts): the worlds are identical (hashes), and their code paths unchanged. | — |
+
+## New in this run: playing a nation (ADR-758, ADR-759)
+
+| Case | What happened | Evidence |
+|---|---|---|
+| PA: Germany taken, war on Poland from the right-click menu (seed 5557) | Menu "Poland / Declare war / Propose alliance"; war on; ticker row. 4 German formations in contact on day 4. | `critic/c19_pa_5557.json`, `critic/shots/c19pa_5557_00_menu.png` |
+| A formation in contact ordered 8 cells back | Selected by a click (camera follows it), marched 2.7 cells west in 24 h, out of contact from hour 4. As specified (a fighting withdrawal until first out of contact). | `critic/c19_pa_5557.json` (`withdraw`), `critic/shots/c19pa_5557_02_withdraw_day1.png` |
+| A rear formation ordered 25 cells into Poland | Met the enemy at hour 24: stopped, and told: "Infantry division 8: not done: it met the enemy and stopped to fight. A new order pulls it back or pushes on, fighting as it goes." Stood in contact to hour 80, then the AI took it back west (as specified: "may undo at once"). | `critic/c19_pa_5557.json` (`rearRun`) |
+| Order arrows at 3,000 / 250 / 25 m/px | 250 and 25 m/px: a dashed line with a dark edge to the target. **3,000 m/px: no arrow at all** for the selected, ordered formation (T0 draws none; the commit added T2/T3 only). | `critic/shots/c19pa_5557_03_rear_arrow_3000m_crop.png`, `…_250m.png`, `…_25m.png` |
+| Ctrl+A (50 of Germany's formations) and a click on Warsaw at 3,000 m/px | 50 selected, the camera stays; 41 marched within 48 h. No arrows at that zoom; gold rings cover the German counters' numbers; **four three-line refusal rows fill the ticker** in 48 h ("…stopped to fight. A new order pulls it back or pushes on…" × 4). | `critic/c19_pa_5557.json` (`ctrlA`), `critic/shots/c19pa_5557_06_ctrlA_ordered.png`, `critic/shots/c19pa_5557_07_ctrlA_48h.png` |
+| Army box unticked | Unordered formations moving: 3 (box on) → 0 (box off) over 3 days. The box works. | `critic/c19_pa_5557.json` (`movedArmyOn5d`, `movedArmyOff5d`) |
+| PB: God placement, 30 armoured divisions of Poland's dropped in Berlin at peace (seed 6673) | 30 placed in 30 clicks, no gold, "Click the map to place: Armoured division. Esc to stop."; at 120 m/px a grid of blocks with tags. At peace they marched home east (14 cells in 10 days), Berlin untouched, no war. Then war declared from Germany's menu: Poland and 1 ally against Germany and 5 (Italy, Japan…), told only as "Poland declared war on Germany". Five days later the 30 divisions, 173k men beside Berlin, had not taken it. | `critic/c19_pb_6673.json`, `critic/shots/c19pb_6673_04_placed_berlin_120m.png`, `critic/shots/c19pb_6673_06_war_day5.png` |
+| Right-click menu edges | No player: no menu. On the sea: no menu. At the window's right edge (Soviet ground at x 1590): the menu kept inside (1396–1574 px). | `critic/c19_pb_6673.json`, `critic/shots/c19pb_6673_00_menu_edge.png` |
+| Map-mode menu, desktop | Eleven modes with their keys (Fallout has none); Escape closes it. Every option hit-testable at 1600, 1366, 1280, 1180, 1024, 820 and 768 px wide. | `critic/c19_p3_widths.json`, `critic/shots/c19pb_6673_07_mapmode_menu.png` |
+| **Map-mode menu, phone (390 × 844)** | The menu opens (11 options, `display: flex`) but is **clipped by the bottom bar** (`.bottombar { overflow: auto }`): `elementFromPoint` at every option's centre hits the canvas or the legend, 0 of 11; a tap on "Terrain" times out; the mode stays Political. Before `c689c2e4` the button cycled the mode on a tap. | `critic/c19_p2_phone_menu.json`, `critic/shots/c19p2_phone_mapmenu_open.png`, `critic/c19_p3_widths.json` |
+| PF: follow (seed 4441) | A click selects and follows; the formation marched 4.6 cells in 48 h and the camera kept it centred; wheel in and out keep the follow; a pan ends it (PT). | `critic/c19_pf_4441.json`, `critic/c19_pt_touch.json` |
+| PS: save and load with a player's order and the navy box unticked (seed 1213) | Saved 2 h after the order; 72 h run (A) and 72 h after loading the save (B): **f5a1a6f2 both**. Boxes after the load as before; the selection is dropped (designed). | `critic/c19_ps_1213.json` |
+| PT: touch on the phone | Tap selects; a short drag pans and ends the follow; a long press and drag box-selects 41; a tap on ground orders them. A long press on a foreign nation opens nothing: on a phone, war is declared only from the Actions tab. The formation panel covers the top 290 px of 844. | `critic/c19_pt_touch.json`, `critic/shots/c19pt_01_box_drawn.png`, `critic/shots/c19pt_02_box_done.png` |
 
 ## Dimensions
 
 ### Map visuals and readability: 7 (unchanged)
 
-- **Tested:** a new seed's Europe every 60 days for two years (2441); late worlds at 3,000 and 250 m/px (7019, 4877, 2441,
-  1801 y20); phone and laptop.
-- **Evidence:** `critic/shots/c18ww_2441_d300_europe.png`, `critic/shots/c18y2_7019_y20_d30_3000m.png`,
-  `critic/shots/c18y2_2441_y20_d30_3000m.png`, `critic/shots/c18p_phone_01_world.png`.
-- **Weak:** late Iberia a patchwork of five colours under occupation hatching (7019 y20); the war chips run under the map
-  mode's legend box ("Peru +3" cut, `c18ww_2441_d300_europe.png`); the phone's legend covers the chips.
-- **AoC does better:** contiguous blobs with readable names and contrasting colours (`reference/screens/steam-screenshot-03.jpg`).
-  No drawing code changed but the ticker's rows.
+- **Tested:** Europe every 60 days for two years (3301); the selection and order lines at 3,000, 250, 25 m/px; 30
+  placed divisions at 120 m/px.
+- **Evidence:** `critic/shots/c19ww_3301_d720_europe.png`, `critic/shots/c19pa_5557_05_ctrlA.png`,
+  `critic/shots/c19pa_5557_03_rear_arrow_250m.png`, `critic/shots/c19pb_6673_04_placed_berlin_120m.png`.
+- **Better:** order lines close in are clear (dark edge, large head). **Worse:** at country zoom a large selection is a
+  blob of gold rings over the counters, and no order line is drawn there. **AoC does better:** contiguous, readable blobs
+  and names (`reference/screens/steam-screenshot-03.jpg`); late Iberia and Scandinavia are still patchworks (3301 day
+  720: Italy holding Norway's north and Sweden's west).
 
 ### Diplomacy, war, alliance, puppet, revolt depth: 7 (unchanged)
 
-- **Same 29 seeds:** wars declared 444 → 444, peaces 423 → 421, puppets, annexations, revolts level; major battles
-  146 → 180 (se 9).
-- **Weak (unchanged UI):** Offer peace unanswered (`critic/c18_pl_6011.json`); the God revolt told as a declared war.
+- **Same worlds as run 18** (identity). **New:** war, peace and alliance from a right-click on the map; a peace now follows
+  the offer in run 18's case, though nothing says the offer was answered (the AI may have made it). **Weak:** the allies pulled into a war the player declares are not told (Poland +1
+  against Germany +5 shown only as one row, `c19_pb_6673.json`); the God revolt still told as a declared war.
 
-### Emergent world dynamics over long runs: 7 (up from 6)
+### Emergent world dynamics over long runs: 7 (unchanged)
 
-- **Tested:** 37 worlds × 30 years (29 paired with run 17, 8 new on both commits); 37 year-20 saves × 61 days on their own
-  commits; four late worlds 60 days in the page; a new seed's first two years in the page.
-- **Why up (same seeds, same cases):** run 17 held 6 because late contact was 13 % of year 1 and half the late worlds
-  showed nobody in contact. Now late contact is 2.6× (0.32 of year 1, higher on all 37 worlds); worlds with nobody in
-  contact on more than two of seven samples 15 → 2 of 29, 5 → 0 of 8 new; 7019 y20 went from an empty front to 24–39
-  formations in contact (`c18y2_7019_y20_d30_250m.png`: French and Australian divisions in the Pyrenees). Sea battles
-  late +30 %, air battles late +44 % (687 → 987, higher on 29), landings +62 %.
-- **Why not 8:** a quarter of the engaged formations are under 2,000 men (0.18 → 0.26): the levy's "Cadre infantry
-  division" tags of 365–1,300 men fill the late fronts (`c18y2_7019_y20_d30_250m.png`); 6421 y20 still has a 748-cell
-  Soviet front against Tannu Tuva with nobody in contact on 4 of 7 samples; late contact is a third of year 1. No
-  evidence yet that the long run is clearly better than AoC's.
+- **Same worlds as run 18**, 120 of 120 world-years equal. New seeds (not compared) sit in run 18's range. The reasons
+  run 18 gave for not 8 stand.
 
 ### God Mode: 7 (unchanged)
 
-- **Tested by clicks:** Revolt, Spawn nation, Found city, Raze city (6421); H-bomb on Paris and A-bomb on London (4219);
-  Breakthrough at peace (2203) and at war (7019). `critic/c18_q_6421.json`, `critic/c18_a_4219.json`, `critic/c18_k_2203.json`, `critic/c18_k3_7019.json`.
-- **Weak (unchanged code):** Breakthrough silent; the revolt told as a declared war.
+- **Better:** any unit of the played nation placed at once, researched or not, refusal told at sea
+  (`c19_pb_6673.json`, `critic/shots/c19pb_6673_02_place_tab.png`).
+- **Not more:** Breakthrough silent at peace (`c19_k_2203.json`); revolt told as a declared war (`c19_q_6421.json`);
+  God tools clipped on the phone (`c19_p.json`). A placed tank army of 173,000 men beside Berlin, at war, does nothing
+  with it for five days (`critic/shots/c19pb_6673_06_war_day5.png`): the AI takes the placed units at once, so the God
+  Mode player cannot make that army attack except by ordering it, unit by unit or by box.
 
 ### Editor and scenarios: 7 (unchanged)
 
-- **Tested:** fleets and a bomber group placed, the refusal on land ("no water of a sea is near the place"), the
-  standoff loaded from its export, armed Poland. `critic/c18_g_4877.json`, `critic/c18_g4_standoff.json`, `critic/c18_g2_9437_POL.json`.
-- **Weak, unchanged code:** editor carrier groups with empty decks; the title's file input a browser default ("Choose File").
+- Fleets and a bomber group placed, the refusal on land (`c19_g_4877.json`). Unchanged code.
 
 ### Stats and history: 7 (unchanged)
 
-- **Evidence:** `critic/c18_hi_7019.json` (4,154 events), `critic/c18_dl_7019.csv`, `critic/c18_dl_7019.json`, `critic/c18_l_6599.log` (3,388 events, 24 types).
-- **Weak:** the export's `a`/`b` columns are raw words for sea battles; the carrier sinkings (`CarrierSunk`) are counted
-  but not in the history (the headless report sums them).
+- 4,154 events in 115 ms (`c19_hi_7019.json`); export a/b raw (`c19_dl_7019.csv`); identical carrier rows.
 
 ### UI/UX and polish: 7 (unchanged)
 
-- **Better:** the title's two save messages are plain and placed where Continue was (`c18os_nofmt_00_title.png`,
-  `c18os_c10fmt1_01_after_continue.png`); the carrier panel's deck rows; the ticker clears the panel at three sizes.
-- **New weakness:** identical carrier strike rows ("Carrier strike ashore: United States on Iceland" three times,
-  `c18y2_7019_y20_d30_3000m.png`), with no fleet or target name to tell them apart.
-- **Unchanged:** phone bar cut ("Stati"), God tools clipped, chips under the legend; "To its fight" on land frames
-  blocks with the formation itself off screen on 6 of 8 presses (`c18_ft_5381_d21.json`).
+- **Better (verified):** playing a nation works as specified in every case tried (table above): selection by click,
+  box, long press and Ctrl+A; the camera follow; orders kept until done; refusals told in words; war from the map; the
+  menu kept inside the window; the AI boxes do what they say; save/load keeps it all.
+- **Worse:** the phone's map modes are gone (blocking R19-B1); a mass order floods the ticker with identical three-line
+  refusal rows (`c19pa_5557_07_ctrlA_48h.png`); no order lines at the zoom where mass orders are given; a long press on
+  a foreign nation does nothing on touch. **Unchanged:** phone bar cut, God tools clipped, "To its fight" on land off its
+  own formation, identical carrier rows.
+- **Why not up:** the gains are real but each new piece came with a visible rough edge, and one regression.
 
 ### Performance: 7 (unchanged)
 
-- **Evidence:** `critic/c18_perf_summary.json`, `critic/c18_perf_*_read*.log`, `critic/c18o_perf_*_read*.log`,
-  `critic/c18_l_6599.log`.
-- **Worse in the sim, not yet for the player:** pinned seed 99 2.10 → 2.56 ms (+22 %, same seed, both commits); same
-  seed-year 6599 y17 2.82 → 5.76 ms (the levy's armies: 817 → 1,061 formations, operational AI 1.03 → 2.57 ms); three of
-  eight measured years over ADR-709's 5.5 ms (5.84 the worst; run 17: one at 5.85). Late mean contended +33 % on 29 of 29
-  worlds. ADR-745's own cost line ("run time 1.065×, worst year 4.75 ms") is not what these worlds show.
-- **Why not down (but R18-B1):** the worst year is no worse than run 17's (5.84 against 5.85), and the slowest year at Max is 59.4 s
-  with no gap over 330 ms (run 17: 60.4 s). **AoC:** text only.
+- **Tested:** HEAD against `cfa73219` at the same time on two cores, swapped, nine late seed-years and seed 99 × 5
+  years (`critic/c19_pair_summary.json`); 0xFFFF-pinned reads started in quiet moments with the load sampled during
+  each (`critic/c19_perf_summary.json`, `critic/c19_perfq.log`); the slowest seed-year at Max in the page
+  (`critic/c19_l_3301.json`).
+- **Same worlds, faster:** HEAD/old 0.923 (6599 y17), 0.940 (2539 y28), 0.946 (2617 y27), 0.964 (1307 y30), 0.966
+  (3727 y25), 0.970 (8011 y26), 0.974 (1213 y26), 0.976 (4441 y26), 0.997 (3301 y28); seed 99 × 5 years 0.989. Hashes
+  equal on every pair.
+- **Against SPEC's 6.5 ms (ADR-757):** quiet pinned reads 6599 y17 5.53/5.64, 2539 y28 5.80/**5.95**, 1307 y30 5.78,
+  3301 y28 (the slowest contended year of the new seeds, 9.14 ms in the batch) 5.38/5.43, 1213 y26 4.99, 2617 y27
+  4.96 (4441 y26 5.55 was contended, ~12 cores in use by another session); seed 99 × 5 years 2.64 (b22bcdd1 at year 1,
+  the pin). Every read under 6.5; the worst leaves 0.55 ms. Against the old 5.5, five of the ten clean reads are still over (and the contended 4441 read).
+- **For the player:** 3301's year 28 at Max took 56.4 s with no gap over 360 ms (run 18's slowest year 59.4 s).
+- **Why not up:** the gain is a few per cent and the budget was moved to meet the cost rather than the cost cut; late
+  years still run at twice seed 99's early-year tick. **AoC:** text only.
 
-### Stability: 7 (up from 5)
+### Stability: 7 (unchanged)
 
-- **Why up (same case, both builds):** run 17's c10 save on HEAD is refused whole, the title says so, nothing starts
-  (`c18os_c10fmt1_01_after_continue.png`; run 17: the chimera in `c17os_01_after_continue.png`). Pre-format saves are
-  refused before load (`c18_os_nofmt.json`). Browser and headless equal on seeds 99 and 1307 (years 1–3, with inputs);
-  `errors` empty in every page JSON of this run but the expected warning of the refused save
-  ("the autosave could not be loaded: missing section formations.struck", `c18_os_c10fmt1.json`); 37 headless worlds 30 years without a throw.
-- **Not more:** the broken format-1 save is offered again on the next visit (`c18_os_c10fmt1.json`); a save that would
-  load is refused for lacking a field (designed, ADR-747).
+- **Held:** the world is deterministic and equal to run 18's (120 world-years); save and load with player orders and
+  non-default AI boxes give the same hash after 72 h (`c19_ps_1213.json`); no page error in 24 page probes but the
+  expected warning of the refused save (`c19_os_c10fmt1.json`); 8 headless worlds × 30 years without a throw.
+- **Not more:** the broken format-1 save is still offered again on the next visit (`c19_os_c10fmt1.json`).
 
 ### Semantic zoom to unit level: 8 (unchanged)
 
-- **Evidence:** `critic/shots/c18c_7019_arm_0025m.png`, `critic/shots/c18c_7019_inf_0010m.png`, `critic/c18_z_5861.json`,
-  `critic/shots/c18y2_7019_y20_d30_250m.png`.
-- **Holds:** German armour ranks against Polish blocks with tracers, the contact line and planes at 25 m/px; late fronts
-  now show blocks in contact at 250 m/px. **Not more:** the formation camera off its own formation (above).
+- **Evidence:** `critic/shots/c19c_7019_arm_0025m.png`, `critic/c19_z_5861.json`, `critic/shots/c19pa_5557_03_rear_arrow_25m.png`.
+- **Better:** the selection is framed at every zoom and the order line is drawn at T2/T3. **Not more:** land "To its
+  fight" off its own formation on 6 of 8 (`c19_ft_5381_d21.json`); T0 has no order line.
 
-### Naval warfare: 8 (up from 6)
+### Naval warfare: 8 (unchanged)
 
-- **Evidence:** `critic/c18_cmp_y30.json`, `critic/c18_y20_reads.json`, `critic/c18_cv_99.json`, `critic/c18_rr_3923.json`,
-  `critic/shots/c18rr_3923_cvpanel.png`, `critic/shots/c18tk_99_1600_02_raidclick.png`, `critic/c18_n4_8693.json`,
-  `critic/c18_g4_standoff.json`, `critic/c18_fp2_4877.json`.
-- **Why up (same 29 seeds, `cfedb50a` → HEAD):** run 17 dropped naval for fewer battles and empty decks. Sea battles late
-  5.37 → 6.96 (higher on 25 of 29), ships sunk in them 60 → 71, and carrier wings now sink ~25 ships a world-year that
-  are counted; carrier groups at war with no wing 31 of 35 → 0 of 36; carrier strikes ashore and out of battle have rows
-  and a framed click; the panel shows each wing and whether it is striking. Transports and landings up (601 at y20,
-  landings +62 %). Fleets on canal cells: none. **AoC has no navy.**
-- **Against run 16's 7 (8.16 late battles, manned carriers):** HEAD fights fewer surface battles (6.96), but adds what
-  run 16 lacked: ~25 ships a world-year sunk by carrier wings and counted, a ticker row and a framed click for every
-  carrier strike, the deck panel, landings up and no fleet stranded. Ships sunk at sea late (battles 71 + carriers ~25)
-  exceed run 16's 80.8 in battles. That, not the battle count, is the 8.
-- **Not more:** 48 of 79 decks hold a worn wing (6 or 3 of 24 aircraft in 3923's US groups), as "manned"; raid rows of one
-  nation are indistinguishable; surface warships y20 297 → 279 (n.s.).
+- Same worlds; fleet "To its fight" and the carrier panel hold (`c19_fp2_4877.json`). Identical raid rows unchanged.
 
 ### Tanks: 8 (unchanged)
 
-- **Evidence:** `critic/shots/c18c_7019_arm_0025m.png`, `critic/shots/c18c_7019_arm_0080m.png`, `critic/c18_c_7019.json`.
+- `critic/shots/c19c_7019_arm_0025m.png`; 30 placed armoured divisions drawn as blocks with tags (`c19pb_6673_04_placed_berlin_120m.png`).
 
 ### Aircraft: 8 (unchanged)
 
-- **Evidence:** `critic/c18_cmp_y30.json`, `critic/c18_u_4877.json`, `critic/shots/c18c_7019_arm_0025m.png`.
-- **Holds and better:** air battles late 687 → 987 a world-year, sorties aloft late 40.7 → 50.3 (higher on 27 of 29);
-  carrier air hours late 730 → 2,331. **Not more:** a late front at 250 m/px is often an empty sky (4877 y20: 0, 1, 1
-  sorties over three fronts at 250 m/px, `c18_u_4877.json`); carrier sorties drawn as land planes. **AoC has no air war.**
+- Same worlds as run 18; no air code changed but the AI's hands-off for a player's wing (not tested by a wing order).
 
 ### AI nuclear use: 8 (unchanged)
 
-- **Evidence:** `critic/c18_g2_9437_POL.json`, `critic/c18_t_7019.json`, `critic/c18_a_4219.json`, `critic/c18_cmp_y30.json`.
-- **Holds:** editor-armed Poland strikes three times in 107 days, the "means lost" line when its airbase falls; restraint
-  lines consistent; bursts a world 22.8 → 25.0 (n.s.). **New to note:** Poland's third strike, on Prague, killed 134,000
-  civilians and 299 men: a city strike against a near-empty target.
+- Same worlds as run 18; God nukes unchanged (`c19_a_4219.json`). Nuclear strikes are a box of their own, unticked when
+  a nation is taken (`c19_pa_5557.json` `boxes`), as ADR-759 says.
 
 ## Blocking issues, in priority order
 
-Each of run 17's three is fixed on its own case (above). One new:
+R18-B1 is resolved (above). One new:
 
-1. **R18-B1. The tick budget fails on late years after the levy (contradicts SPEC's "≤ 5.5 ms in any year", ADR-709).**
-   - Pinned, alone, twice: 6599 y17 **5.76 / 5.75 ms**, 2539 y28 **5.67 / 5.84**, 1307 y30 5.33 / **5.55**: three of the
-     eight slowest measured years over the budget (run 17: one of seven, 5.85). Same seed-year 6599 y17 on `cfedb50a`
-     2.82 ms (817 formations, operational AI 1.03 ms) against HEAD's 5.76 (1,061, 2.57 ms). Seed 99 × 5 years 2.10 →
-     2.56 ms. Contended world-years over 5.5 ms 17 of 2,160 → 136 of 1,110; late mean higher on 29 of 29. ADR-745's
-     cost line ("1.065 ×, the worst year 4.75 ms") is not what these worlds show.
-   - Run 17 demoted one breach of 6 % in 2,160 world-years; that premise is gone. The player does not feel it yet (the
-     slowest year at Max 59.4 s), which is why Performance holds 7.
-   - **Evidence:** `critic/c18_perf_summary.json`, `critic/c18_perf_6599_y17_read1.log`, `critic/c18o_perf_6599_y17_read1.log`,
-     `critic/c18_perf_2539_y28_read2.log`, `critic/c18_perf_seed99_5y_head.log`, `critic/c18_perf_seed99_5y_cfed.log`, `critic/c18_cmp_y30.txt`.
-   - **Fix and bar:** make the levy's armies cheaper to plan (fold or cap cadres per front, or a cheaper operational AI
-     per formation); pinned ≤ 5.5 ms on the five slowest years of ten unseen 30-year seeds.
+1. **R19-B1. On a phone the map modes cannot be chosen: the new map-mode menu is clipped by the bottom bar.**
+   - `c689c2e4` replaced the map button's cycle-on-tap with a menu. The menu is a child of `.bottombar`, which has
+     `overflow: auto` and on a phone scrolls sideways (scrollWidth 839 in 366 px). At 390 × 844 the menu opens
+     (247–434 px × 560–802 px, 11 options) but is clipped: 0 of 11 options are hit by `elementFromPoint`, a tap on
+     "Terrain" times out, the mode stays Political. Every desktop and tablet width tried (768–1600 px) is fine. The
+     phone has no keys 1–0, so there is no other way: a claimed feature (map modes, SPEC's touch support) lost for every
+     phone player by the latest commit.
+   - **Evidence:** `critic/c19_p2_phone_menu.json`, `critic/shots/c19p2_phone_mapmenu_open.png`,
+     `critic/shots/c19p2_phone_after_tap.png`, `critic/c19_p3_widths.json`.
+   - **Fix and bar:** render the menu outside the scrolling bar (a portal or `position: fixed` at the button's rect),
+     or let the button cycle on touch; bar: at 390 × 844 every option hit-testable and a tap changes the mode.
 
 ## Non-blocking issues
 
-1. **Identical carrier strike rows** for several groups of one nation on one enemy (`c18y2_7019_y20_d30_3000m.png`). Fix:
-   one row a nation pair with a count, or name the group and the target.
-2. **Worn wings count as manned decks:** 31 of 79 decks hold a whole wing (20+ of 24 aircraft); the rest fewer (`c18_decks_c18_y20_a.json`).
-   Fix: refill deck wings as land wings are refilled, or re-man below a threshold.
-3. **Hollow levies fill the late fronts:** engaged formations under 2,000 men 18 → 26 %; "Cadre infantry division" tags of
-   365–1,300 men (`c18y2_7019_y20_d30_250m.png`). Fix: merge cadres in contact, or show them as one block.
-4. **One late world still idle on a large front:** 6421 y20, Soviet Union against Tannu Tuva, 748 cells, 237 formations
-   against 4, nobody in contact on 4 of 7 samples (`c18_phantom_6421.json`).
-5. **A broken save with the current format is offered again** after its refusal, on the next visit (`c18_os_c10fmt1.json`).
-6. **Unchanged UI:** Breakthrough silent; God revolt told as a declared war; Offer peace unanswered; phone God tools
-   clipped and bar cut; export a/b raw; land "To its fight" off its own formation; editor carriers empty.
+1. **No order lines at country zoom (T0, above 2,000 m/px)**, where a Ctrl+A order is most likely given: 50 divisions
+   sent to Warsaw show nothing but gold rings (`c19pa_5557_06_ctrlA_ordered.png`, `c19pa_5557_03_rear_arrow_3000m_crop.png`).
+2. **A mass order floods the ticker** with identical three-line refusals, one per formation that meets the enemy (four
+   in 48 h for one Ctrl+A order, `c19pa_5557_07_ctrlA_48h.png`). Fix: one row per order ("4 of 50 stopped to fight").
+3. **Selection rings hide the counters' numbers** at country zoom (`c19pa_5557_05_ctrlA.png`).
+4. **Allies drawn into a war the player declares are not told** (`c19_pb_6673.json`).
+5. **No war from the map on touch** (a long press on a foreign nation does nothing; `c19_pt_touch.json`).
+6. **Unchanged from run 18:** identical carrier strike rows; worn wings count as manned decks; hollow levies on late
+   fronts; 6421's idle front; the broken format-1 save offered again; Breakthrough silent; God revolt as a declared war;
+   phone God tools clipped and bar cut; export a/b raw; land "To its fight" off its own formation; editor carriers empty.
 
 ## Design objections (none blocking, no score lowered)
 
-- **Every compatible autosave refused once (ADR-747):** a `cfedb50a` save loads whole on HEAD when the record claims the
-  format (`c18_os_fmt1.json`), but without the field it is refused. A trial load with ADR-744's rollback would have kept
-  these games; the user accepted the loss.
-- **The levy for no gold (ADR-745):** it fixes the stillness by numbers of small formations, and its cost lands on the
-  tick budget (R18-B1). Fronts of cadres look thin at 250 m/px.
-- **The sea battles' fall kept (ADR-751):** now moot on these seeds (late battles +30 % since run 17), though still under
-  run 16's 8.16 a world-year.
-- **A stable top is a valid world (ADR-750):** fine on these runs: the ordered five never held over 8 years on HEAD.
+- **The budget raised instead of the cost cut (ADR-757):** the late tick is now measured against 6.5 ms. HEAD does meet
+  it, and is a few per cent faster than run 18's build, but the late years still cost twice seed 99's early years, and
+  the room is only the margin of the quiet reads.
+- **The AI takes God-placed units at once (ADR-759):** a God Mode player who drops an army to see what it does sees it
+  marched home (`c19_pb_6673.json`); a "placed units hold until ordered" option would serve that player.
+- **A player's march that meets the enemy is cancelled (ADR-759):** a broad-front push by box or Ctrl+A turns into a line
+  of halted divisions and refusal rows, each to be ordered again.
 
 ## Notes
 
-- The batch ran nine worlds at a time beside page probes; pinned figures were taken alone after it was stopped.
-  `c18_headless.ts`'s 1307 year-1 hash equals the page's (f9a6a2d6).
-- Contended timing ratios between runs are a trend; the verdicts above rest on pinned pairs.
-- The title card's date in the old-save shots is the probe's tick written into the record.
-- Port 5338 stopped at the end; the worktree's `node_modules` junction was unlinked before `git worktree remove`.
+- The machine was shared with another session's capture/build loop from about 14:24; contended batch timings are a trend.
+  Paired same-time ratios and quiet-gated pinned reads are what the Performance verdict rests on.
+- `cfa73219` worktree at `critic/wt` for timing; its `node_modules` junction unlinked before `git worktree remove`.
+- Port 5339 stopped at the end.
 
 ## Strengths, verified
 
-- **Run 17's three blocking issues fixed on their own cases**, each with a same-case before/after.
-- **Late fronts are alive:** 7019's year 20 from 0 to 39 formations in contact; worlds with idle fronts 15 → 2 of 29.
-- **Determinism:** browser and headless equal on 99 and 1307 with inputs, the seed-99 pin met in the page.
+- **Playing a nation finally feels like playing:** the fronts keep fighting when taken, orders are kept until done and
+  refused in plain words, war is a right-click away, and all of it survives a save and load to the same hash.
+- **The world is stable to the bit:** 120 of 120 world-years equal to run 18's build, a few per cent faster.
