@@ -67,4 +67,53 @@ describe('wideLinked (PLAN 7.129)', () => {
     expect(apart).toBeGreaterThan(0);
     expect(pairs - apart).toBeGreaterThan(0);
   });
+
+  // PLAN 7.157: the walk is kept on the passage's node parts for the passages after it (one an
+  // hour, `passageOf`) while no cell has gone from an open holder to a closed one or back. Last in
+  // the file: it flips cells of the world.
+  it("keeps the walk for the next passage of the same parts, until a cell goes between an open and a closed holder", () => {
+    const nav = navOf(w);
+    const held = w.heldByNode();
+    const { controller } = w.cells;
+    const n = [...w.wars.nations()].filter((m) => w.nations.cols.living[m] === 1).sort((a, b) => a - b)[0]!;
+    const first = passageOf(w, n);
+    // With `joined` on the parts, `wideLinked` reads it and walks nothing: dropped, so it walks.
+    first.keep!.joined = undefined;
+    first.keep!.runs = undefined;
+    delete first.joined;
+    const open: number[] = [];
+    for (let node = 1; node < nav.graph.nodeCount; node++) if (first.open![node] === 1) open.push(node);
+    wideLinked(nav.grid, nav.graph, first, open[0]!, open[open.length - 1]!);
+    const walk = first.link;
+    expect(walk).toBeDefined();
+    expect(first.keep!.link).toBe(walk);
+    // The next hour's passage: the same parts, no cell flipped.
+    const next = passageOf(w, n);
+    expect(next).not.toBe(first);
+    expect(next.link).toBe(walk);
+    // A cell flipped to a holder of its node that is open as its holder was (or closed as it was),
+    // its holder keeping cells in the node: the nodes' parts are the same.
+    const flip = (same: boolean): number => {
+      for (let i = 0; i < controller.length; i++) {
+        const node = nav.graph.nodeOf[i]!;
+        const from = controller[i]!;
+        if (node === 0 || (held.get(node * 65536 + from) ?? 0) < 2) continue;
+        for (let to = 1; to < first.ok.length; to++) {
+          if (to === from || !held.has(node * 65536 + to) || (first.ok[to] === first.ok[from]) !== same) continue;
+          const keys = w.heldKeys;
+          w.setController(i, to);
+          expect(w.heldKeys).toBe(keys);
+          return i;
+        }
+      }
+      throw new Error(`no cell to flip (${same ? 'same' : 'other'} ground)`);
+    };
+    flip(true);
+    const kept = passageOf(w, n);
+    expect(kept.link).toBe(walk);
+    flip(false);
+    const after = passageOf(w, n);
+    expect(after.link).toBeUndefined();
+    expect(after.keep!.link).toBeUndefined();
+  });
 });

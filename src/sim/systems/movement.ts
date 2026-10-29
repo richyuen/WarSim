@@ -65,7 +65,7 @@
  */
 import { EventKind, RejectReason } from '../../shared/events';
 import { atan2 } from '../core/dmath';
-import { Mobility, MOVE_COST, stepKm, type JoinRuns, type MobilityId, type NavGrid, type Passage } from '../nav/grid';
+import { Mobility, MOVE_COST, stepKm, type JoinRuns, type MobilityId, type NavGrid, type Passage, type WideLinks } from '../nav/grid';
 import { exitsOf } from '../nav/crossings';
 import { nearestCellWhere } from '../data/ownership';
 import { dropRuns, findDirectRoute, findRoute, JOIN_PROBE, joinedKept, nodeGroups, type ProvinceGraph } from '../nav/provinceGraph';
@@ -149,9 +149,23 @@ function passageWith(world: World, ok: Uint8Array, parts: NodeParts): Passage {
       }
     }
   }
+  // `wideLinked`'s walk is of which cells are open: any flip between an open and a closed holder
+  // undoes it (PLAN 7.157).
+  if (parts.link !== undefined) {
+    if (parts.flips < world.flipLogBase) parts.link = undefined;
+    else {
+      const log = world.flipLog;
+      for (let k = parts.flips - world.flipLogBase; k < log.length; k++) {
+        const from = Math.floor(log[k]! / 65536);
+        if (ok[from] === ok[log[k]! - from * 65536]) continue;
+        parts.link = undefined;
+        break;
+      }
+    }
+  }
   parts.flips = now;
-  const { open, shut, group, wide, joined } = parts;
-  const pass: Passage = { ok, holder: world.cells.controller, open, group, shut, wide, keep: parts, ...(joined ? { joined } : {}) };
+  const { open, shut, group, wide, joined, link } = parts;
+  const pass: Passage = { ok, holder: world.cells.controller, open, group, shut, wide, keep: parts, ...(joined ? { joined } : {}), ...(link ? { link } : {}) };
   if (judged && joined !== undefined) JOIN_PROBE.kept?.(pass);
   return pass;
 }
@@ -178,6 +192,11 @@ interface NodeParts {
   flips: number;
   /** What the walk of `joined` saw of the runs, and the flips judged since (PLAN 7.30c2). */
   runs?: JoinRuns | undefined;
+  /**
+   * What `wideLinked` has walked on a passage of these parts (PLAN 7.157): kept for the passages
+   * after it while no cell has gone from an open holder to a closed one or back (`passageWith`).
+   */
+  link?: WideLinks | undefined;
   /**
    * The coarse routes over open nodes asked on these parts (`coarseRoute`, by mobility and ends;
    * PLAN 1.42h): a route is of `open` and `shut` alone, so it is kept while they are.
@@ -254,6 +273,7 @@ function nodeParts(world: World, ok: Uint8Array, key: string): NodeParts {
     joined: same && patched ? was.joined : undefined,
     flips: same && patched ? was.flips : -1,
     runs: same && patched ? was.runs : undefined,
+    link: same && patched ? was.link : undefined,
     coarse: same && was.coarse.size < COARSE_KEPT ? was.coarse : new Map(),
   };
   // Runs not carried over judge nothing more: their place among the kept is freed.

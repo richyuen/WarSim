@@ -24558,3 +24558,26 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Filed:** PLAN 7.157 (R18-B1: pinned late-year ticks over 5.5 ms after the levy; seeds 1461–1470). No dimension
   under its bar, so no dimension task.
 - **Next:** PLAN 7.157.
+
+## 2026-10-28 — PLAN 7.157 (part): `wideLinked`'s walk kept from hour to hour
+
+- **Start:** gate green on `6ab32632`; critic not due. The task: R18-B1, late years over 5.5 ms after the levy.
+- **Read** (`.cache/7157/`, not committed; spanProf, opCalls, a probe of the walks by planning hour): 6599 y17's
+  operational AI 2.57 of 5.76 ms; its leaves `pocketOf` and `wideLinked`'s `walkGroup`. Both keep what they walked on
+  the `Passage`, made anew each planning hour: `wideLinked` made ~1.3 walks an hour, 47,000 cells, thrown away at the
+  next. On 2539's year 28 the cost sits from its second month on (month 0 0.88 ms of operational AI, months 1–11
+  2.1–2.7): ~2,500 sectors a plan, one world coalition; Afghanistan with one free formation 4.6 ms a plan, #235 with
+  5.5 4.0 ms. A plan's cost goes with the shared front's sectors and the walks, not with the formations: folding or
+  capping the levy's cadres (the critic's fix) would not touch it.
+- **Change** (pure, no rule): the walk is kept on the passage's node parts (`NodeParts.link`) and handed to the next
+  passage while no cell has gone between an open and a closed holder since (`passageWith`, as `joined`). Hashes held:
+  6599 y17 1f9f464d, 2539 y28 25c4b526, 1307 y30 d62420cd; the gate's pin.
+- **Measured** (pinned, one at a time): 6599 y17 5.76 → 5.50–5.54 ms (operational AI 2.57 → 2.28–2.34); 2539 y28
+  5.94–5.99 (the critic's 5.67/5.84: the drift of sequential reads), 1307 y30 5.43. The walks an hour on 6599 47,000 →
+  5,700 cells; on 2539's month 1 the walk is still made 2.3 times a day (its front flips).
+- **Tried and dropped:** a drop rule by the cells the walk has seen (makes 68 → 62 in 30 days: the walk is where the
+  front flips); four pocket stores by passage in place of one (resets 9 → 5.8 an hour, cells −8 %, and 6599 y17's
+  hash moved: `pocketOf`'s answers depend on the order of the asks).
+- **Test:** `tests/unit/wideLinked1938.test.ts` "keeps the walk for the next passage…" (red without).
+- **Next:** 7.157 goes on: the link's daily remake on a flipping front (`joined` with its runs as a survivor), then
+  the AT's ten seeds (1461–1470).

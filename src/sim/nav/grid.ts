@@ -334,7 +334,7 @@ export interface Passage {
    * (`passageOf`, PLAN 7.1i): until the nodes' parts change, or a cell's flip between an open and
    * a closed holder that the runs of its walk (`runs`) cannot rule out changing it (PLAN 7.30c2).
    */
-  keep?: { joined?: Int32Array | undefined; runs?: JoinRuns | undefined; coarse?: Map<number, number[] | null> };
+  keep?: { joined?: Int32Array | undefined; runs?: JoinRuns | undefined; coarse?: Map<number, number[] | null>; link?: WideLinks | undefined };
   /**
    * The routes `findRoute` has answered on this passage, by mobility and ends (PLAN 7.1l3): the
    * formations of a stack sent to one cell asked for the same search each, 18 of 3 ms in one plan
@@ -344,7 +344,9 @@ export interface Passage {
   routes?: Map<number, PathResult | null>;
   /**
    * What `wideLinked` (nav/provinceGraph.ts) has walked of `joined`'s answer on this passage, pair
-   * by pair (PLAN 7.129): made at its first ask, read by those after it in the passage's hour.
+   * by pair (PLAN 7.129): made at its first ask, read by those after it in the passage's hour, and
+   * by the passages after it on the same parts while no cell's open or closed ground changed
+   * (`Passage.keep`, PLAN 7.157).
    */
   link?: WideLinks;
 }

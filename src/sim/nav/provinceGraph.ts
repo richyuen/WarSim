@@ -332,8 +332,9 @@ export function wideJoined(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: numb
 /**
  * `wideJoined`'s answer for one pair, walking no more than it needs (PLAN 7.129): from the
  * passage's `joined` where it has one; else the runs of open cells that `joinWide` walks are
- * walked outwards from the two grounds' groups, each run once a passage (`Passage.link`), until
- * the two are joined or one of them has no group left to walk from. The same answer as
+ * walked outwards from the two grounds' groups, each run once a passage (`Passage.link`; kept for
+ * the passages after it on the same parts while no cell goes between an open and a closed holder,
+ * `passageWith`, PLAN 7.157), until the two are joined or one of them has no group left to walk from. The same answer as
  * `joinWide`'s: a run that meets a group has a cell next to a cell of it, in a node next to one of
  * the group's nodes (`adjacent8`, diagonals too), and the open cells of every such node are walked.
  * A run is of `joinWide`'s only if one of its cells is in a node of open and closed ground (where
@@ -344,7 +345,10 @@ export function wideLinked(g: NavGrid, pg: ProvinceGraph, pass: Passage, a: numb
   if (pass.joined) return pass.joined[a] === pass.joined[b];
   const sc = linkScratch(g);
   let st = pass.link;
-  if (!st || st.epoch !== sc.epoch) pass.link = st = makeLinks(pg, pass, sc);
+  if (!st || st.epoch !== sc.epoch) {
+    pass.link = st = makeLinks(pg, pass, sc);
+    if (pass.keep) pass.keep.link = st;
+  }
   const ga = st.group[a]!;
   const gb = st.group[b]!;
   // `joined` is 0 for a node of no group, and a group's root otherwise.
