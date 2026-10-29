@@ -16306,3 +16306,25 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   at once, swapped); then pinned ≤ 5.5 ms on 1461 y29, 2539 y28, 1307 y30, 1468 y25 and y26; a stop: a year over 5.5.
   Missed 2026-10-29 (`d551fc60`, pure: 0.83–0.85 × paired; pinned 5.57–6.05 ms, `docs/evidence/7.158/at.md`): BLOCKERS;
   ADR-756 waits on the user.
+
+<!-- moved 2026-10-29 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.159 R19-B1: on a phone the map modes cannot be chosen; the map-mode menu (`c689c2e4`) is clipped by the
+  bottom bar's `overflow: auto` (at 390 × 844, 0 of 11 options hit-testable, a tap on Terrain leaves Political).
+  Evidence: `critic/c19_p2_phone_menu.json`, `critic/shots/c19p2_phone_mapmenu_open.png`, `critic/c19_p3_widths.json`.
+  Fix: draw the menu outside the scrolling bar (a portal, or fixed at the button's rect).
+  AT: an e2e at 390 × 844 opens the menu, finds 11 of 11 options hit-testable (`elementFromPoint` at each option's
+  centre is the option), and a tap on Terrain makes `mapmode-btn`'s `data-mode` `terrain`; red on `c689c2e4`; the
+  same spec green at 1280 × 800; `player1938`/`alliances1938`/`ticker1938` still green.

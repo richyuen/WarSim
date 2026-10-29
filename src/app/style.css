@@ -126,20 +126,22 @@ body {
 }
 
 /* A button's `min-width` would let it shrink under its text. */
-/* The map button's menu of every mode, above it (the user's request of 2026-10-29). */
-/* While it is open the bar stands over the war banners and the ticker above it. */
-.bottombar:has(.mapmode-menu) {
-  z-index: 8;
-}
+/* The map button's menu of every mode, above it (the user's request of 2026-10-29). It is drawn in
+   the UI layer, not in the bar, which scrolls on a phone and cut it off (PLAN 7.159); its place is
+   the button's (BottomBar.tsx), over the war banners and the ticker. */
 .mapmode-wrap {
   position: relative;
   display: inline-flex;
 }
 .mapmode-menu {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0;
-  z-index: 7;
+  position: fixed;
+  z-index: 8;
+  overflow-y: auto;
+  box-sizing: border-box;
+  max-width: calc(100% - 8px);
+  font-size: 0.9rem;
+  color: #f3e3b5;
+  user-select: none;
   display: flex;
   flex-direction: column;
   min-width: 13rem;

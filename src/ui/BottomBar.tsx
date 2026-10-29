@@ -1,5 +1,6 @@
 import type { ComponentChildren } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { createPortal } from 'preact/compat';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { SimDate } from '../shared/calendar';
 import { MAP_MODES, type MapMode } from '../shared/mapModes';
 import { SPEED_LEVELS } from '../shared/speed';
@@ -135,14 +136,21 @@ const modeKey = (i: number): string | null => (i < 10 ? String((i + 1) % 10) : n
  * to the next mode): the button opens a list of every map mode above it, the current one ticked,
  * each with its number key; a pick switches to it and closes the list, as do Escape, the button
  * again and a press anywhere else.
+ *
+ * The list is drawn in the UI layer, not in the bar (PLAN 7.159, critic run 19's R19-B1): on a
+ * phone the bar scrolls sideways, and a list inside it was cut off by it, no option in reach. It
+ * stands above the button, kept inside the view; a scroll of the bar or a resize closes it.
  */
 function MapModeMenu({ mode, onMode }: { mode: MapMode; onMode: (mode: MapMode) => void }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLSpanElement>(null);
+  const btn = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
     const away = (e: PointerEvent): void => {
-      if (!root.current?.contains(e.target as Node)) setOpen(false);
+      const at = e.target as Node;
+      if (!root.current?.contains(at) && !menu.current?.contains(at)) setOpen(false);
     };
     // Escape closes the list first, before the game's Escape (the selection, the panels).
     const key = (e: KeyboardEvent): void => {
@@ -150,40 +158,66 @@ function MapModeMenu({ mode, onMode }: { mode: MapMode; onMode: (mode: MapMode) 
       e.stopImmediatePropagation();
       setOpen(false);
     };
+    // The list stands where the button was: a scroll that moves the button (the bar's, on a
+    // phone), or a resize, closes it. A panel's own scroll leaves it open.
+    const moved = (e: Event): void => {
+      const at = e.target;
+      if (at instanceof Node && btn.current && at.contains(btn.current)) setOpen(false);
+    };
+    const resized = (): void => setOpen(false);
     window.addEventListener('pointerdown', away, true);
     window.addEventListener('keydown', key, true);
+    window.addEventListener('scroll', moved, true);
+    window.addEventListener('resize', resized);
     return () => {
       window.removeEventListener('pointerdown', away, true);
       window.removeEventListener('keydown', key, true);
+      window.removeEventListener('scroll', moved, true);
+      window.removeEventListener('resize', resized);
     };
   }, [open]);
+  // Above the button, its left edge at the button's, moved left as far as the view's edge needs.
+  useLayoutEffect(() => {
+    const b = btn.current;
+    const m = menu.current;
+    if (!open || !b || !m) return;
+    const r = b.getBoundingClientRect();
+    const edge = 4;
+    m.style.bottom = `${window.innerHeight - r.top + 8}px`;
+    m.style.maxHeight = `${Math.max(0, r.top - 8 - edge)}px`;
+    m.style.left = `${Math.max(edge, Math.min(r.left, window.innerWidth - m.offsetWidth - edge))}px`;
+  }, [open]);
+  const host = typeof document === 'undefined' ? null : (document.getElementById('ui') ?? document.body);
   return (
     <span class="mapmode-wrap" ref={root}>
-      <button type="button" class="bar-btn" data-testid="mapmode-btn" data-mode={mode} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+      <button ref={btn} type="button" class="bar-btn" data-testid="mapmode-btn" data-mode={mode} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}>
         {t('bar.mapMode', { mode: t(`mapMode.${mode}` as MessageKey) })}
       </button>
-      {open ? (
-        <div class="mapmode-menu" role="menu" data-testid="mapmode-menu">
-          {MAP_MODES.map((m, i) => (
-            <button
-              type="button"
-              key={m}
-              role="menuitemradio"
-              aria-checked={m === mode}
-              class={m === mode ? 'mapmode-opt current' : 'mapmode-opt'}
-              data-testid={`mapmode-opt-${m}`}
-              onClick={() => {
-                onMode(m);
-                setOpen(false);
-              }}
-            >
-              <span class="mapmode-tick">{m === mode ? '✓' : ''}</span>
-              <span class="mapmode-name">{t(`mapMode.${m}` as MessageKey)}</span>
-              {modeKey(i) !== null ? <kbd class="mapmode-key">{modeKey(i)}</kbd> : <span />}
-            </button>
-          ))}
-        </div>
-      ) : null}
+      {open && host
+        ? createPortal(
+            <div class="mapmode-menu" role="menu" data-testid="mapmode-menu" ref={menu}>
+              {MAP_MODES.map((m, i) => (
+                <button
+                  type="button"
+                  key={m}
+                  role="menuitemradio"
+                  aria-checked={m === mode}
+                  class={m === mode ? 'mapmode-opt current' : 'mapmode-opt'}
+                  data-testid={`mapmode-opt-${m}`}
+                  onClick={() => {
+                    onMode(m);
+                    setOpen(false);
+                  }}
+                >
+                  <span class="mapmode-tick">{m === mode ? '✓' : ''}</span>
+                  <span class="mapmode-name">{t(`mapMode.${m}` as MessageKey)}</span>
+                  {modeKey(i) !== null ? <kbd class="mapmode-key">{modeKey(i)}</kbd> : <span />}
+                </button>
+              ))}
+            </div>,
+            host,
+          )
+        : null}
     </span>
   );
 }

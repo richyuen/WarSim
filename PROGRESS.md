@@ -24671,3 +24671,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   under ADR-757's 6.5). Blocking 1: R19-B1, the map-mode menu clipped on a phone; filed as PLAN 7.159.
 - Evidence PNGs the review's e2e re-rendered were restored, not committed.
 - **Next:** PLAN 7.159.
+
+## 2026-10-29 — PLAN 7.159: the map-mode menu reached on a phone (R19-B1)
+
+- **Cause:** the menu was drawn inside the bottom bar, which scrolls sideways on a phone (`overflow-x: auto`), and the
+  bar's `transform` made even a fixed menu its child: 0 of 11 options in reach at 390 × 844.
+- **Change:** the menu is drawn through a portal into `#ui`, fixed above the button and kept inside the view; a scroll
+  that moves the button, or a resize, closes it (a panel's own scroll does not). UI only, no sim input.
+- **AT:** `phoneLayout1938.spec.ts` "the map-mode menu": 11 of 11 options hit-testable and in view, and a tap on
+  Terrain sets `data-mode` to `terrain`, at 390 × 844 and at 1280 × 800; red on `c689c2e4` at 390, green after.
+  `phoneLayout1938`, `alliances1938`, `ticker1938`, `puppets1938`, `player1938`: 14 of 14 green.
+- **Next:** PLAN 7.5 (critic not due).

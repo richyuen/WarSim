@@ -62,3 +62,36 @@ test('a phone\'s width: the top bar, the ranking and a nation\'s panel apart and
     expect(b.left >= now.left - 0.5 && b.right <= now.right + 0.5, `${id} inside the bar once scrolled to`).toBe(true);
   }
 });
+
+// PLAN 7.159 (critic run 19, R19-B1): the map button's menu was drawn inside the bottom bar, which
+// scrolls sideways on a phone, and so was cut off by it: no option could be tapped. Each option
+// must be what a tap at its centre hits, inside the view, at a phone's width and a desktop's.
+test.describe('the map-mode menu', () => {
+  test.use({ hasTouch: true });
+  for (const [W, H] of [[390, 844], [1280, 800]] as const) {
+    test(`at ${W} × ${H} every option of the map-mode menu is in view and a tap picks it`, async ({ page }, info) => {
+      test.setTimeout(120_000);
+      await page.setViewportSize({ width: W, height: H });
+      await page.goto('/?scenario=1938&paused=1&seed=1938');
+      await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0, null, { timeout: 60_000 });
+      const btn = page.getByTestId('mapmode-btn');
+      await btn.scrollIntoViewIfNeeded();
+      await btn.tap();
+      await expect(page.getByTestId('mapmode-menu')).toBeVisible();
+      const hits = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>('[data-testid="mapmode-menu"] [role="menuitemradio"]')].map((opt) => {
+          const r = opt.getBoundingClientRect();
+          const at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          const inView = r.left >= 0 && r.top >= 0 && r.right <= innerWidth + 0.5 && r.bottom <= innerHeight + 0.5;
+          return { id: opt.dataset['testid'], hit: at !== null && opt.contains(at), inView };
+        }),
+      );
+      expect(hits.length, 'every map mode listed').toBe(11);
+      expect(hits.filter((h) => !h.hit || !h.inView), 'options in view and hit-testable').toEqual([]);
+      await page.screenshot({ path: info.outputPath(`mapmode-menu-${W}.png`) });
+      await page.getByTestId('mapmode-opt-terrain').tap({ timeout: 5_000 });
+      await expect(btn).toHaveAttribute('data-mode', 'terrain');
+      await expect(page.getByTestId('mapmode-menu')).toHaveCount(0);
+    });
+  }
+});
