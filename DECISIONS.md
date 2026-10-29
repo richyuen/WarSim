@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-758 · 2026-10-29 · accepted (the user's decision) — outside PLAN: God placement, war from the map, the selection followed and seen
+
+- **Context.** The user asked, outside the loop, for: placing any unit of a controlled nation at once under a God
+  Mode; declaring war by a click on the map; the camera following a selected unit; a clearer selection close in.
+- **Decision** (the user's choices among options put to them): every kind of unit (land, sea, air), researched or not,
+  for no gold or training, behind the existing God Mode button, on any land; a right-click menu on another nation's
+  ground (Declare war or Offer peace, Propose alliance); follow on every select, ended by a pan of the user's; the
+  selection a gold frame that wraps the marker far out and the elements close in.
+- **Consequences.** UI only (`19061bfa`, `dbfa8fc9`, `980033a7`): the sim's existing commands (`spawnFormation`,
+  `spawnFleet`, `spawnWing`, `declareWar`, `offerPeace`, `proposeAlliance`); nothing new saved; pin unchanged. No PLAN
+  task ticked. SPEC's Player control and God Mode UI sections describe them; e2e in `player1938.spec.ts` and
+  `playerActions1938.spec.ts`.
+
 ### ADR-757 · 2026-10-29 · accepted (the user's decision) — the tick budget is 6.5 ms in any year; PLAN 7.157 ticked, 7.158 closed not done
 
 - **Context.** ADR-756: late world-years over SPEC's 5.5 ms after the levy (R18-B1); PLAN 7.157 and 7.158 took them as
