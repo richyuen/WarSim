@@ -108,6 +108,9 @@ const MARKER_CELLS = 0.9;
 const STAND_IN_MAX_PX = 48;
 /** Element sprite size in cells: a little under the slot spacing (PLAN 2.3). */
 const ELEMENT_CELLS = 0.026;
+/** The selection's colour, and the radius of its ring at the far tiers, CSS px (`drawSelection`). */
+const SELECTION_GOLD = '#ffe28a';
+const SELECTION_RING_PX = 12;
 /** And at least this many CSS px, before the size setting. */
 const ELEMENT_MIN_PX = 5;
 /**
@@ -569,11 +572,17 @@ export class MapView {
     this.formNation = f.nation.slice(0, f.count);
     this.formX = f.x.slice(0, f.count);
     this.formY = f.y.slice(0, f.count);
+    this.formPrevX = f.prevX.slice(0, f.count);
+    this.formPrevY = f.prevY.slice(0, f.count);
     this.blockX = new Float64Array(f.count);
     this.blockY = new Float64Array(f.count);
+    this.blockPrevX = new Float64Array(f.count);
+    this.blockPrevY = new Float64Array(f.count);
     for (let i = 0; i < f.count; i++) {
       this.blockX[i] = f.block[i * BLOCK_STRIDE]!;
       this.blockY[i] = f.block[i * BLOCK_STRIDE + 1]!;
+      this.blockPrevX[i] = f.block[i * BLOCK_STRIDE + 2]!;
+      this.blockPrevY[i] = f.block[i * BLOCK_STRIDE + 3]!;
     }
     this.formStrength = f.strength.slice(0, f.count);
     this.formTemplate = f.template.slice(0, f.count);
@@ -794,6 +803,10 @@ export class MapView {
   selectionNation = 0;
   /** Called when a snapshot took formations out of the selection. */
   onSelectionDropped: (() => void) | null = null;
+  /** The screen boxes of the selected formations' elements in the frame drawn (`drawFormationTags`), per copy of the map. */
+  private selectionBoxes: [number, number, number, number][] = [];
+  /** The selection's marks drawn in the last frame, CSS px (tests): a frame around a T1 marker, a ring where none is drawn, a frame around the elements close in. */
+  selectionMarks: { kind: 'ring' | 'marker' | 'frame'; x0: number; y0: number; x1: number; y1: number }[] = [];
   private formIds = new Uint32Array(0);
   /** Each formation's `generation` (PLAN 7.4f23): which formation of an id was selected. */
   private formGen = new Uint32Array(0);
@@ -806,6 +819,11 @@ export class MapView {
    */
   private blockX = new Float64Array(0);
   private blockY = new Float64Array(0);
+  /** Where the marker and the block stood a tick before, for the place a followed formation is drawn at (`followPoint`). */
+  private formPrevX = new Float64Array(0);
+  private formPrevY = new Float64Array(0);
+  private blockPrevX = new Float64Array(0);
+  private blockPrevY = new Float64Array(0);
   private formStrength = new Uint32Array(0);
   private formTemplate = new Uint16Array(0);
   private formFlags = new Uint8Array(0);
@@ -1805,6 +1823,7 @@ export class MapView {
     this.tagRects = [];
     this.tagInputs = [];
     this.tagsLeft = 0;
+    this.selectionBoxes = [];
     if (alpha <= 0.01) return;
     const vw = this.canvas.clientWidth;
     const vh = this.canvas.clientHeight;
@@ -1843,6 +1862,10 @@ export class MapView {
           grow(this.formIds[i]! * copies + k, px, py, r);
         }
       }
+    }
+    // The selected formations' boxes, for their rings (`drawSelection`), per copy of the map.
+    if (this.selectedFormations.size > 0) {
+      for (const [key, b] of boxes) if (this.selectedFormations.has(Math.floor(key / copies))) this.selectionBoxes.push(b);
     }
     if (boxes.size === 0) return;
     const index = new Map<number, number>();
@@ -1992,6 +2015,37 @@ export class MapView {
     return [fx + (this.unwrapped(this.blockX[i]!, fx) - fx) * k, this.formY[i]! + (this.blockY[i]! - this.formY[i]!) * k];
   }
 
+  /**
+   * The middle of the selected formations where they are drawn at `now` (world cells, x near the
+   * camera's on a looping map): each between its place a tick before and its place now, as the
+   * sprites go, at its marker far out and its block close in (`drawnAt`). Null with none selected.
+   */
+  followPoint(now = performance.now()): [number, number] | null {
+    const t = this.tickProgress(now);
+    const k = this.shares.elements;
+    const cx = this.controller.cam.cx;
+    let sx = 0;
+    let sy = 0;
+    let n = 0;
+    for (let i = 0; i < this.formIds.length; i++) {
+      if (!this.selectedFormations.has(this.formIds[i]!)) continue;
+      const mx = this.unwrapped(this.formPrevX[i]!, this.formX[i]!);
+      const bx = this.unwrapped(this.blockPrevX[i]!, this.blockX[i]!);
+      const fx = mx + (this.formX[i]! - mx) * t;
+      const fy = this.formPrevY[i]! + (this.formY[i]! - this.formPrevY[i]!) * t;
+      const x = fx + (this.unwrapped(bx + (this.blockX[i]! - bx) * t, fx) - fx) * k;
+      sx += this.unwrapped(x, cx);
+      sy += fy + (this.blockPrevY[i]! + (this.blockY[i]! - this.blockPrevY[i]!) * t - fy) * k;
+      n++;
+    }
+    return n === 0 ? null : [sx / n, sy / n];
+  }
+
+  /** Has the camera follow the selected formations (`followPoint`), or stops it. */
+  followSelection(on: boolean): void {
+    this.controller.follow(on ? () => this.followPoint() : null);
+  }
+
   /** Formations of `nation` in the last snapshot. */
   formationsOf(nation: number): number[] {
     const out: number[] = [];
@@ -2115,26 +2169,100 @@ export class MapView {
     for (const key of this.flagPlace.keys()) if (!seen.has(key)) this.flagPlace.delete(key);
     this.flagMoveStart = latest;
   }
-  /** Rings around the selected formations (PLAN 1.33a). */
+  /**
+   * The marks of the selected formations (PLAN 1.33a): far out a frame around the T1 marker that
+   * stands for one, or a ring where none is drawn (T0); at the close ones,
+   * where a formation is drawn as its elements, a frame around them (the box its tag is placed
+   * by), so that the mark grows with the zoom. Each has a pointer above it. The two cross-fade
+   * with the elements' share.
+   */
   private drawSelection(cam: Camera): void {
+    this.selectionMarks = [];
     if (this.selectedFormations.size === 0) return;
     const ctx = this.overlay.getContext('2d')!;
     const w = this.canvas.clientWidth;
     const h = this.canvas.clientHeight;
+    const close = this.selectionBoxes.length > 0 ? this.shares.elements : 0;
+    const pointer = (x: number, top: number): void => {
+      ctx.beginPath();
+      ctx.moveTo(x, top - 3);
+      ctx.lineTo(x - 7, top - 13);
+      ctx.lineTo(x + 7, top - 13);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    };
+    const stroke = (path: () => void): void => {
+      // A dark edge under a gold line with a glow: seen on land, on the sea and on the units.
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = 'rgba(0,0,0,0.65)';
+      path();
+      ctx.stroke();
+      ctx.shadowColor = 'rgba(255,226,138,0.9)';
+      ctx.shadowBlur = 8;
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = SELECTION_GOLD;
+      path();
+      ctx.stroke();
+    };
     ctx.save();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = '#ffe28a';
-    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-    ctx.shadowBlur = 3;
-    for (let i = 0; i < this.formIds.length; i++) {
-      if (!this.selectedFormations.has(this.formIds[i]!)) continue;
-      const [fx, fy] = this.drawnAt(i);
-      for (const off of wrapOffsets(cam, this.geo, w, SEAM_MARGIN)) {
-        const [px, py] = worldToScreen(cam, fx + off, fy, w, h);
-        if (px < -20 || py < -20 || px > w + 20 || py > h + 20) continue;
-        ctx.beginPath();
-        ctx.arc(px, py, 9, 0, Math.PI * 2);
-        ctx.stroke();
+    ctx.fillStyle = SELECTION_GOLD;
+    if (close < 1) {
+      // A T1 marker that stands for a selected formation (or a stack that holds one): the frame
+      // goes around its box. A selected formation with no marker drawn has the ring.
+      const framed = new Set<number>();
+      for (const m of this.markerRects) {
+        if (m.alpha <= 0.01 || !m.members.some((id) => this.selectedFormations.has(id))) continue;
+        for (const id of m.members) framed.add(id);
+        const pad = 6;
+        const [x0, y0, x1, y1] = [m.x - pad, m.y - pad, m.x + m.w + pad, m.y + m.h + pad];
+        ctx.globalAlpha = (1 - close) * Math.min(1, m.alpha);
+        stroke(() => {
+          ctx.beginPath();
+          ctx.roundRect(x0, y0, x1 - x0, y1 - y0, 4);
+        });
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+        ctx.shadowBlur = 0;
+        pointer((x0 + x1) / 2, y0);
+        this.selectionMarks.push({ kind: 'marker', x0, y0, x1, y1 });
+      }
+      ctx.globalAlpha = 1 - close;
+      for (let i = 0; i < this.formIds.length; i++) {
+        if (!this.selectedFormations.has(this.formIds[i]!) || framed.has(this.formIds[i]!)) continue;
+        const [fx, fy] = this.drawnAt(i);
+        for (const off of wrapOffsets(cam, this.geo, w, SEAM_MARGIN)) {
+          const [px, py] = worldToScreen(cam, fx + off, fy, w, h);
+          if (px < -30 || py < -30 || px > w + 30 || py > h + 30) continue;
+          stroke(() => {
+            ctx.beginPath();
+            ctx.arc(px, py, SELECTION_RING_PX, 0, Math.PI * 2);
+          });
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+          ctx.shadowBlur = 0;
+          pointer(px, py - SELECTION_RING_PX);
+          this.selectionMarks.push({ kind: 'ring', x0: px - SELECTION_RING_PX, y0: py - SELECTION_RING_PX, x1: px + SELECTION_RING_PX, y1: py + SELECTION_RING_PX });
+        }
+      }
+    }
+    if (close > 0) {
+      ctx.globalAlpha = close;
+      for (const b of this.selectionBoxes) {
+        const pad = 6;
+        const [x0, y0, x1, y1] = [b[0] - pad, b[1] - pad, b[2] + pad, b[3] + pad];
+        if (x1 < 0 || y1 < 0 || x0 > w || y0 > h) continue;
+        const r = Math.min(8, (x1 - x0) / 4, (y1 - y0) / 4);
+        stroke(() => {
+          ctx.beginPath();
+          ctx.roundRect(x0, y0, x1 - x0, y1 - y0, r);
+        });
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+        ctx.shadowBlur = 0;
+        pointer((x0 + x1) / 2, y0);
+        this.selectionMarks.push({ kind: 'frame', x0, y0, x1, y1 });
       }
     }
     ctx.restore();

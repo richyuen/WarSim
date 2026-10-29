@@ -2995,6 +2995,15 @@ on screen.
   The selection is of the played nation (ADR-116): each snapshot takes out of it an id that
   is gone or is another nation's by now (`MapView.selectionNation`), the bar's count
   follows, and a load empties it.
+  The selection's mark (`MapView.drawSelection`, the user's request of 2026-10-29): a gold frame
+  with a glow and a pointer above it, around the T1 marker that stands for a selected formation
+  (or its stack), a ring where no marker is drawn (T0), and at T2 and T3 around the box of its
+  elements on the screen (the box its tag is placed by), so that it grows with the zoom; the two
+  cross-fade with the elements' share. A click that selects a formation has the camera follow
+  the selection (`CameraController.follow`, `MapView.followPoint`): its middle where the sprites
+  are drawn, between the tick before and the tick in hand, is eased to the middle of the view;
+  a zoom goes on about it. A pan of the user's (a drag past 5 px, a pan key, one finger, a jump
+  or a flight) ends the follow, as an empty selection does.
   The controlled nation gets an Actions tab (PLAN 1.33b, `src/ui/ActionsTab.tsx`):
   - `declareWar`, `offerPeace` and `proposeAlliance` (refusable, unlike God commands):
     - peace is accepted when the offering side leads by ≥ 25 or the other side's exhaustion is

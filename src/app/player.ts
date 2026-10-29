@@ -8,6 +8,9 @@
  * A wing's order (PLAN 5.8v1): its mission or rebase, chosen in the Actions tab, is armed
  * (`wingOrder`); the next map click gives it at the clicked cell, and Escape disarms it. So does
  * a paradrop of the selected formations (PLAN 5.8v2, `dropArmed`): each is dropped there.
+ *
+ * A click that selects a formation has the camera follow the selection (`MapView.followSelection`)
+ * until the user pans, or the selection is empty.
  */
 import { signal } from '@preact/signals';
 import type { Hud } from './hud';
@@ -37,7 +40,10 @@ export class PlayerControl {
       }
     });
     // A selected formation that is gone leaves the selection in the view; the count follows.
-    view.onSelectionDropped = () => (this.selectedCount.value = view.selectedFormations.size);
+    view.onSelectionDropped = () => {
+      this.selectedCount.value = view.selectedFormations.size;
+      if (view.selectedFormations.size === 0) view.followSelection(false);
+    };
     // A loaded world's formations are others, with the same ids (PLAN 2.16Rk).
     hud.sim.onLoad(() => this.clearSelection());
   }
@@ -61,6 +67,7 @@ export class PlayerControl {
     this.dropArmed.value = false;
     this.view.selectionNation = this.nation.value;
     this.view.selectedFormations.clear();
+    this.view.followSelection(false);
     this.selectedCount.value = 0;
     this.view.requestDraw();
   }
@@ -115,6 +122,7 @@ export class PlayerControl {
       if (!shift) sel.clear();
       if (shift && sel.has(f)) sel.delete(f);
       else sel.add(f);
+      this.view.followSelection(sel.size > 0);
       this.selectedCount.value = sel.size;
       this.view.requestDraw();
       return true;

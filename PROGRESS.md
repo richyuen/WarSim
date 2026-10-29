@@ -24617,3 +24617,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   ms in any year. SPEC updated; PLAN 7.157 ticked (all its reads under 6.5, the worst 6.05); 7.158 closed not done,
   its pure speed-up kept; BLOCKERS resolved. No code changed.
 - **Next:** PLAN 7.5 (critic not due: no phase review since run 18).
+
+## 2026-10-29 — Outside the loop (the user's request): the selection seen and followed
+
+- The user asked for four features outside PLAN: God placement of any unit for a controlled nation, war declared from
+  the map (right-click), the camera following a selected unit, and a clearer selection close in. Choices (the user's):
+  every kind of unit behind the God Mode button, on any land; a right-click menu; follow on select, ended by a pan.
+  No PLAN task; UI only, no sim input (the pin of seed 99 is not touched).
+- **This commit:** the selection's mark is a gold frame around the T1 marker, a ring at T0, and close in a frame around
+  the elements that grows with the zoom; a click that selects starts a follow of the selection, eased, ended by a pan.
+  e2e: `player1938.spec.ts` "a selected formation is marked at every zoom".

@@ -227,3 +227,70 @@ test('the selection drops a formation that is gone, though one of its own nation
   const later = (await where(picked))!;
   expect([later.nation, later.x, later.y], 'the new division a day after the click on ground').toEqual([POL, raised.x, raised.y]);
 });
+
+// The player's selection, seen and followed: a click that selects a formation has the camera
+// follow it, as it marches too, until the user pans; its mark is a frame around its T1 marker
+// far out and, close in, a frame around its elements that grows with the zoom.
+test('a selected formation is marked at every zoom, and the camera follows it until a pan', async ({ page }, info) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  await page.waitForFunction((p) => window.__warsim!.view!.formationsOf(p).length > 3, POL, { timeout: 60_000 });
+  await page.evaluate((p) => window.__warsim!.view!.select(p), POL);
+  await page.getByTestId('take-control').click();
+  await expect(page.getByTestId('player-label')).toContainText('Poland');
+  const out = info.outputPath();
+  mkdirSync(out, { recursive: true });
+
+  // Select by a click on a marker beside the middle of the view: the camera brings it to the middle.
+  const unit = (await page.evaluate((p) => window.__warsim!.view!.formationsOf(p), POL))[0]!;
+  const at = (await page.evaluate((id) => window.__warsim!.view!.formationPos(id), unit))!;
+  await page.evaluate(([x, y]) => window.__warsim!.view!.controller.set({ cx: x - 5, cy: y, scale: 16 }), at);
+  await page.waitForTimeout(200);
+  const picked = await page.evaluate((p) => window.__warsim!.view!.formationAt(780, 400, p), POL);
+  expect(picked).not.toBe(0);
+  await page.mouse.click(780, 400);
+  await expect(page.getByTestId('player-label')).toContainText('1 selected');
+  expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(true);
+  const offMiddle = (): Promise<number> =>
+    page.evaluate(() => {
+      const v = window.__warsim!.view!;
+      const p = v.followPoint()!;
+      return Math.hypot(p[0] - v.controller.cam.cx, p[1] - v.controller.cam.cy) * v.controller.cam.scale;
+    });
+  await expect.poll(offMiddle, { timeout: 5_000 }).toBeLessThan(1);
+  const far = await page.evaluate(() => window.__warsim!.view!.selectionMarks);
+  expect(far.map((m) => m.kind)).toEqual(['marker']);
+  await page.screenshot({ path: path.join(out, 'selected-far.png') });
+
+  // Close in (100 m/px), zoomed by the wheel about a point off the middle: the follow keeps the
+  // formation in the middle, and its mark is a frame around its elements, wider than the ring.
+  const scale = await page.evaluate(() => window.__warsim!.view!.geo.kmPerCell * 10);
+  await page.evaluate((s) => window.__warsim!.view!.controller.zoomTo(s, [300, 200]), scale);
+  await page.waitForFunction(() => window.__warsim!.view!.selectionMarks.some((m) => m.kind === 'frame') && !window.__warsim!.view!.controller.animating, null, { timeout: 30_000 });
+  expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(true);
+  await expect.poll(offMiddle, { timeout: 5_000 }).toBeLessThan(1);
+  const frame = (await page.evaluate(() => window.__warsim!.view!.selectionMarks.find((m) => m.kind === 'frame')))!;
+  expect(frame.y1 - frame.y0, 'the frame is taller than the marker box').toBeGreaterThan(far[0]!.y1 - far[0]!.y0);
+  expect(frame.x0 < 700 && frame.x1 > 700 && frame.y0 < 400 && frame.y1 > 400, 'the frame is around the middle of the view').toBe(true);
+  await page.screenshot({ path: path.join(out, 'selected-close.png') });
+
+  // It marches (ordered by a command: a click close in is a few hundred metres off); a day on,
+  // the camera has come with it.
+  const before = await page.evaluate(() => [window.__warsim!.view!.controller.cam.cx, window.__warsim!.view!.controller.cam.cy]);
+  await page.evaluate(([id, x, y, n]) => window.__warsim!.sim.command({ kind: 'moveFormation', id: id!, x: x! - 8, y: y!, nation: n! }), [picked, at[0], at[1], POL]);
+  await page.evaluate(() => window.__warsim!.sim.step(24));
+  await page.waitForFunction(() => window.__warsim!.view!.lastTick >= 24, null, { timeout: 30_000 });
+  await expect.poll(offMiddle, { timeout: 5_000 }).toBeLessThan(1);
+  const after = await page.evaluate(() => [window.__warsim!.view!.controller.cam.cx, window.__warsim!.view!.controller.cam.cy]);
+  expect(Math.hypot(after[0]! - before[0]!, after[1]! - before[1]!), 'the camera moved with the march, cells').toBeGreaterThan(0.5);
+
+  // A drag of the map is the user's pan: the follow ends, and the camera stays where it was put.
+  await page.mouse.move(400, 300);
+  await page.mouse.down();
+  await page.mouse.move(460, 330, { steps: 5 });
+  await page.mouse.up();
+  expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(false);
+  await expect(page.getByTestId('player-label')).toContainText('1 selected');
+});
