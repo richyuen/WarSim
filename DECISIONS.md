@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-762 · 2026-10-29 · accepted (the user's request) — outside PLAN: the UI in glossy gunmetal plates, after the Cities project
+
+- **Context.** The user: try a new style for all the UI, with the Cities project (`C:\Git\Cities`) as the example, "not
+  exactly like that but more visually appealing". Cities' HUD is glossy dark plates (bevel, gloss band, dark ring and a
+  lip below, a row of Lego studs), glossy yellow/red/blue buttons, segmented controls, inset wells, small capital
+  labels and heavy numerals. Ours was ADR-443's plum-brown AoC frame ("taste, low confidence").
+- **Decision** (`src/app/style.css`, the block "Panel frames", which replaces ADR-443's): the same seven framed panels
+  (top and bottom bars, legend, nation/formation panel, ranking, history/charts/settings/editor, title cards) are
+  gunmetal plates: a 5 px bevelled steel rim with a rivet in each corner (rivets, not Cities' studs: a war, not toys),
+  a gloss over the top 2.6 rem, a near-black ring, a lip and a drop shadow, a 12 px radius. Buttons are glossy steel
+  chips; the chosen one (a tab, God Mode, Cancel, Start) brass; an armed tool red. The nation panel's tabs are a
+  segmented control. Selects and inputs are dark wells. Titles are Lato Black in brass; a group's name (`.panel-sub`,
+  the title screen's card names) small capitals, muted. The ticker's rows, war banners, menus, tooltip and nuclear
+  alert are small plates of the same set; a battle's banner stays red, a quiet war's grey (PLAN 7.4f35), the swords
+  `#e9c46a`. The title screen: the name in a brass gradient, the tagline in spaced capitals, the scenario list as
+  wells with the chosen one brass. Colours are tokens on `:root` (`--frame-*`, `--ui-*`).
+- **Kept:** every outer box (the 5 px rim and the padding less 4 px, PLAN 3.12Rh), so no layout moves; opaque fills
+  (PLAN 7.4f6, the critic's N15), no backdrop blur (the map is WebGL under the panels); rem sizes (the UI size
+  setting); the phone rules (ADR-760).
+- **Test:** `warBannerRows1938` reads the ranking's fill colour, now `rgb(52, 58, 69)` (was `rgb(70, 48, 51)`); what it
+  checks, an opaque fill, is the same.
+- **Evidence:** `docs/evidence/762/` (before and after at 1600 × 900, after at 390 × 844).
+- **Supersedes** ADR-443's look. Taste: the user's to judge; a second round is open.
+
 ### ADR-761 · 2026-10-29 · accepted (the user's request) — outside PLAN: the game is called Warism, not WarSim
 
 - **Context.** The user, on feedback: rename the project to Warism, everywhere possible.
@@ -8442,7 +8466,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   The draw of a zoom from 6000 to 1500 m/px: p95 6.1–6.2 ms (6.2–6.4 before).
 - **Taste, low confidence** (`reference/NOTES.md` missing).
 
-### ADR-443 · 2026-10-16 · accepted — The panels in one frame after AoC's (PLAN 7.4d)
+### ADR-443 · 2026-10-16 · superseded by ADR-762 — The panels in one frame after AoC's (PLAN 7.4d)
 
 - **Context.** AoC's panels (`steam-screenshot-01`, `-03`) are plum-brown in a maroon band with a
   near-black edge and cream caps at the corners; its buttons are brown with a tan rim. Ours were

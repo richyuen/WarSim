@@ -29,6 +29,6 @@ for (const [w, h] of [[1400, 800], [1920, 1080]] as const) {
     const rows = await page.getByTestId('war-banner').evaluateAll((els) => new Set(els.map((e) => Math.round(e.getBoundingClientRect().top))).size);
     expect(rows, 'rows of banners').toBeLessThanOrEqual(2);
     const bg = await page.getByTestId('stats-ranking').evaluate((el) => getComputedStyle(el).backgroundImage);
-    expect(bg, 'the ranking\'s fill opaque').toContain('rgb(70, 48, 51)');
+    expect(bg, 'the ranking\'s fill opaque').toContain('rgb(52, 58, 69)');
   });
 }

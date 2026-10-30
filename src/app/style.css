@@ -1120,18 +1120,44 @@ textarea,
   max-height: calc(100% - 8.6rem - var(--alert-bottom, 3.4rem));
 }
 
-/* Panel frames (PLAN 7.4d, ADR-443), after AoC's: a plum-brown panel in a maroon band with a
-   near-black edge and cream caps at its corners; buttons brown with a tan rim. One rule for
-   every panel, so they read as one set. Taste, low confidence (no reference/NOTES.md). */
+/* Panel frames (ADR-762, the user's request; replaces ADR-443's plum-brown AoC frames): glossy
+   gunmetal plates after the Cities project's HUD, made for a war: a bevelled steel rim with a
+   rivet in each corner, a soft gloss across the top, a dark ring and a lip below; buttons glossy
+   steel chips, the chosen one brass, a danger red; inputs dark wells. One rule for every panel,
+   so they read as one set. Opaque (PLAN 7.4f6, the critic's N15) and without a backdrop blur
+   (the map is a WebGL canvas under them). The outer box is the old frame's: a 5 px border and
+   the padding less 4 px (PLAN 3.12Rh), so no layout moves. */
 :root {
-  /* Opaque (PLAN 7.4f6, the critic's N15: names and counters showed through the ranking). */
-  --frame-bg: rgb(70, 48, 51);
-  --frame-band: #5c3a3d;
-  --frame-edge: #160d0e;
-  --frame-cap: #e8d4b0;
-  --frame-trim: #b8957a;
-  --frame-button: #4d3537;
-  --frame-button-hi: #6a4a4c;
+  --frame-bg: rgb(52, 58, 69);
+  --frame-bg-hi: rgb(66, 73, 86);
+  --frame-bg-lo: rgb(40, 45, 54);
+  --frame-rim-hi: #66707f;
+  --frame-rim-lo: #1f232a;
+  --frame-edge: #0a0c10;
+  --frame-cap: #f2c14e;
+  --frame-trim: rgba(255, 255, 255, 0.16);
+  --frame-button: #333a45;
+  --frame-button-hi: #5a6372;
+  --ui-text: #f2f4f7;
+  --ui-muted: rgba(222, 229, 238, 0.68);
+  --ui-accent: #f2c14e;
+  --ui-accent-soft: rgba(242, 193, 78, 0.18);
+  --ui-danger: #ef5b4c;
+  --ui-ok: #6cc06b;
+  --ui-well: #1a1e25;
+  --ui-hover: rgba(255, 255, 255, 0.1);
+  --ui-rivet: radial-gradient(circle at 42% 38%, #f4f6f9 0 0.7px, #aab3bf 1.3px, #5c6571 2.3px, rgba(0, 0, 0, 0.6) 2.8px, transparent 3.3px);
+  --ui-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03) 1.4rem, rgba(255, 255, 255, 0) 2.6rem);
+  --ui-plate: linear-gradient(180deg, var(--frame-bg-hi) 0, var(--frame-bg) 3rem, var(--frame-bg-lo) 100%);
+  --ui-lift: 0 0 0 1px var(--frame-edge), 0 3px 0 rgba(0, 0, 0, 0.42), 0 10px 24px rgba(0, 0, 0, 0.4);
+  --ui-brass: linear-gradient(180deg, #ffe38a 0%, #f7cb52 46%, #e2a92a 54%, #ecb839 100%);
+  --ui-brass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -2px 0 rgba(120, 75, 0, 0.35), 0 1px 0 rgba(0, 0, 0, 0.5);
+  --ui-red: linear-gradient(180deg, #ff8378 0%, #ec4d42 46%, #c5241c 54%, #d62f27 100%);
+  --ui-chip: linear-gradient(180deg, #5a6372 0%, #434b58 48%, #363d48 52%, #2f353f 100%);
+  --ui-chip-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.22), 0 1px 0 rgba(0, 0, 0, 0.55);
+}
+body {
+  color: var(--ui-text);
 }
 .topbar,
 .bottombar,
@@ -1140,51 +1166,405 @@ textarea,
 .stats-ranking,
 .history-panel,
 .title-card {
-  /* The band is a layer of the background under the caps (a border is drawn over them). */
+  /* The rim is a layer of the background under the rivets (a border is drawn over them). */
   border: 5px solid transparent;
-  border-radius: 2px;
-  box-shadow: 0 0 0 2px var(--frame-edge), inset 0 0 0 1px rgba(0, 0, 0, 0.45), 0 3px 10px rgba(0, 0, 0, 0.45);
+  border-radius: 12px;
+  color: var(--ui-text);
+  box-shadow: var(--ui-lift), inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 0 0 1px rgba(0, 0, 0, 0.5);
   background:
-    linear-gradient(135deg, var(--frame-cap) 0 46%, transparent 47%) left top / 14px 14px no-repeat border-box,
-    linear-gradient(225deg, var(--frame-cap) 0 46%, transparent 47%) right top / 14px 14px no-repeat border-box,
-    linear-gradient(45deg, var(--frame-cap) 0 46%, transparent 47%) left bottom / 14px 14px no-repeat border-box,
-    linear-gradient(315deg, var(--frame-cap) 0 46%, transparent 47%) right bottom / 14px 14px no-repeat border-box,
-    linear-gradient(var(--frame-bg), var(--frame-bg)) padding-box,
-    linear-gradient(var(--frame-band), var(--frame-band)) border-box;
+    var(--ui-rivet) left 1px top 1px / 9px 9px no-repeat border-box,
+    var(--ui-rivet) right 1px top 1px / 9px 9px no-repeat border-box,
+    var(--ui-rivet) left 1px bottom 1px / 9px 9px no-repeat border-box,
+    var(--ui-rivet) right 1px bottom 1px / 9px 9px no-repeat border-box,
+    var(--ui-gloss) padding-box,
+    var(--ui-plate) padding-box,
+    linear-gradient(180deg, var(--frame-rim-hi), #3a414c 40%, var(--frame-rim-lo)) border-box;
 }
 .bar-btn,
 .god-btn,
-.panel-tabs .tab {
-  color: #f6ead2;
-  background: linear-gradient(var(--frame-button-hi), var(--frame-button));
-  border: 1px solid var(--frame-trim);
-  border-radius: 2px;
-  box-shadow: 0 0 0 1px var(--frame-edge);
+.panel-tabs .tab,
+.war-more-btn {
+  color: var(--ui-text);
+  background: var(--ui-chip);
+  border: 1px solid var(--frame-edge);
+  border-radius: 7px;
+  box-shadow: var(--ui-chip-shadow);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+  transition: filter 0.12s;
 }
 .bar-btn:hover:not(:disabled),
-.god-btn:hover,
+.god-btn:hover:not(:disabled),
+.panel-tabs .tab:hover,
+.war-more-btn:hover {
+  filter: brightness(1.18);
+}
+.bar-btn:active:not(:disabled),
+.god-btn:active:not(:disabled) {
+  filter: brightness(0.92);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.45);
+}
+.bar-btn:focus-visible,
+.god-btn:focus-visible,
+.panel-tabs .tab:focus-visible,
+.start-btn:focus-visible,
+.title-scenario:focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 1px;
+}
+/* The chosen one is brass: a tab, the God Mode toggle, the touch screen's way out. */
+.panel-tabs .tab.active,
+.bar-god.active,
+.bar-cancel,
+.start-btn {
+  color: #2e2100;
+  background: var(--ui-brass);
+  border: 1px solid rgba(70, 45, 0, 0.8);
+  box-shadow: var(--ui-brass-shadow);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  font-weight: 700;
+}
+/* An armed tool is red (PLAN 1.32b kept its own colour). */
+.god-btn.active,
+.god-tools .bar-btn.active {
+  color: #fff;
+  background: var(--ui-red);
+  border-color: rgba(70, 0, 0, 0.85);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -2px 0 rgba(90, 0, 0, 0.35), 0 1px 0 rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+/* Tabs: a segmented control, its buttons in one dark well. */
+.panel-tabs {
+  padding: 3px;
+  gap: 3px;
+  background: rgba(0, 0, 0, 0.32);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.panel-tabs .tab {
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+  color: var(--ui-muted);
+  font-weight: 700;
+}
 .panel-tabs .tab:hover {
-  border-color: var(--frame-cap);
-}
-.panel-tabs .tab.active {
-  background: linear-gradient(#8a5a4c, #6b3f35);
-  border-color: var(--frame-cap);
-}
-/* An armed tool keeps its own orange (PLAN 1.32b). */
-.god-btn.active {
-  background: linear-gradient(#e98a6e, #c9573c);
-  border-color: var(--frame-cap);
+  color: var(--ui-text);
+  background: var(--ui-hover);
 }
 .topbar select,
 .stats-ranking select,
 .nation-panel select,
-.history-panel select {
-  color: #f6ead2;
-  background: var(--frame-button);
-  border: 1px solid var(--frame-trim);
-  border-radius: 2px;
+.history-panel select,
+.form-row select,
+.form-row input,
+.god-tab input:not([type='checkbox']),
+.god-tab select {
+  color: var(--ui-text);
+  background: var(--ui-well);
+  border: 1px solid var(--frame-edge);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.08);
 }
-/* The band is 4 px wider than the 1 px border it replaced (the legend had none): each panel's
+.form-row input[aria-invalid='true'] {
+  border-color: var(--ui-danger);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--ui-danger);
+}
+select option {
+  color: var(--ui-text);
+  background: var(--ui-well);
+}
+input[type='checkbox'],
+input[type='range'] {
+  accent-color: var(--ui-accent);
+}
+/* Titles in Lato's Black, the accent's brass; a group's name small, in capitals, muted. */
+.topbar-title,
+.panel-name,
+.ranking-head,
+.title-sub,
+.legend-title {
+  font-weight: 900;
+  color: var(--ui-accent);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+}
+.topbar-title {
+  letter-spacing: 0.06em;
+}
+.topbar-tagline {
+  color: var(--ui-muted);
+  opacity: 1;
+}
+.panel-sub {
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ui-muted);
+}
+.panel-block {
+  border-top: 1px solid rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.panel-row > :last-child {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.panel-note,
+.form-hint,
+.title-scenario-date {
+  color: var(--ui-muted);
+  opacity: 1;
+}
+.panel-close,
+.nuke-close {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 6px;
+  color: var(--ui-muted);
+  line-height: 1;
+}
+.panel-close:hover,
+.nuke-close:hover {
+  color: var(--ui-text);
+  background: var(--ui-hover);
+}
+.panel-swatch,
+.panel-flag,
+.rank-flag,
+.chip-swatch,
+.legend-swatch {
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.nation-chip {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.nation-chip:hover {
+  background: var(--ui-hover);
+}
+.rank-bar {
+  border-radius: 4px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+.rank-row:hover .rank-bar {
+  filter: brightness(1.12);
+}
+.rank-row.selected,
+.chart-hover-date,
+.bar-speed {
+  color: var(--ui-accent);
+}
+.rank-value,
+.bar-date {
+  font-weight: 700;
+}
+.panel-warn,
+.bar-paused {
+  color: var(--ui-danger);
+}
+.bar-speed {
+  font-weight: 900;
+}
+.god-tools {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.45);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.god-tools-name,
+.bottombar > .bar-playing,
+.formation-notice {
+  color: var(--ui-accent);
+}
+.god-tools-hint {
+  color: var(--ui-muted);
+}
+.history-list li {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.history-date {
+  color: var(--ui-muted);
+  opacity: 1;
+}
+.formation-unit-count {
+  color: var(--ui-muted);
+}
+/* Small plates: the ticker's rows, the war banners, the menus, the tooltip, the nuclear alert. */
+.ticker-row,
+.war-banner,
+.mapmode-menu,
+.nation-menu,
+.map-tooltip {
+  border: 1px solid var(--frame-trim);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px var(--frame-edge), 0 2px 0 rgba(0, 0, 0, 0.4), 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.ticker-row,
+.mapmode-menu,
+.nation-menu,
+.map-tooltip {
+  color: var(--ui-text);
+  background: var(--ui-gloss), var(--ui-plate);
+}
+.ticker-row {
+  border-left: 3px solid var(--ui-accent);
+}
+.ticker-row:hover {
+  background: var(--ui-gloss), linear-gradient(180deg, #4c5564, #39404b);
+}
+.ticker-row[data-kind-name='WarDeclared'],
+.ticker-row[data-kind-name='CapitalCaptured'] {
+  border-left-color: var(--ui-danger);
+}
+.ticker-row[data-kind-name='PeaceSigned'],
+.ticker-row[data-kind-name='NationRevived'] {
+  border-left-color: var(--ui-ok);
+}
+.ticker-date {
+  color: var(--ui-muted);
+}
+/* A war's banner: a battle's red, a quiet war's grey (PLAN 7.4f35), each with the plates' gloss. */
+.war-banner {
+  background: var(--ui-gloss), linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.18));
+  background-color: rgb(122, 30, 24);
+  border-color: rgba(255, 140, 120, 0.35);
+  color: #fff3ea;
+}
+.war-banner:hover {
+  filter: brightness(1.12);
+}
+.war-quiet {
+  background-color: rgb(52, 55, 60);
+  border-color: var(--frame-trim);
+  color: rgba(242, 244, 247, 0.72);
+}
+.war-score {
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.45);
+}
+.war-score-fill {
+  background: linear-gradient(180deg, #ff9a8a, var(--ui-danger));
+}
+.mapmode-menu,
+.nation-menu {
+  border-radius: 10px;
+}
+.mapmode-opt {
+  border-radius: 6px;
+}
+.mapmode-opt:hover,
+.mapmode-opt:focus-visible {
+  background: var(--ui-hover);
+}
+.mapmode-opt.current {
+  color: var(--ui-accent);
+}
+.mapmode-key {
+  border: 1px solid var(--frame-edge);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  opacity: 1;
+  color: var(--ui-text);
+}
+.map-tooltip-name,
+.map-tooltip-nation,
+.nation-menu-title {
+  color: var(--ui-text);
+}
+.map-tooltip-note {
+  color: var(--ui-accent);
+}
+.nuke-alert {
+  background: var(--ui-gloss), linear-gradient(180deg, rgb(110, 22, 14), rgb(62, 10, 6));
+  border: 2px solid var(--ui-accent);
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px var(--frame-edge), 0 3px 0 rgba(0, 0, 0, 0.45), 0 0 22px rgba(242, 193, 78, 0.45);
+}
+.nuke-icon {
+  color: var(--ui-accent);
+}
+/* The title screen. */
+.title-screen {
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(242, 193, 78, 0.14) 0%, rgba(242, 193, 78, 0) 45%),
+    radial-gradient(ellipse at 50% 0%, #34465e 0%, #1d2735 55%, #10151d 100%);
+}
+.title-name {
+  font-weight: 900;
+  background: linear-gradient(180deg, #ffe9a6 0%, #f5c64c 55%, #d99a1e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.55)) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4));
+}
+.title-tagline {
+  color: var(--ui-muted);
+  opacity: 1;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.9rem;
+}
+.title-sub {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.title-scenario {
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: background 0.12s;
+}
+.title-scenario:hover {
+  background: var(--ui-hover);
+}
+.title-scenario.active {
+  background: linear-gradient(180deg, rgba(242, 193, 78, 0.24), rgba(242, 193, 78, 0.08));
+  border-color: rgba(242, 193, 78, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.title-file-pending {
+  border: 1px solid rgba(242, 193, 78, 0.35);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.22);
+}
+.title-preview,
+.flag-canvas {
+  border: 1px solid var(--frame-edge);
+  border-radius: 9px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.flag-canvas {
+  border-radius: 3px;
+}
+.start-btn {
+  border-radius: 9px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.start-btn:hover:not(:disabled) {
+  filter: brightness(1.07);
+}
+.title-file::file-selector-button {
+  margin-right: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  color: var(--ui-text);
+  background: var(--ui-chip);
+  border: 1px solid var(--frame-edge);
+  border-radius: 7px;
+  box-shadow: var(--ui-chip-shadow);
+  font: inherit;
+  cursor: pointer;
+}
+/* The rim is 4 px wider than the 1 px border it replaced (the legend had none): each panel's
    padding gives that room back, and its outer box is what the layout reserved (PLAN 3.12Rh). */
 .topbar {
   padding: calc(0.35rem - 4px) calc(0.75rem - 4px);
@@ -1297,9 +1677,6 @@ textarea,
   .war-more-btn {
     flex: 0 0 auto;
     padding: 0.2rem 0.5rem;
-    background: rgba(20, 24, 32, 0.85);
-    border: 1px solid rgba(214, 178, 94, 0.55);
-    border-radius: 0.3rem;
     font: inherit;
     font-size: 0.75rem;
     cursor: pointer;

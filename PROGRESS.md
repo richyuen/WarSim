@@ -24717,3 +24717,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   `window.__warism` beside it), the record, the GitHub repository and local folder names.
 - The GitHub repository is renamed `richyuen/Warism` (the user's choice); the remote and the Pages address in
   CLAUDE.md follow: https://richyuen.github.io/Warism/.
+
+## 2026-10-29 — Outside the loop (the user's request): a new look for the UI, after the Cities project (ADR-762)
+
+- Every panel is a glossy gunmetal plate with a steel rim and corner rivets; buttons glossy steel chips, the chosen
+  brass, an armed tool red; tabs a segmented control; inputs dark wells; titles Lato Black in brass. The ticker, war
+  banners, menus, tooltip, nuclear alert and the title screen follow. CSS only (`src/app/style.css`), no sim input.
+- Outer boxes unchanged (no layout moves); `warBannerRows1938`'s fill colour literal follows the new plate.
+- e2e by hand: title, settings, phoneLayout, warBannerRows, toBattle, rankingRows, mapTooltip and the panel, bar,
+  ticker, legend, ranking, history, charts, God, editor, nuke-alert specs. Evidence `docs/evidence/762/`.
