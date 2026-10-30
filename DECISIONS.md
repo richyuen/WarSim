@@ -167,6 +167,19 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-769 · 2026-10-30 · accepted — PLAN 7.160 (R20-B1): while playing, a click opens the panel of the formation it selects
+
+- **Context.** Critic run 20: playing Germany at the front (seed 4441, day 60), 7 of 12 clicks on its divisions
+  selected one German formation and opened another's panel (Polish, Italian or another German). The panel came
+  from `MapView.formationPick` (what is drawn there, any nation: tag, marker, element), the selection from
+  `formationAt` (the played nation's nearest within 14 px).
+- **Decision.** One pick, own first (`game.tsx` `onPick`): while playing and no wing order or paradrop is armed,
+  the played nation's formation under the click (`formationAt`) is the panel's, the one `PlayerControl.click`
+  selects; only where none is does the panel take `formationPick`'s. The observer's click is unchanged.
+- **Cost.** While playing, a click on one's own formation in a mixed stack no longer cycles the panel to the
+  enemy's in it (PLAN 7.4f20); the enemy's panel opens from a click on it clear of one's own, or while observing.
+- **Test:** `formationClickPanel1938` replays the critic's twelve clicks: 12 of 12 (5 of 12 before).
+
 ### ADR-768 · 2026-10-29 · accepted (the user's request) — outside PLAN: the nation's allies on its overview
 
 - **Context.** The user: a list of allies on a country's overview.

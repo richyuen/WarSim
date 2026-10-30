@@ -16328,3 +16328,27 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   AT: an e2e at 390 × 844 opens the menu, finds 11 of 11 options hit-testable (`elementFromPoint` at each option's
   centre is the option), and a tap on Terrain makes `mapmode-btn`'s `data-mode` `terrain`; red on `c689c2e4`; the
   same spec green at 1280 × 800; `player1938`/`alliances1938`/`ticker1938` still green.
+
+<!-- moved 2026-10-30 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.160 R20-B1: the formation panel is not the formation the click selected. Playing Germany at a front (seed
+  4441, day 60), 7 of 12 clicks on its own divisions selected a German formation while the panel showed another
+  (Polish 3, Italian 2, another German 2): `game.tsx` `onPick` opens the panel with `formationPick` (any nation),
+  `PlayerControl.click` selects with `formationAt` (the played nation's only).
+  Evidence: `critic/c20_sx_4441.json`, `critic/shots/c20sx_4441_1.png`, `critic/shots/c20sx_4441_3.png`,
+  `critic/shots/c20sx_4441_4.png`, `critic/shots/c20ph_portrait_06_selected.png`.
+  Fix: while playing, a click that selects a formation opens that formation's panel (or one pick, own first).
+  AT: an e2e test replays `c20_sx`'s twelve clicks (seed 4441, day 60, Germany played): 12 of 12 panels show the
+  formation the click selected; red on `a3edf009`.

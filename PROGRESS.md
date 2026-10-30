@@ -24763,3 +24763,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   options tappable at 390 × 844). Blocking 1: R20-B1, the formation panel not the formation a click selected while
   playing; filed as PLAN 7.160.
 - **Next:** PLAN 7.160.
+
+## 2026-10-30 — PLAN 7.160 (R20-B1): while playing, a click opens the panel of the formation it selects (ADR-769)
+
+- Cause: `game.tsx` `onPick` opened the panel with `MapView.formationPick` (what is drawn there, any nation) while
+  `PlayerControl.click` selected with `formationAt` (the played nation's nearest). Fix: one pick, own first; while
+  playing (no wing order or paradrop armed) the played nation's formation under the click is the panel's. The
+  observer's click is unchanged. UI only, no sim input.
+- AT: `tests/e2e/formationClickPanel1938.spec.ts` replays the critic's `c20_sx` (seed 4441, Germany at war with
+  Poland, day 60, twelve clicks at 1600 × 900): 12 of 12 panels are the selected formation's; red on HEAD 503fea3e
+  (docs only on a3edf009) with the critic's figures, 5 of 12. Evidence `docs/evidence/7.160/` (click 1: German
+  Infantry division 4, which was Polish 562's panel).
+- e2e by hand: formationClickPanel1938, formationPanel1938, player1938, playerActions1938, airOrders1938 (18 passed).
+- **Next:** PLAN 7.5.
