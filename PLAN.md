@@ -33,6 +33,16 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
+- [ ] 7.160 R20-B1: the formation panel is not the formation the click selected. Playing Germany at a front (seed
+  4441, day 60), 7 of 12 clicks on its own divisions selected a German formation while the panel showed another
+  (Polish 3, Italian 2, another German 2): `game.tsx` `onPick` opens the panel with `formationPick` (any nation),
+  `PlayerControl.click` selects with `formationAt` (the played nation's only).
+  Evidence: `critic/c20_sx_4441.json`, `critic/shots/c20sx_4441_1.png`, `critic/shots/c20sx_4441_3.png`,
+  `critic/shots/c20sx_4441_4.png`, `critic/shots/c20ph_portrait_06_selected.png`.
+  Fix: while playing, a click that selects a formation opens that formation's panel (or one pick, own first).
+  AT: an e2e test replays `c20_sx`'s twelve clicks (seed 4441, day 60, Germany played): 12 of 12 panels show the
+  formation the click selected; red on `a3edf009`.
+
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

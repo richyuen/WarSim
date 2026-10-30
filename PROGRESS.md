@@ -24753,3 +24753,13 @@ No rule changed and nothing on screen changed. One task came out of it.
   arm placing; air tiles are violet.
 - The overview lists the nation's allies (its alliance's other members) as chips.
 - e2e: airOrders1938, playerActions1938, nationPanel1938, allianceTitle1938, alliances1938, puppets1938.
+
+## 2026-10-30 — PLAN 7.5: critic run 20 on a3edf009 (blocking 1)
+
+- `npm run check:review` green before the run (2 known red: `seaRow1938` Speed x1, `zoomDemo1938`; 0 not known).
+  Evidence PNGs the review's e2e re-rendered were restored, not committed.
+- Scores (as run 19): map 7, diplomacy 7, emergent 7, God Mode 7, editor 7, stats 7, UI 7, performance 7, stability 7;
+  zoom 8, naval 8, tanks 8, aircraft 8, nukes 8. Every dimension at its bar. R19-B1 resolved (11 of 11 map-mode
+  options tappable at 390 × 844). Blocking 1: R20-B1, the formation panel not the formation a click selected while
+  playing; filed as PLAN 7.160.
+- **Next:** PLAN 7.160.

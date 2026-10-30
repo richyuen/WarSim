@@ -1,5 +1,5 @@
 {
-  "commit": "c689c2e44a729ece30117f3878b6279c99b59e7c",
+  "commit": "a3edf009a35b51d3ea09b466590bbd3ccf05d3e6",
   "scores": {
     "mapVisuals": 7,
     "diplomacyWarDepth": 7,
@@ -18,16 +18,17 @@
   },
   "blocking": [
     {
-      "id": "R19-B1",
-      "title": "On a phone the map modes cannot be chosen: the new map-mode menu (c689c2e4) is clipped by the bottom bar's overflow:auto; at 390x844 0 of 11 options are hit-testable, a tap on Terrain times out, the mode stays Political (desktop and tablet widths 768-1600 px are fine; the old button cycled on a tap).",
+      "id": "R20-B1",
+      "title": "The formation panel is not the formation the click selected: playing Germany at a front (seed 4441, day 60), 7 of 12 clicks on own divisions selected a German formation but the panel showed another (Polish 3, Italian 2, other German 2); game.tsx onPick opens the panel with formationPick (any nation) while PlayerControl.click selects with formationAt (played nation). Pre-existing code, first found this run.",
       "evidence": [
-        "critic/c19_p2_phone_menu.json",
-        "critic/shots/c19p2_phone_mapmenu_open.png",
-        "critic/shots/c19p2_phone_after_tap.png",
-        "critic/c19_p3_widths.json"
+        "critic/c20_sx_4441.json",
+        "critic/shots/c20sx_4441_1.png",
+        "critic/shots/c20sx_4441_3.png",
+        "critic/shots/c20sx_4441_4.png",
+        "critic/shots/c20ph_portrait_06_selected.png"
       ],
-      "fix": "Render the menu outside the scrolling bar (portal or position:fixed at the button's rect), or cycle the mode on touch; bar: at 390x844 every option hit-testable and a tap changes the mode."
+      "fix": "While playing, when a click selects a formation, open that formation's panel (or one picker with own formations first); bar: on c20_sx's case 12 of 12 panels are the selected formation's."
     }
   ],
-  "timestamp": "2026-10-29T15:30:00Z"
+  "timestamp": "2026-10-30T01:00:00Z"
 }
