@@ -167,6 +167,13 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-764 · 2026-10-29 · accepted (the user's request) — outside PLAN: scroll bars in the plates' look
+
+- **Context.** The user: the country panel's scroll bar should match the panel (ADR-762).
+- **Decision** (`src/app/style.css`): every scroll bar in the UI layer (`#ui`: the nation and formation panels,
+  History, Settings, Editor, the menus, the phone's bar) is thin, a steel thumb in a dark track
+  (`scrollbar-color`, which Chromium and Firefox read), with `::-webkit-scrollbar` rules for Safari, which reads only those.
+
 ### ADR-763 · 2026-10-29 · accepted (the user's request) — outside PLAN: no language picker; the bottom bar in the user's order; a narrower speed label
 
 - **Context.** The user: get rid of the Language select; order the bottom bar Resume, Speed, God Mode, Map,

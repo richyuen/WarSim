@@ -1548,6 +1548,35 @@ input[type='file']::file-selector-button {
 #ui input::placeholder {
   color: var(--ui-muted);
 }
+/* Scroll bars in the plates' look (the user's request, ADR-764): a slim steel thumb in a dark
+   track. `scrollbar-color` is the standard (Chromium, Firefox); the `::-webkit-scrollbar` rules
+   are Safari's, which reads only those. */
+#ui * {
+  scrollbar-width: thin;
+  scrollbar-color: #6a7382 rgba(0, 0, 0, 0.3);
+}
+#ui ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+#ui ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+#ui ::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #7a8391, #565e6b);
+  border: 2px solid transparent;
+  border-radius: 5px;
+  background-clip: padding-box;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+#ui ::-webkit-scrollbar-thumb:hover {
+  background-image: linear-gradient(90deg, #8d97a5, #69717e);
+}
+#ui ::-webkit-scrollbar-corner {
+  background: transparent;
+}
 /* The rim is 4 px wider than the 1 px border it replaced (the legend had none): each panel's
    padding gives that room back, and its outer box is what the layout reserved (PLAN 3.12Rh). */
 .topbar {

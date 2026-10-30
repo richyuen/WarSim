@@ -24734,3 +24734,8 @@ No rule changed and nothing on screen changed. One task came out of it.
 - `i18n.spec`/`title.spec` switch the locale by `warsim.locale` and a reload; `i18n.spec`'s stale "WarSim" pseudo-title
   fixed. e2e by hand: i18n, title, phoneLayout, barNarrow, settings, godUi, warBannerRows, ticker, speed, history,
   player (48 passed).
+
+## 2026-10-29 — Outside the loop (the user's request): scroll bars in the plates' look (ADR-764)
+
+- Every UI scroll bar is a thin steel thumb in a dark track (standard `scrollbar-color`, and Safari's
+  `::-webkit-scrollbar`). CSS only.
