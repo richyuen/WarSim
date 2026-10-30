@@ -33,7 +33,7 @@ import { isTransport, liveCarriers, wingAircraft } from '../sim/systems/air';
 import { airbaseRoom } from '../sim/data/airbases';
 import { nearestWingBase } from '../sim/placeForces';
 import { Refusal } from '../shared/commands';
-import { sortieEnd } from '../shared/sorties';
+import { sortieAt, sortieEnd } from '../shared/sorties';
 import { carrierRaids } from './carrierRaids';
 import {
   BLOCK_STRIDE,
@@ -1766,7 +1766,12 @@ function playerWings(world: World): PlayerWing[] {
   const out: PlayerWing[] = [];
   for (const [id, base] of [...world.wingBase].sort((a, b) => a[0] - b[0])) {
     if (!world.formations.has(id) || c.nation[id] !== n) continue;
-    out.push({ id, template: c.template[id]!, transport: isTransport(world, id), carrier: base < 0, mission: world.wingMission.get(id)?.kind ?? null, flying: world.sorties.has(id), ferryDays: ferryDays(world, id) });
+    const s = world.sorties.get(id);
+    const up = s !== undefined && s.launch <= world.tick && world.tick < sortieEnd(s);
+    const lw = world.settings.loopingMap ? world.cells.w : 0;
+    const at = up ? sortieAt(s, world.tick, lw) : { x: c.x[id]!, y: c.y[id]! };
+    const x = lw > 0 ? ((at.x % lw) + lw) % lw : at.x;
+    out.push({ id, template: c.template[id]!, transport: isTransport(world, id), carrier: base < 0, mission: world.wingMission.get(id)?.kind ?? null, flying: world.sorties.has(id), ferryDays: ferryDays(world, id), x, y: at.y });
   }
   return out;
 }

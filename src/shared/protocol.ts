@@ -536,6 +536,12 @@ export interface PlayerWing {
    * up, until it is there; 0 when it is not at sea.
    */
   ferryDays: number;
+  /**
+   * Where it is now, world cells (ADR-766: what the camera follows): in the air, its flight's place
+   * at the stats' tick; else its base's, or its carrier's.
+   */
+  x: number;
+  y: number;
 }
 
 /** The airbase a refused wing of the editor could go to (PLAN 7.24b): its name and km from the click. */

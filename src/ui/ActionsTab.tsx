@@ -4,6 +4,7 @@ import type { NationStat, PlayerWing, TemplateInfo, WarStat } from '../shared/pr
 import { REFUSAL_KEY } from './GodTab';
 import { t, type MessageKey } from './i18n';
 import { displayName } from './NationPanel';
+import { UnitIcon } from './UnitIcon';
 
 export interface ActionsTabProps {
   nation: NationStat;
@@ -17,6 +18,9 @@ export interface ActionsTabProps {
   wings: PlayerWing[];
   wingOrder: { wing: number; kind: WingOrderKind } | null;
   onArmWing: (wing: number, kind: WingOrderKind) => void;
+  /** The wing selected by its name, which the camera follows (ADR-766), and the selecting of one. */
+  followedWing?: number | null;
+  onFollowWing?: (wing: number) => void;
   /** The formations selected (PLAN 5.8v2), whether their paradrop is armed, and the arming of it. */
   selected: number;
   dropArmed: boolean;
@@ -53,7 +57,7 @@ const num = (v: number): string => Math.round(v).toLocaleString('en-US');
  * on the map (patrol, strike, supply for a transport, rebase); and a paradrop of the formations
  * selected, the same way (PLAN 5.8v2).
  */
-export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing, selected, dropArmed, onArmDrop, place, assist }: ActionsTabProps) {
+export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing, followedWing, onFollowWing, selected, dropArmed, onArmDrop, place, assist }: ActionsTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   const [target, setTarget] = useState(0);
@@ -131,6 +135,7 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
           ) : null}
           {templates.map((tp, i) => (
             <div class="god-row act-template" key={i}>
+              <UnitIcon template={tp} />
               <span class="god-war-name">{t(tp.nameKey as MessageKey)}</span>
               <button type="button" class={place.armed === i ? 'god-btn active' : 'god-btn'} data-testid={`act-place-${i}`} onClick={() => place.onArm(i)}>
                 {t('act.placeButton')}
@@ -157,8 +162,22 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
             </div>
           ) : null}
           {wings.map((wg) => (
-            <div class="god-row act-wing" key={wg.id} data-testid={`act-wing-${wg.id}`}>
-              <span class="god-war-name">
+            <div class={followedWing === wg.id ? 'god-row act-wing followed' : 'god-row act-wing'} key={wg.id} data-testid={`act-wing-${wg.id}`}>
+              <UnitIcon template={templates[wg.template]} />
+              <span
+                class="god-war-name act-wing-name"
+                role="button"
+                tabIndex={0}
+                aria-pressed={followedWing === wg.id}
+                data-testid={`act-wing-${wg.id}-name`}
+                title={t('act.wingFollowHint')}
+                onClick={() => onFollowWing?.(wg.id)}
+                onKeyDown={(e) => {
+                  if (e.key !== 'Enter' && e.key !== ' ') return;
+                  e.preventDefault();
+                  onFollowWing?.(wg.id);
+                }}
+              >
                 {t((templates[wg.template]?.nameKey ?? 'template.fighter_group') as MessageKey)}
                 <span class="act-cost">
                   {' '}
@@ -197,6 +216,7 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
         const port = tp.domain === 0 || (tp.domain === 1 ? nation.shipyard : nation.airRoom >= tp.aircraft);
         return (
           <div class="god-row act-template" key={i}>
+            <UnitIcon template={tp} />
             <span class="god-war-name" title={t('act.templateInfo', { men: num(tp.men), gold: num(tp.gold), manpower: num(tp.manpower), days: tp.days })}>
               {t(tp.nameKey as MessageKey)}
               <span class="act-cost"> {!known ? t('act.needsResearch') : !port ? t(tp.domain === 1 ? 'act.needsPort' : 'act.needsAirfield') : t('act.cost', { gold: num(tp.gold), days: tp.days })}</span>
@@ -214,6 +234,7 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
         <ul class="act-queue" data-testid="act-queue">
           {nation.queue.map((q, i) => (
             <li key={i} data-testid="act-queue-row">
+              <UnitIcon template={templates[q.template]} />
               {t((templates[q.template]?.nameKey ?? 'template.infantry_div') as MessageKey)} · {t('act.readyIn', { n: Math.max(0, q.readyDay - day) })}
             </li>
           ))}

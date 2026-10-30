@@ -167,6 +167,32 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-766 · 2026-10-29 · accepted (the user's request) — outside PLAN: a wing's name selects it and the camera follows it
+
+- **Context.** The user: in the Actions tab's air force list, a click on a group's name should select that group and
+  follow it.
+- **Decision.** Wings are not among the view's formations, so `PlayerWing` (the nation stats, `src/worker/server.ts`)
+  now carries where the wing is: in the air, its flight's place at the stats' tick (`sortieAt`); else its base's or its
+  carrier's (the formation's `x`, `y`). A click on the name (`act-wing-<id>-name`, a button by role, Enter and Space
+  too) calls `Player.followWing`: the formations' selection and an armed paradrop go, the row is lit (`.followed`),
+  and the camera follows that place at the zoom it has, as a formation's click does. The name again, Escape, the
+  touch Cancel, a pan of the user's (`CameraController.onFollowEnd`) or a formation's selection end it. An armed
+  wing order stays armed.
+- **Not done:** a mark on the map for the selected wing; the place is the stats' (once an hour of game time), so
+  the camera eases from one to the next rather than riding the sortie the map draws between them.
+- **Test:** `airOrders1938` "a wing's name in the Actions tab selects it and the camera follows it".
+
+### ADR-765 · 2026-10-29 · accepted (the user's request) — outside PLAN: an icon for each unit type in the Actions tab
+
+- **Context.** The user: a representative icon to the left of each unit type in the Actions tab.
+- **Decision** (`src/ui/UnitIcon.tsx`): our own side-view silhouettes (24 × 24 SVG paths) on a glossy tile in the
+  branch's colour (land olive, sea navy, air sky), as Cities' tool tiles: soldier, mountain, horse, fort, truck,
+  half-track, tank; battleship (and cruiser), destroyer, carrier, submarine, freighter; fighter, twin- and
+  four-engined bombers, a diving plane (close support), a torpedo bomber over waves, a parachute (air transport).
+  A template's icon is by its id, else its marker symbol, else its domain. Shown on the production list, God Mode's
+  placing list, each air wing's row and the training queue. The map's sprites were not used: they are seen from
+  above and read poorly at 20 px.
+
 ### ADR-764 · 2026-10-29 · accepted (the user's request) — outside PLAN: scroll bars in the plates' look
 
 - **Context.** The user: the country panel's scroll bar should match the panel (ADR-762).

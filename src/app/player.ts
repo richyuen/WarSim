@@ -49,6 +49,8 @@ export class PlayerControl {
   readonly selectedCount = signal(0);
   /** A wing's order waiting for its place on the map (PLAN 5.8v1), or null. */
   readonly wingOrder = signal<{ wing: number; kind: WingOrder } | null>(null);
+  /** The wing selected by its name in the Actions tab, which the camera follows (ADR-766); null: none. */
+  readonly followedWing = signal<number | null>(null);
   /** A paradrop of the selection waiting for its place on the map (PLAN 5.8v2). */
   readonly dropArmed = signal(false);
   /** The template armed for God Mode's placing, or null. */
@@ -75,6 +77,10 @@ export class PlayerControl {
     view.onSelectionDropped = () => {
       this.selectedCount.value = view.selectedFormations.size;
       if (view.selectedFormations.size === 0) view.followSelection(false);
+    };
+    // A pan of the user's ends a wing's follow, as it ends a formation's (ADR-766).
+    view.controller.onFollowEnd = () => {
+      this.followedWing.value = null;
     };
     // A loaded world's formations are others, with the same ids (PLAN 2.16Rk).
     hud.sim.onLoad(() => {
@@ -128,6 +134,7 @@ export class PlayerControl {
 
   clearSelection(): void {
     this.wingOrder.value = null;
+    this.followedWing.value = null;
     this.dropArmed.value = false;
     this.placing.value = null;
     this.view.selectionNation = this.nation.value;
@@ -158,6 +165,28 @@ export class PlayerControl {
     }
     this.view.followSelection(false);
     this.selectedCount.value = sel.size;
+    this.view.requestDraw();
+  }
+
+  /**
+   * Selects wing `wing` (its name clicked in the Actions tab, ADR-766): the formations' selection
+   * goes, and the camera follows the wing where it is (`PlayerWing.x`, `y`: its base, its carrier
+   * or its flight) at the zoom it has, until a pan, Escape or the name again.
+   */
+  followWing(wing: number): void {
+    if (this.followedWing.value === wing) {
+      this.followedWing.value = null;
+      this.view.controller.follow(null);
+      return;
+    }
+    this.view.selectedFormations.clear();
+    this.selectedCount.value = 0;
+    this.dropArmed.value = false;
+    this.followedWing.value = wing;
+    this.view.controller.follow(() => {
+      const w = this.hud.stats.peek()?.wings.find((x) => x.id === wing);
+      return w ? [w.x, w.y] : null;
+    });
     this.view.requestDraw();
   }
 
@@ -225,6 +254,7 @@ export class PlayerControl {
       if (!shift) sel.clear();
       if (shift && sel.has(f)) sel.delete(f);
       else sel.add(f);
+      this.followedWing.value = null;
       this.view.followSelection(sel.size > 0);
       this.selectedCount.value = sel.size;
       this.view.requestDraw();

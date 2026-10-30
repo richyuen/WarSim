@@ -123,7 +123,7 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       if (e.key === 'Escape') {
         if (p.menu.value !== null) p.closeMenu();
         else if (p.placing.value !== null) p.stopPlacing();
-        else if (p.selectedCount.value > 0 || p.wingOrder.value !== null || p.dropArmed.value) p.clearSelection();
+        else if (p.selectedCount.value > 0 || p.wingOrder.value !== null || p.dropArmed.value || p.followedWing.value !== null) p.clearSelection();
         else hud.escape();
       }
       // Ctrl+A: every formation of the nation played that a click orders, while playing one.

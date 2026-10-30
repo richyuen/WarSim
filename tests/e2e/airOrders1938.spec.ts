@@ -182,3 +182,38 @@ test('a wing at sea to its new base says so on its row, with the days left', asy
   await expect(page.getByTestId(`act-wing-${home}`)).not.toContainText('at sea');
   await page.getByTestId('tab-actions').locator('xpath=ancestor::aside[1]').screenshot({ path: 'docs/evidence/7.142/a-wing-at-sea-row.png' });
 });
+
+test('a wing\'s name in the Actions tab selects it and the camera follows it; again, it lets go (ADR-766)', async ({ page }) => {
+  test.setTimeout(150_000);
+  await page.setViewportSize({ width: 1400, height: 800 });
+  await open1938(page);
+  await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
+  await page.getByTestId('take-control').click();
+  await page.getByTestId('tab-actions').click();
+  await expect.poll(async () => (await wings(page)).length, { timeout: 30_000 }).toBeGreaterThan(20);
+  const wing = (await wings(page)).find((w) => !w.carrier && !w.flying)!;
+  // Each wing has an icon and a place.
+  await expect(page.getByTestId(`act-wing-${wing.id}`).locator('.unit-icon')).toHaveCount(1);
+  expect(Number.isFinite(wing.x) && Number.isFinite(wing.y)).toBe(true);
+  // The camera is elsewhere first: far from the wing.
+  await lookAt(page, (wing.x + 300) % SIZE_1938.w, wing.y, 1500);
+  await page.getByTestId(`act-wing-${wing.id}-name`).click();
+  await expect(page.getByTestId(`act-wing-${wing.id}`)).toHaveClass(/followed/);
+  expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(true);
+  await expect
+    .poll(async () => page.evaluate(([x, y]) => {
+      const c = window.__warsim!.view!.controller.cam;
+      return Math.hypot(c.cx - x!, c.cy - y!);
+    }, [wing.x, wing.y]), { timeout: 15_000 })
+    .toBeLessThan(2);
+  // The name again: the follow ends, the row is no more lit.
+  await page.getByTestId(`act-wing-${wing.id}-name`).click();
+  await expect(page.getByTestId(`act-wing-${wing.id}`)).not.toHaveClass(/followed/);
+  expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(false);
+  // Selected again, Escape lets go.
+  await page.getByTestId(`act-wing-${wing.id}-name`).click();
+  await expect(page.getByTestId(`act-wing-${wing.id}`)).toHaveClass(/followed/);
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId(`act-wing-${wing.id}`)).not.toHaveClass(/followed/);
+  expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(false);
+});

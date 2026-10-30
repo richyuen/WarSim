@@ -112,7 +112,7 @@ export function App({
   const cancel: (() => void) | null =
     player && player.placing.value !== null
       ? () => player.stopPlacing()
-      : player && (player.selectedCount.value > 0 || player.wingOrder.value !== null || player.dropArmed.value)
+      : player && (player.selectedCount.value > 0 || player.wingOrder.value !== null || player.dropArmed.value || player.followedWing.value !== null)
         ? () => player.clearSelection()
         : hud.godTool.value !== null
           ? () => hud.setGodTool(null)
@@ -343,6 +343,8 @@ export function App({
                   wings: stats.wings,
                   wingOrder: player.wingOrder.value,
                   onArmWing: (wing, kind) => player.armWing(wing, kind),
+                  followedWing: player.followedWing.value,
+                  onFollowWing: (wing) => player.followWing(wing),
                   selected: player.selectedCount.value,
                   dropArmed: player.dropArmed.value,
                   onArmDrop: () => player.armDrop(),

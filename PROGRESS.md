@@ -24739,3 +24739,10 @@ No rule changed and nothing on screen changed. One task came out of it.
 
 - Every UI scroll bar is a thin steel thumb in a dark track (standard `scrollbar-color`, and Safari's
   `::-webkit-scrollbar`). CSS only.
+
+## 2026-10-29 — Outside the loop (the user's requests): unit icons in the Actions tab; a wing's name follows it (ADR-765, ADR-766)
+
+- Every unit type in the Actions tab (production, placing, air wings, queue) has a side-view icon on a tile in its
+  branch's colour (`src/ui/UnitIcon.tsx`).
+- A click on an air wing's name selects it and the camera follows it (its base, carrier or flight; `PlayerWing.x`,
+  `y` from the worker); again, Escape, Cancel or a pan let go. e2e: `airOrders1938` (5 passed), a new test for it.
