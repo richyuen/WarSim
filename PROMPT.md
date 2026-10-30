@@ -184,7 +184,11 @@ added without code changes.
     the run those entries wait for); then spawn the `critic` subagent
     (Agent tool, subagent_type
     `critic`) with no hints about what to look at, wait for it to finish,
-    and check that `critic/CRITIC_REPORT.json` now names HEAD. Append one
+    and check that `critic/CRITIC_REPORT.json` now names HEAD. Commit the
+    critic's new files in `critic/` with the report (`git add critic/`;
+    `.gitignore` keeps its saved states, saves and build copies out),
+    since the report and later tasks cite them as evidence (added
+    2026-10-30, ADR-770, the user's decision). Append one
     line to PROGRESS.md with the scores and blocking count. Then add a
     PLAN.md task for every blocking issue that has none, placed before the
     next feature task unless a later phase already covers it (a finding that

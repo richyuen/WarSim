@@ -167,6 +167,18 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-770 · 2026-10-30 · accepted (the user's decision) — outside PLAN: a critic run's evidence is committed with its report
+
+- **Context.** The critic never commits, and PROMPT step 2a named only the report, PLAN.md and PROGRESS.md, so
+  runs 18–20 left their logs, JSON and scripts untracked (run 17's were committed). A clean-up of 7.5 GB of
+  untracked critic files on this date deleted about 12 files that `docs/PLAN_DONE.md` cites from runs 18 and 19
+  (`critic/c18_perf_summary.json`, `critic/c19_p2_phone_menu.json` among them); those citations now lead nowhere.
+- **Decision.** Step 2a commits the critic's new files in `critic/` with the report. `.gitignore` keeps out what
+  is bulky and rebuilt on demand: `critic/*.bin`, `critic/*.wsz`, `critic/*_dist/`, `critic/*_olddist/`,
+  `critic/wt/` (with `critic/shots/` as before). Run 20's evidence is committed now.
+- **Cost.** A few MB of logs and JSON a run in the repository. Screenshots stay uncommitted, so a report's cited
+  PNGs live only on the machine that ran it.
+
 ### ADR-769 · 2026-10-30 · accepted — PLAN 7.160 (R20-B1): while playing, a click opens the panel of the formation it selects
 
 - **Context.** Critic run 20: playing Germany at the front (seed 4441, day 60), 7 of 12 clicks on its divisions

@@ -24776,3 +24776,5 @@ No rule changed and nothing on screen changed. One task came out of it.
   Infantry division 4, which was Polish 562's panel).
 - e2e by hand: formationClickPanel1938, formationPanel1938, player1938, playerActions1938, airOrders1938 (18 passed).
 - **Next:** PLAN 7.5.
+
+- 2026-10-30, outside PLAN (the user's decision, ADR-770): 7.5 GB of untracked critic byproducts of runs 2–19 deleted (run 20 and the 20 cited saved states kept); `.gitignore` keeps saved states, saves and build copies out; step 2a now commits a run's evidence with its report, run 20's committed here. About 12 cited files of runs 18–19 were lost in the clean-up.

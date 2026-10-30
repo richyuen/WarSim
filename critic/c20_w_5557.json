@@ -1,0 +1,2864 @@
+{
+ "seed": 5557,
+ "steps": [
+  {
+   "s": "war",
+   "ticker": [
+    "1 January 1938 Germany declared war on Poland"
+   ]
+  },
+  {
+   "s": "fighter",
+   "id": 1258,
+   "x": 1071.5,
+   "y": 272.5,
+   "warsaw": [
+    1143.5235555555555,
+    269.6437945543833
+   ],
+   "km": 1406
+  },
+  {
+   "s": "strike ordered",
+   "w": {
+    "id": 1258,
+    "template": 25,
+    "transport": false,
+    "carrier": false,
+    "mission": null,
+    "flying": false,
+    "ferryDays": 0,
+    "x": 1071.5,
+    "y": 272.5
+   },
+   "ticker": [
+    "Strike",
+    "Strike",
+    "Strike"
+   ]
+  },
+  {
+   "s": "followed",
+   "cls": "god-row act-wing followed"
+  },
+  {
+   "s": "samples x1_3000",
+   "n": 61,
+   "flyingWithMark": 56,
+   "noMark": 0,
+   "medianPx": 32,
+   "p90Px": 88,
+   "max": 139,
+   "first": {
+    "tick": 1,
+    "flying": true,
+    "mission": "patrol",
+    "wx": 1053.48328157288,
+    "wy": 289.21170639888,
+    "mark": [
+     740,
+     506
+    ],
+    "nearestSortiePx": 32,
+    "sorties": 26,
+    "mpp": 3000,
+    "following": true
+   },
+   "last": {
+    "tick": 8,
+    "flying": true,
+    "mission": "patrol",
+    "wx": 1053.48328157288,
+    "wy": 289.21170639888,
+    "mark": [
+     800,
+     450
+    ],
+    "nearestSortiePx": 31,
+    "sorties": 12,
+    "mpp": 3000,
+    "following": true
+   }
+  },
+  {
+   "s": "samples x1_250",
+   "n": 58,
+   "flyingWithMark": 36,
+   "noMark": 2,
+   "medianPx": 212,
+   "p90Px": 714,
+   "max": 1245,
+   "first": {
+    "tick": 9,
+    "flying": true,
+    "mission": "patrol",
+    "wx": 1062.847478803109,
+    "wy": 280.52578973731784,
+    "mark": [
+     800,
+     450
+    ],
+    "nearestSortiePx": 0,
+    "sorties": 2,
+    "mpp": 207,
+    "following": true
+   },
+   "last": {
+    "tick": 16,
+    "flying": true,
+    "mission": "patrol",
+    "wx": 1071.5,
+    "wy": 272.5,
+    "mark": [
+     801,
+     449
+    ],
+    "nearestSortiePx": null,
+    "sorties": 0,
+    "mpp": 206,
+    "following": true
+   }
+  },
+  {
+   "s": "samples x5_3000",
+   "n": 60,
+   "flyingWithMark": 60,
+   "noMark": 0,
+   "medianPx": 43,
+   "p90Px": 102,
+   "max": 151,
+   "first": {
+    "tick": 17,
+    "flying": true,
+    "mission": "patrol",
+    "wx": 1071.5,
+    "wy": 272.5,
+    "mark": [
+     800,
+     450
+    ],
+    "nearestSortiePx": 57,
+    "sorties": 14,
+    "mpp": 2989,
+    "following": true
+   },
+   "last": {
+    "tick": 208,
+    "flying": true,
+    "mission": "patrol",
+    "wx": 1068.0501559511858,
+    "wy": 282.89708618893457,
+    "mark": [
+     800,
+     450
+    ],
+    "nearestSortiePx": 26,
+    "sorties": 11,
+    "mpp": 3000,
+    "following": true
+   }
+  },
+  {
+   "s": "other panel open",
+   "tick": 212,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 17,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  }
+ ],
+ "raw_x1_3000": [
+  {
+   "tick": 1,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    740,
+    506
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 1,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    779,
+    469
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 1,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    793,
+    457
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 1,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    798,
+    452
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 1,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    799,
+    451
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 1,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 1,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 1,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 2,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 2,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 26,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 2,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 24,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 2,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 23,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 2,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 23,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 2,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 16,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 2,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 3,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    847,
+    407
+   ],
+   "nearestSortiePx": 66,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 3,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    816,
+    435
+   ],
+   "nearestSortiePx": 59,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 3,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    806,
+    444
+   ],
+   "nearestSortiePx": 55,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 3,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    802,
+    448
+   ],
+   "nearestSortiePx": 66,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 3,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    801,
+    449
+   ],
+   "nearestSortiePx": 50,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 3,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 46,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 3,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 48,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 3,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 17,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 4,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    843,
+    410
+   ],
+   "nearestSortiePx": 30,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 4,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    805,
+    445
+   ],
+   "nearestSortiePx": 5,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 4,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    802,
+    448
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 4,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    801,
+    449
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 4,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 4,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 4,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 5,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 11,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 5,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 5,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 56,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 5,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 77,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 5,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 100,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 5,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 139,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 5,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 115,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 6,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 75,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 6,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 57,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 6,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 43,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 6,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 26,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 6,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 5,
+   "sorties": 10,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 6,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 47,
+   "sorties": 4,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 6,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 61,
+   "sorties": 4,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 6,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 80,
+   "sorties": 3,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 7,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    710,
+    534
+   ],
+   "nearestSortiePx": 106,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 7,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    769,
+    479
+   ],
+   "nearestSortiePx": 95,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 7,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    788,
+    461
+   ],
+   "nearestSortiePx": 88,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 7,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    796,
+    454
+   ],
+   "nearestSortiePx": 66,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 7,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    798,
+    452
+   ],
+   "nearestSortiePx": 39,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 7,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    799,
+    451
+   ],
+   "nearestSortiePx": 8,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 7,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 7,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 32,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 8,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 8,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 8,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 8,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 8,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 8,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 8,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 8,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  }
+ ],
+ "raw_x1_250": [
+  {
+   "tick": 9,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 0,
+   "sorties": 2,
+   "mpp": 207,
+   "following": true
+  },
+  {
+   "tick": 9,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 0,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 9,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 0,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 9,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 0,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 9,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 0,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 9,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 0,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 9,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 0,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 9,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 0,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 10,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": null,
+   "nearestSortiePx": null,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 10,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    1083,
+    188
+   ],
+   "nearestSortiePx": 714,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 10,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    897,
+    360
+   ],
+   "nearestSortiePx": 266,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 10,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    838,
+    415
+   ],
+   "nearestSortiePx": 560,
+   "sorties": 2,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 10,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    813,
+    438
+   ],
+   "nearestSortiePx": 212,
+   "sorties": 3,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 10,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    801,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 11,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 11,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 897,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 11,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 655,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 11,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 508,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 11,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 493,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 11,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 11,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 11,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 12,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 12,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 12,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 12,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 12,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 12,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 13,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": null,
+   "nearestSortiePx": null,
+   "sorties": 5,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 13,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    349,
+    868
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 13,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    645,
+    594
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 13,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    739,
+    507
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 13,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    779,
+    469
+   ],
+   "nearestSortiePx": 493,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 13,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    799,
+    451
+   ],
+   "nearestSortiePx": 70,
+   "sorties": 3,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 14,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 14,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 14,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 14,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 14,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 14,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 14,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 14,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1053.48328157288,
+   "wy": 289.21170639888,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 15,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    1256,
+    27
+   ],
+   "nearestSortiePx": 1245,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 15,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    957,
+    304
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 15,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    862,
+    393
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 15,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    821,
+    430
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 15,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    808,
+    442
+   ],
+   "nearestSortiePx": 669,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 15,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    803,
+    447
+   ],
+   "nearestSortiePx": 730,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 15,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    801,
+    449
+   ],
+   "nearestSortiePx": 489,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 15,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 41,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 16,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1062.847478803109,
+   "wy": 280.52578973731784,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 337,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 16,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    1221,
+    59
+   ],
+   "nearestSortiePx": 335,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 16,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    966,
+    296
+   ],
+   "nearestSortiePx": 564,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 16,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    857,
+    397
+   ],
+   "nearestSortiePx": 475,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 16,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    822,
+    429
+   ],
+   "nearestSortiePx": 550,
+   "sorties": 1,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 16,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    808,
+    443
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 16,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    803,
+    448
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  },
+  {
+   "tick": 16,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    801,
+    449
+   ],
+   "nearestSortiePx": null,
+   "sorties": 0,
+   "mpp": 206,
+   "following": true
+  }
+ ],
+ "raw_x5_3000": [
+  {
+   "tick": 17,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 57,
+   "sorties": 14,
+   "mpp": 2989,
+   "following": true
+  },
+  {
+   "tick": 20,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 42,
+   "sorties": 12,
+   "mpp": 2999,
+   "following": true
+  },
+  {
+   "tick": 22,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 67,
+   "sorties": 3,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 22,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 57,
+   "sorties": 3,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 28,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 28,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 32,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 151,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 35,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 102,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 38,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 98,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 41,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.5,
+   "wy": 272.5,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 122,
+   "sorties": 20,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 44,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7038631095638,
+   "wy": 272.93430644922535,
+   "mark": [
+    839,
+    451
+   ],
+   "nearestSortiePx": 49,
+   "sorties": 7,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 47,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7038631095638,
+   "wy": 272.93430644922535,
+   "mark": [
+    815,
+    451
+   ],
+   "nearestSortiePx": 4,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 49,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7038631095638,
+   "wy": 272.93430644922535,
+   "mark": [
+    805,
+    450
+   ],
+   "nearestSortiePx": 19,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 54,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7038631095638,
+   "wy": 272.93430644922535,
+   "mark": [
+    802,
+    450
+   ],
+   "nearestSortiePx": 51,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 60,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7038631095638,
+   "wy": 272.93430644922535,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 40,
+   "sorties": 10,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 63,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7038631095638,
+   "wy": 272.93430644922535,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 50,
+   "sorties": 10,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 66,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1104.5048419718523,
+   "wy": 273.6813378088486,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 49,
+   "sorties": 20,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 69,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1104.5048419718523,
+   "wy": 273.6813378088486,
+   "mark": [
+    844,
+    452
+   ],
+   "nearestSortiePx": 45,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 69,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1104.5048419718523,
+   "wy": 273.6813378088486,
+   "mark": [
+    815,
+    451
+   ],
+   "nearestSortiePx": 12,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 70,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1104.5048419718523,
+   "wy": 273.6813378088486,
+   "mark": [
+    806,
+    450
+   ],
+   "nearestSortiePx": 45,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 78,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1104.5048419718523,
+   "wy": 273.6813378088486,
+   "mark": [
+    802,
+    450
+   ],
+   "nearestSortiePx": 10,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 81,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1104.5048419718523,
+   "wy": 273.6813378088486,
+   "mark": [
+    801,
+    450
+   ],
+   "nearestSortiePx": 46,
+   "sorties": 19,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 84,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1104.5048419718523,
+   "wy": 273.6813378088486,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 1,
+   "sorties": 12,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 87,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1104.5048419718523,
+   "wy": 273.6813378088486,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 16,
+   "sorties": 18,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 90,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7048581748913,
+   "wy": 272.9131733933268,
+   "mark": [
+    687,
+    446
+   ],
+   "nearestSortiePx": 13,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 96,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7048581748913,
+   "wy": 272.9131733933268,
+   "mark": [
+    787,
+    449
+   ],
+   "nearestSortiePx": 12,
+   "sorties": 16,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 100,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7048581748913,
+   "wy": 272.9131733933268,
+   "mark": [
+    795,
+    450
+   ],
+   "nearestSortiePx": 130,
+   "sorties": 8,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 103,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7048581748913,
+   "wy": 272.9131733933268,
+   "mark": [
+    798,
+    450
+   ],
+   "nearestSortiePx": 18,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 106,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7048581748913,
+   "wy": 272.9131733933268,
+   "mark": [
+    799,
+    450
+   ],
+   "nearestSortiePx": 50,
+   "sorties": 20,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 109,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7048581748913,
+   "wy": 272.9131733933268,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 65,
+   "sorties": 14,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 112,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7048581748913,
+   "wy": 272.9131733933268,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 46,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 115,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7081395883715,
+   "wy": 272.8341282019427,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 33,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 118,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7081395883715,
+   "wy": 272.8341282019427,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 37,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 118,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7081395883715,
+   "wy": 272.8341282019427,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 136,
+   "sorties": 8,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 124,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7081395883715,
+   "wy": 272.8341282019427,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 56,
+   "sorties": 7,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 131,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7081395883715,
+   "wy": 272.8341282019427,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 54,
+   "sorties": 13,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 134,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7081395883715,
+   "wy": 272.8341282019427,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 52,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 137,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.7081395883715,
+   "wy": 272.8341282019427,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 50,
+   "sorties": 19,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 141,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.784668848164,
+   "wy": 272.1388457731485,
+   "mark": [
+    800,
+    448
+   ],
+   "nearestSortiePx": 50,
+   "sorties": 20,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 144,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.784668848164,
+   "wy": 272.1388457731485,
+   "mark": [
+    800,
+    449
+   ],
+   "nearestSortiePx": 43,
+   "sorties": 7,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 147,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.784668848164,
+   "wy": 272.1388457731485,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 90,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 150,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.784668848164,
+   "wy": 272.1388457731485,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 68,
+   "sorties": 18,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 153,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.784668848164,
+   "wy": 272.1388457731485,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 53,
+   "sorties": 18,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 156,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.784668848164,
+   "wy": 272.1388457731485,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 64,
+   "sorties": 10,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 159,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1084.784668848164,
+   "wy": 272.1388457731485,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 132,
+   "sorties": 7,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 162,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.9317444939916,
+   "wy": 283.2636521774908,
+   "mark": [
+    727,
+    513
+   ],
+   "nearestSortiePx": 30,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 165,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.9317444939916,
+   "wy": 283.2636521774908,
+   "mark": [
+    775,
+    472
+   ],
+   "nearestSortiePx": 38,
+   "sorties": 18,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 166,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.9317444939916,
+   "wy": 283.2636521774908,
+   "mark": [
+    790,
+    459
+   ],
+   "nearestSortiePx": 23,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 171,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.9317444939916,
+   "wy": 283.2636521774908,
+   "mark": [
+    797,
+    453
+   ],
+   "nearestSortiePx": 27,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 174,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.9317444939916,
+   "wy": 283.2636521774908,
+   "mark": [
+    799,
+    451
+   ],
+   "nearestSortiePx": 31,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 177,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.9317444939916,
+   "wy": 283.2636521774908,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 21,
+   "sorties": 17,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 181,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.9317444939916,
+   "wy": 283.2636521774908,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 24,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 184,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1071.9317444939916,
+   "wy": 283.2636521774908,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 12,
+   "sorties": 8,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 186,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    781,
+    448
+   ],
+   "nearestSortiePx": 1,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 190,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    792,
+    449
+   ],
+   "nearestSortiePx": 35,
+   "sorties": 17,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 192,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    797,
+    450
+   ],
+   "nearestSortiePx": 42,
+   "sorties": 8,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 196,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    799,
+    450
+   ],
+   "nearestSortiePx": 11,
+   "sorties": 15,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 199,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 33,
+   "sorties": 7,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 202,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 39,
+   "sorties": 20,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 205,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 12,
+   "sorties": 9,
+   "mpp": 3000,
+   "following": true
+  },
+  {
+   "tick": 208,
+   "flying": true,
+   "mission": "patrol",
+   "wx": 1068.0501559511858,
+   "wy": 282.89708618893457,
+   "mark": [
+    800,
+    450
+   ],
+   "nearestSortiePx": 26,
+   "sorties": 11,
+   "mpp": 3000,
+   "following": true
+  }
+ ],
+ "errors": []
+}
