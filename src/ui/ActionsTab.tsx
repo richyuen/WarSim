@@ -135,7 +135,7 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
           ) : null}
           {templates.map((tp, i) => (
             <div class="god-row act-template" key={i}>
-              <UnitIcon template={tp} />
+              <UnitIcon template={tp} onClick={() => place.onArm(i)} pressed={place.armed === i} label={`${t('act.placeButton')}: ${t(tp.nameKey as MessageKey)}`} testId={`act-place-${i}-icon`} />
               <span class="god-war-name">{t(tp.nameKey as MessageKey)}</span>
               <button type="button" class={place.armed === i ? 'god-btn active' : 'god-btn'} data-testid={`act-place-${i}`} onClick={() => place.onArm(i)}>
                 {t('act.placeButton')}
@@ -163,7 +163,13 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
           ) : null}
           {wings.map((wg) => (
             <div class={followedWing === wg.id ? 'god-row act-wing followed' : 'god-row act-wing'} key={wg.id} data-testid={`act-wing-${wg.id}`}>
-              <UnitIcon template={templates[wg.template]} />
+              <UnitIcon
+                template={templates[wg.template]}
+                onClick={() => onFollowWing?.(wg.id)}
+                pressed={followedWing === wg.id}
+                label={t('act.wingFollowHint')}
+                testId={`act-wing-${wg.id}-icon`}
+              />
               <span
                 class="god-war-name act-wing-name"
                 role="button"

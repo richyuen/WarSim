@@ -144,6 +144,11 @@ export function NationPanel({
               <div class="panel-sub" data-testid="alliance-title">{allianceTitle(nation.alliance.name, (byId.get(nation.alliance.founder) ?? byId.get(nation.alliance.leader))?.name ?? null)}</div>
               {row('panel.unity', num(nation.alliance.unity))}
               {nation.alliance.leader !== nation.id ? row('panel.allianceLoyalty', num(nation.alliance.loyalty)) : null}
+              {/* Its allies (the user's request, ADR-768): the other members, the leader first. */}
+              <div class="panel-sub panel-sub-inner">{t('panel.allies')}</div>
+              <div class="chips" data-testid="panel-allies">
+                {nation.alliance.members.filter((m) => m !== nation.id).map(chip)}
+              </div>
             </div>
           ) : null}
           {nation.overlord !== 0 ? (

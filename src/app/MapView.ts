@@ -111,6 +111,8 @@ const ELEMENT_CELLS = 0.026;
 /** The selection's colour, and the radius of its ring at the far tiers, CSS px (`drawSelection`). */
 const SELECTION_GOLD = '#ffe28a';
 const SELECTION_RING_PX = 12;
+/** The radius of a selected wing's mark (ADR-767), CSS px. */
+const WING_MARK_PX = 14;
 /** A Shift-drag shorter than this is a Shift-click (CSS px); a finger that moves more before its long press pans. */
 const BOX_SLACK_PX = 6;
 /** How long a finger is held still for its drag to draw the selection box (ms). */
@@ -903,7 +905,9 @@ export class MapView {
   /** The screen boxes of the selected formations' elements in the frame drawn (`drawFormationTags`), per copy of the map. */
   private selectionBoxes: [number, number, number, number][] = [];
   /** The selection's marks drawn in the last frame, CSS px (tests): a frame around a T1 marker, a ring where none is drawn, a frame around the elements close in. */
-  selectionMarks: { kind: 'ring' | 'marker' | 'frame'; x0: number; y0: number; x1: number; y1: number }[] = [];
+  selectionMarks: { kind: 'ring' | 'marker' | 'frame' | 'wing'; x0: number; y0: number; x1: number; y1: number }[] = [];
+  /** Where the wing selected in the Actions tab is (world cells), for its mark (ADR-767); null: none. */
+  markedWing: (() => [number, number] | null) | null = null;
   private formIds = new Uint32Array(0);
   /** Each formation's `generation` (PLAN 7.4f23): which formation of an id was selected. */
   private formGen = new Uint32Array(0);
@@ -2376,6 +2380,61 @@ export class MapView {
    * by), so that the mark grows with the zoom. Each has a pointer above it. The two cross-fade
    * with the elements' share.
    */
+  /**
+   * The mark of the wing selected in the Actions tab (ADR-767): a ring with crosshair ticks, in
+   * the selection's gold over a dark edge, turning slowly, and the selection's pointer above it.
+   */
+  private drawWingMark(cam: Camera, now: number): void {
+    const at = this.markedWing?.();
+    if (!at) return;
+    const ctx = this.overlay.getContext('2d')!;
+    const w = this.canvas.clientWidth;
+    const h = this.canvas.clientHeight;
+    const r = WING_MARK_PX;
+    const turn = (now / 4000) * Math.PI * 2;
+    ctx.save();
+    for (const off of wrapOffsets(cam, this.geo, w, SEAM_MARGIN)) {
+      const [px, py] = worldToScreen(cam, at[0] + off, at[1], w, h);
+      if (px < -40 || py < -40 || px > w + 40 || py > h + 40) continue;
+      const path = (): void => {
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        for (let k = 0; k < 4; k++) {
+          const a = turn + (k * Math.PI) / 2;
+          ctx.moveTo(px + Math.cos(a) * (r - 4), py + Math.sin(a) * (r - 4));
+          ctx.lineTo(px + Math.cos(a) * (r + 6), py + Math.sin(a) * (r + 6));
+        }
+      };
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = 'rgba(0,0,0,0.65)';
+      path();
+      ctx.stroke();
+      ctx.shadowColor = 'rgba(255,226,138,0.9)';
+      ctx.shadowBlur = 8;
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = SELECTION_GOLD;
+      path();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = SELECTION_GOLD;
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+      const top = py - r - 6;
+      ctx.beginPath();
+      ctx.moveTo(px, top - 3);
+      ctx.lineTo(px - 7, top - 13);
+      ctx.lineTo(px + 7, top - 13);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      this.selectionMarks.push({ kind: 'wing', x0: px - r, y0: py - r, x1: px + r, y1: py + r });
+    }
+    ctx.restore();
+    // It turns: another frame while it is shown.
+    this.requestDraw();
+  }
+
   private drawSelection(cam: Camera): void {
     this.selectionMarks = [];
     if (this.selectedFormations.size === 0) return;
@@ -2613,6 +2672,7 @@ export class MapView {
     this.drawFlags(cam, now);
     this.drawCityLayer(cam, dpr, now);
     this.drawSelection(cam);
+    this.drawWingMark(cam, now);
     this.drawBox();
     // A nuclear burst's flash, shockwave and cloud (PLAN 6.6b): over all of the overlay, the
     // formations' tags too, at every tier.

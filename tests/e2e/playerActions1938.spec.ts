@@ -222,6 +222,13 @@ test('God Mode places any unit of the played nation at once: a division, a fleet
   const gold = (await pol(page)).gold;
   const before = (await polish()).length;
 
+  // The template's icon is a button too (ADR-767): it arms the placing, and again disarms it.
+  await page.getByTestId(`act-place-${panzer}-icon`).click();
+  await expect(page.getByTestId('act-place-armed')).toContainText('Armoured division');
+  await expect(page.getByTestId(`act-place-${panzer}-icon`)).toHaveAttribute('aria-pressed', 'true');
+  await page.getByTestId(`act-place-${panzer}-icon`).click();
+  await expect(page.getByTestId('act-place-armed')).toHaveCount(0);
+
   // A division not researched (the panzer division), on Polish ground and on German ground.
   await page.getByTestId(`act-place-${panzer}`).click();
   await expect(page.getByTestId('act-place-armed')).toContainText('Armoured division');

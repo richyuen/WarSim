@@ -81,6 +81,14 @@ export class PlayerControl {
     // A pan of the user's ends a wing's follow, as it ends a formation's (ADR-766).
     view.controller.onFollowEnd = () => {
       this.followedWing.value = null;
+      view.requestDraw();
+    };
+    // The selected wing's mark on the map (ADR-767) stands where the camera follows it.
+    view.markedWing = () => {
+      const id = this.followedWing.peek();
+      if (id === null) return null;
+      const w = this.hud.stats.peek()?.wings.find((x) => x.id === id);
+      return w ? [w.x, w.y] : null;
     };
     // A loaded world's formations are others, with the same ids (PLAN 2.16Rk).
     hud.sim.onLoad(() => {
@@ -177,6 +185,7 @@ export class PlayerControl {
     if (this.followedWing.value === wing) {
       this.followedWing.value = null;
       this.view.controller.follow(null);
+      this.view.requestDraw();
       return;
     }
     this.view.selectedFormations.clear();
@@ -255,6 +264,7 @@ export class PlayerControl {
       if (shift && sel.has(f)) sel.delete(f);
       else sel.add(f);
       this.followedWing.value = null;
+      this.view.requestDraw();
       this.view.followSelection(sel.size > 0);
       this.selectedCount.value = sel.size;
       this.view.requestDraw();

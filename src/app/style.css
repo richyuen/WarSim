@@ -1548,7 +1548,8 @@ input[type='file']::file-selector-button {
 #ui input::placeholder {
   color: var(--ui-muted);
 }
-/* A unit type's icon tile (ADR-765): a glossy tile in its branch's colour, the silhouette white. */
+/* A unit type's icon tile (ADR-765): a glossy tile in its branch's colour (land olive, sea navy,
+   air violet: ADR-767, the sky blue read as the sea's), the silhouette white. */
 .unit-icon {
   flex: none;
   display: inline-grid;
@@ -1573,7 +1574,28 @@ input[type='file']::file-selector-button {
   background: linear-gradient(180deg, #4f86c6, #24508a);
 }
 .unit-icon-air {
-  background: linear-gradient(180deg, #6cc1e8, #2b84b5);
+  background: linear-gradient(180deg, #a98be0, #5e3f9e);
+}
+/* An icon that is a button (ADR-767): a wing's selects it, God Mode's arms its placing. */
+button.unit-icon {
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  transition: filter 0.12s;
+}
+button.unit-icon:hover {
+  filter: brightness(1.18);
+}
+button.unit-icon:active {
+  filter: brightness(0.9);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.45);
+}
+button.unit-icon:focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 1px;
+}
+button.unit-icon.on {
+  box-shadow: 0 0 0 2px var(--ui-accent), inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 8px rgba(242, 193, 78, 0.6);
 }
 .act-queue {
   list-style: none;
@@ -1592,6 +1614,10 @@ input[type='file']::file-selector-button {
 .act-queue .unit-icon svg {
   width: 0.9rem;
   height: 0.9rem;
+}
+/* A group's name inside a block, below its rows (the allies, ADR-768). */
+.panel-sub-inner {
+  margin-top: 0.3rem;
 }
 /* A wing's name selects it and the camera follows it (ADR-766); the followed one's row is lit. */
 .act-wing-name {

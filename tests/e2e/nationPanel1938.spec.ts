@@ -38,6 +38,8 @@ test('nation panel: click a nation, read its overview and economy, follow a chip
   expect(share).toBeLessThan(0.6);
   expect(int(await page.getByTestId('stat-army').textContent())).toBeGreaterThan(100_000);
   await expect(page.getByTestId('panel-alliance')).toContainText('Anti-Comintern Pact');
+  // Its allies (ADR-768): the pact's other members, as chips, itself not among them.
+  await expect(page.getByTestId('panel-allies').locator('.nation-chip')).toHaveText(['Italy', 'Japan']);
   await expect(page.getByTestId('panel-wars')).toContainText('At peace');
 
   const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/1.31') : info.outputPath();

@@ -871,7 +871,7 @@ export class SimServer {
         fallout: falloutOf(world, id),
         efficiency: nc.efficiency[id]!,
         ceLocked: nc.ceLocked[id] === 1,
-        alliance: al ? { id: al.id, name: al.nameKey, leader: al.leader, founder: al.founder, unity: al.unity, loyalty: al.loyalty[k] ?? 0 } : null,
+        alliance: al ? { id: al.id, name: al.nameKey, leader: al.leader, founder: al.founder, unity: al.unity, loyalty: al.loyalty[k] ?? 0, members: [al.leader, ...al.members.filter((m) => m !== al.leader)] } : null,
         overlord: nc.overlord[id]!,
         autonomy: nc.autonomy[id]!,
         loyalty: nc.loyalty[id]!,

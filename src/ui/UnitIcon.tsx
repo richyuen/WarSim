@@ -75,15 +75,27 @@ export function iconOf(tp: Pick<TemplateInfo, 'nameKey' | 'symbol' | 'domain'>):
   return BY_ID[id] ?? (tp.domain === 2 ? 'fighter' : BY_SYMBOL[tp.symbol] ?? 'infantry');
 }
 
-/** A template's icon tile, for a list row (it has no text: the row's name says what it is). */
-export function UnitIcon({ template }: { template: Pick<TemplateInfo, 'nameKey' | 'symbol' | 'domain'> | undefined }) {
+/**
+ * A template's icon tile, for a list row. With `onClick` it is a button (ADR-767: a wing's selects
+ * it, God Mode's arms its placing), `label` its name for a screen reader and `pressed` its state;
+ * without, a picture beside the row's name, which says what it is.
+ */
+export function UnitIcon({ template, onClick, label, pressed, testId }: { template: Pick<TemplateInfo, 'nameKey' | 'symbol' | 'domain'> | undefined; onClick?: () => void; label?: string; pressed?: boolean; testId?: string }) {
   if (!template) return null;
   const icon = iconOf(template);
-  return (
-    <span class={`unit-icon unit-icon-${DOMAIN_CLASS[template.domain] ?? 'land'}`} data-icon={icon} aria-hidden="true">
-      <svg viewBox="0 0 24 24" focusable="false">
-        <path d={PATHS[icon]} />
-      </svg>
+  const cls = `unit-icon unit-icon-${DOMAIN_CLASS[template.domain] ?? 'land'}`;
+  const svg = (
+    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+      <path d={PATHS[icon]} />
+    </svg>
+  );
+  return onClick ? (
+    <button type="button" class={pressed ? `${cls} unit-icon-btn on` : `${cls} unit-icon-btn`} data-icon={icon} data-testid={testId} aria-label={label} aria-pressed={pressed} title={label} onClick={onClick}>
+      {svg}
+    </button>
+  ) : (
+    <span class={cls} data-icon={icon} aria-hidden="true">
+      {svg}
     </span>
   );
 }

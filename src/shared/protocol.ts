@@ -578,7 +578,8 @@ export interface NationStat {
   efficiency: number;
   /** Whether its combat efficiency is held where God Mode set it (PLAN 7.4f17). */
   ceLocked: boolean;
-  alliance: { id: number; name: string; leader: number; founder: number; unity: number; loyalty: number } | null;
+  /** Its alliance; `members` its nations, the leader first, then in joining order (ADR-768: the overview's allies). */
+  alliance: { id: number; name: string; leader: number; founder: number; unity: number; loyalty: number; members: number[] } | null;
   overlord: number;
   autonomy: number;
   loyalty: number;

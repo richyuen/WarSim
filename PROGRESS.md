@@ -24746,3 +24746,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   branch's colour (`src/ui/UnitIcon.tsx`).
 - A click on an air wing's name selects it and the camera follows it (its base, carrier or flight; `PlayerWing.x`,
   `y` from the worker); again, Escape, Cancel or a pan let go. e2e: `airOrders1938` (5 passed), a new test for it.
+
+## 2026-10-29 — Outside the loop (the user's requests): a wing's mark, icons that act, the allies (ADR-767, ADR-768)
+
+- A selected wing has a turning gold reticle on the map; a wing's icon selects it like its name; God Mode's icons
+  arm placing; air tiles are violet.
+- The overview lists the nation's allies (its alliance's other members) as chips.
+- e2e: airOrders1938, playerActions1938, nationPanel1938, allianceTitle1938, alliances1938, puppets1938.

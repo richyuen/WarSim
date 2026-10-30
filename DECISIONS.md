@@ -167,6 +167,29 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-768 · 2026-10-29 · accepted (the user's request) — outside PLAN: the nation's allies on its overview
+
+- **Context.** The user: a list of allies on a country's overview.
+- **Decision.** `NationStat.alliance` carries the alliance's `members` (the leader first, then in joining order;
+  `src/worker/server.ts`). The overview's alliance block lists the other members under "Allies" as nation chips,
+  which open that nation's panel, as the puppets' and enemies' do. A nation in no alliance shows no block, as before.
+- **Test:** `nationPanel1938`: Germany's allies are Italy and Japan.
+
+### ADR-767 · 2026-10-29 · accepted (the user's requests) — outside PLAN: a selected wing's mark on the map; icons that act; air violet
+
+- **Context.** The user, on ADR-765/766: a marker for the selected wing; the icons look like buttons, so a click
+  on one should select; God Mode's icons should place; the air force's and the navy's colours should differ.
+- **Decision.**
+  - `MapView.markedWing` (set by `Player`): the followed wing's place gets a mark on the overlay, a ring with four
+    crosshair ticks turning slowly and the selection's pointer, in the selection's gold over a dark edge
+    (`drawWingMark`; `selectionMarks` kind `wing`). It goes when the follow ends.
+  - `UnitIcon` with `onClick` is a button: on a wing's row it selects and follows the wing (as its name does), on
+    God Mode's placing list it arms (and again disarms) that template's placing (`act-place-<i>-icon`), lit while
+    on. The production list's and the queue's icons stay pictures: a click there would spend gold.
+  - Air tiles are violet (was a sky blue next to the sea's navy).
+- **Tests:** `airOrders1938` (the mark shown and gone; the icon selects), `playerActions1938` (the icon arms and
+  disarms placing).
+
 ### ADR-766 · 2026-10-29 · accepted (the user's request) — outside PLAN: a wing's name selects it and the camera follows it
 
 - **Context.** The user: in the Actions tab's air force list, a click on a group's name should select that group and

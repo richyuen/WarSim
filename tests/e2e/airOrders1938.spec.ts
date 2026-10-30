@@ -206,12 +206,15 @@ test('a wing\'s name in the Actions tab selects it and the camera follows it; ag
       return Math.hypot(c.cx - x!, c.cy - y!);
     }, [wing.x, wing.y]), { timeout: 15_000 })
     .toBeLessThan(2);
+  // Its mark on the map (ADR-767), at the middle of the view where the camera follows it.
+  await expect.poll(async () => page.evaluate(() => window.__warsim!.view!.selectionMarks.filter((m) => m.kind === 'wing').length), { timeout: 10_000 }).toBeGreaterThan(0);
   // The name again: the follow ends, the row is no more lit.
   await page.getByTestId(`act-wing-${wing.id}-name`).click();
   await expect(page.getByTestId(`act-wing-${wing.id}`)).not.toHaveClass(/followed/);
   expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(false);
-  // Selected again, Escape lets go.
-  await page.getByTestId(`act-wing-${wing.id}-name`).click();
+  await expect.poll(async () => page.evaluate(() => window.__warsim!.view!.selectionMarks.filter((m) => m.kind === 'wing').length)).toBe(0);
+  // Selected again, by its icon this time (ADR-767), and Escape lets go.
+  await page.getByTestId(`act-wing-${wing.id}-icon`).click();
   await expect(page.getByTestId(`act-wing-${wing.id}`)).toHaveClass(/followed/);
   await page.keyboard.press('Escape');
   await expect(page.getByTestId(`act-wing-${wing.id}`)).not.toHaveClass(/followed/);
