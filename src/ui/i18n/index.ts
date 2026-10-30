@@ -77,6 +77,8 @@ function initialLocale(): Locale {
 }
 
 export const locale = signal<Locale>(initialLocale());
+// The page's language from the start, not only after a change (a stored pseudo-locale, ADR-763).
+if (typeof document !== 'undefined') document.documentElement.lang = locale.value === 'qps' ? 'en-XA' : locale.value;
 
 export function setLocale(l: Locale): void {
   locale.value = l;

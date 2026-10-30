@@ -1,27 +1,10 @@
-import { OFFERED_LOCALES, locale, setLocale, t, type Locale, type MessageKey } from './i18n';
+import { t } from './i18n';
 
-/** The language picker (PLAN 0.21), in the top bar and on the title screen. */
-export function LocalePicker() {
-  return (
-    <label class="topbar-locale">
-      <span data-testid="locale-label">{t('settings.language')}</span>
-      <select
-        data-testid="locale-select"
-        aria-label={t('settings.language')}
-        value={locale.value}
-        onChange={(e) => setLocale((e.currentTarget as HTMLSelectElement).value as Locale)}
-      >
-        {OFFERED_LOCALES.map((l) => (
-          <option key={l} value={l}>
-            {t(`locale.${l}` as MessageKey)}
-          </option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
-/** Top bar: title and language picker (PLAN 0.21). Grows into the AoC-style bottom bar later. */
+/**
+ * Top bar: the title and tagline (PLAN 0.21). The language picker is gone (the user's request,
+ * ADR-763): the release build offers English alone; a tester's pseudo-locale is the stored
+ * `warsim.locale` (`src/ui/i18n`).
+ */
 export function TopBar() {
   return (
     <header class="topbar" data-testid="topbar">
@@ -29,7 +12,6 @@ export function TopBar() {
         {t('app.title')}
       </span>
       <span class="topbar-tagline">{t('app.tagline')}</span>
-      <LocalePicker />
     </header>
   );
 }

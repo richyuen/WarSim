@@ -51,7 +51,15 @@ function widestDates(year: number): string {
   return lines.join('\n');
 }
 
-/** Bottom bar (PLAN 1.8): date, pause and speed controls, AoC-style. */
+/** Every speed's label, a line each: the room the speed's label keeps (ADR-763). */
+function speedLabels(): string {
+  return SPEED_LEVELS.map((l, i) => (l === 'max' ? t('bar.speedMax') : t('bar.speed', { n: i + 1 }))).join('\n');
+}
+
+/**
+ * Bottom bar (PLAN 1.8), in the user's order (ADR-763): Cancel when there is something to cancel,
+ * Pause/Resume, speed, God Mode, map, Statistics, History, Editor, the date, Settings.
+ */
 export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, mapMode, onMapMode, showStats, onToggleStats, godMode, onToggleGod, playing, showHistory, onToggleHistory, showEditor, onToggleEditor, showSettings, onToggleSettings, godTools, onCancel }: BottomBarProps) {
   const isMax = SPEED_LEVELS[speedLevel] === 'max';
   // How far the bar's top is from the view's bottom, for what stands above it (PLAN 7.4f25): a
@@ -86,7 +94,7 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
       <button type="button" class="bar-btn" data-testid="speed-down" aria-label={t('bar.speedDown')} disabled={speedLevel === 0} onClick={() => onSpeed(speedLevel - 1)}>
         −
       </button>
-      <span class="bar-speed" data-testid="speed-label" data-level={speedLevel}>
+      <span class="bar-speed bar-reserve" data-testid="speed-label" data-level={speedLevel} data-reserve={speedLabels()}>
         {isMax ? t('bar.speedMax') : t('bar.speed', { n: speedLevel + 1 })}
       </span>
       <button
@@ -99,6 +107,11 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
       >
         +
       </button>
+      {onToggleGod ? (
+        <button type="button" class={godMode ? 'bar-btn bar-god active' : 'bar-btn bar-god'} data-testid="god-btn" aria-pressed={godMode} onClick={onToggleGod}>
+          {t('bar.god')}
+        </button>
+      ) : null}
       <MapModeMenu mode={mapMode} onMode={onMapMode} />
       {onToggleStats ? (
         <button type="button" class="bar-btn" data-testid="stats-btn" aria-pressed={showStats} onClick={onToggleStats}>
@@ -110,19 +123,9 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
           {t('bar.history')}
         </button>
       ) : null}
-      {onToggleSettings ? (
-        <button type="button" class="bar-btn" data-testid="settings-btn" aria-pressed={showSettings} onClick={onToggleSettings}>
-          {t('bar.settings')}
-        </button>
-      ) : null}
       {onToggleEditor ? (
         <button type="button" class="bar-btn" data-testid="editor-btn" aria-pressed={showEditor} onClick={onToggleEditor}>
           {t('bar.editor')}
-        </button>
-      ) : null}
-      {onToggleGod ? (
-        <button type="button" class={godMode ? 'bar-btn bar-god active' : 'bar-btn bar-god'} data-testid="god-btn" aria-pressed={godMode} onClick={onToggleGod}>
-          {t('bar.god')}
         </button>
       ) : null}
       {playing ? (
@@ -134,6 +137,11 @@ export function BottomBar({ date, speedLevel, paused, onTogglePause, onSpeed, ma
         {t('date.format', { day: date.day, month: t(`month.${date.month}` as MessageKey), year: date.year })}
         {paused ? <span class="bar-paused"> · {t('bar.paused')}</span> : null}
       </span>
+      {onToggleSettings ? (
+        <button type="button" class="bar-btn" data-testid="settings-btn" aria-pressed={showSettings} onClick={onToggleSettings}>
+          {t('bar.settings')}
+        </button>
+      ) : null}
     </footer>
   );
 }

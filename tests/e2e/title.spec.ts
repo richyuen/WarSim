@@ -97,9 +97,13 @@ test('/ opens the title screen and no world', async ({ page }, info) => {
   await page.screenshot({ path: path.join(evidence(info), 'title.png') });
 
   // The texts go through i18n: the pseudo-locale changes them.
-  await page.getByTestId('locale-select').selectOption('qps');
+  // (No language picker, ADR-763: the pseudo-locale is stored and the page reloaded.)
+  await page.evaluate(() => localStorage.setItem('warsim.locale', 'qps'));
+  await page.reload();
   await expect(page.getByTestId('settings-new-game')).toHaveText(/^⟦Šţåŕţ·+⟧$/);
-  await page.getByTestId('locale-select').selectOption('en');
+  await page.evaluate(() => localStorage.setItem('warsim.locale', 'en'));
+  await page.reload();
+  await expect(page.getByTestId('settings-new-game')).toHaveText('Start');
 
   // A phone-sized window: one column, nothing cut off sideways, Start reachable.
   await page.setViewportSize({ width: 420, height: 800 });

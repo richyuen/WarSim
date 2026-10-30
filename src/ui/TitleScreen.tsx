@@ -5,7 +5,6 @@ import type { ScenarioId } from '../shared/protocol';
 import type { ScenarioInfo } from '../shared/scenarios';
 import { t, type MessageKey } from './i18n';
 import { NewGameForm, randomSeed } from './NewGameForm';
-import { LocalePicker } from './TopBar';
 
 /** What the title screen shows of a saved game. */
 export interface SavedGame {
@@ -77,7 +76,6 @@ export function TitleScreen({ scenarios, previewUrl, onStart, readSave, onContin
           </h1>
           <p class="title-tagline">{t('app.tagline')}</p>
         </div>
-        <LocalePicker />
       </header>
       <div class="title-body">
         <div class="title-column">

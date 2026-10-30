@@ -24726,3 +24726,11 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Outer boxes unchanged (no layout moves); `warBannerRows1938`'s fill colour literal follows the new plate.
 - e2e by hand: title, settings, phoneLayout, warBannerRows, toBattle, rankingRows, mapTooltip and the panel, bar,
   ticker, legend, ranking, history, charts, God, editor, nuke-alert specs. Evidence `docs/evidence/762/`.
+
+## 2026-10-29 — Outside the loop (the user's request): no language picker, the bar reordered (ADR-763)
+
+- The Language select is gone (top bar, title screen); the bottom bar reads Resume, speed, God Mode, Map,
+  Statistics, History, Editor, date, Settings; the speed's label is as wide as "Speed Max".
+- `i18n.spec`/`title.spec` switch the locale by `warsim.locale` and a reload; `i18n.spec`'s stale "WarSim" pseudo-title
+  fixed. e2e by hand: i18n, title, phoneLayout, barNarrow, settings, godUi, warBannerRows, ticker, speed, history,
+  player (48 passed).

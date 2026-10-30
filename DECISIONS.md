@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-763 · 2026-10-29 · accepted (the user's request) — outside PLAN: no language picker; the bottom bar in the user's order; a narrower speed label
+
+- **Context.** The user: get rid of the Language select; order the bottom bar Resume, Speed, God Mode, Map,
+  Statistics, History, Editor, Date, Settings; make the speed's text just wide enough for "Speed Max".
+- **Decision.**
+  - The picker is gone from the top bar and the title screen (`src/ui/TopBar.tsx`, `TitleScreen.tsx`). The release
+    build offered English alone. The pseudo-locale stays a tester's tool: with `warsim.testLocale` set, a stored
+    `warsim.locale` of `qps` is taken at load, and the page's `lang` now follows the stored locale from the start.
+  - The bar (`src/ui/BottomBar.tsx`): Cancel first when there is something to cancel (ADR-760), then Pause/Resume,
+    −, the speed, +, God Mode, Map, Statistics, History, Editor, the date, Settings. The played nation's label stays
+    last in the flex order (PLAN 7.4f25), so it is still what wraps.
+  - The speed's label keeps the room of its longest label (`data-reserve`, as the date does), not 6.5 rem.
+- **Tests.** `i18n.spec` and `title.spec` switch the locale by the stored setting and a reload, not the picker, and
+  check there is no picker. `i18n.spec`'s pseudo-title still read "WarSim" (missed by ADR-761) and now reads Warism.
+
 ### ADR-762 · 2026-10-29 · accepted (the user's request) — outside PLAN: the UI in glossy gunmetal plates, after the Cities project
 
 - **Context.** The user: try a new style for all the UI, with the Cities project (`C:\Git\Cities`) as the example, "not

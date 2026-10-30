@@ -64,20 +64,6 @@ textarea,
   opacity: 0.75;
 }
 
-.topbar-locale {
-  display: flex;
-  gap: 0.4rem;
-  align-items: center;
-}
-
-.topbar-locale select {
-  font: inherit;
-  background: #1b2330;
-  color: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.25rem;
-}
-
 /* Bottom bar (PLAN 1.8): date, pause, speed. */
 .bottombar {
   position: absolute;
@@ -215,7 +201,7 @@ textarea,
 }
 
 .bar-speed {
-  min-width: 6.5rem;
+  /* As wide as its longest label, "Speed Max" (the user's request, ADR-763; `data-reserve`). */
   text-align: center;
   color: #e9c46a;
   font-variant-numeric: tabular-nums;
@@ -1245,7 +1231,6 @@ body {
   color: var(--ui-text);
   background: var(--ui-hover);
 }
-.topbar select,
 .stats-ranking select,
 .nation-panel select,
 .history-panel select,
