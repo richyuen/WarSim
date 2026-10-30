@@ -659,9 +659,6 @@ textarea,
   font: inherit;
   padding: 0.15rem 0.3rem;
 }
-.god-tab select option {
-  color: #111;
-}
 .god-btn {
   padding: 0.15rem 0.45rem;
   background: rgba(214, 178, 94, 0.15);
@@ -817,9 +814,6 @@ textarea,
   border: 1px solid rgba(214, 178, 94, 0.35);
   border-radius: 0.25rem;
   color: inherit;
-}
-.form-row select option {
-  color: #111;
 }
 .form-row input {
   width: 8rem;
@@ -1258,7 +1252,9 @@ body {
 .form-row select,
 .form-row input,
 .god-tab input:not([type='checkbox']),
-.god-tab select {
+.god-tab select,
+#ui input:not([type='checkbox']):not([type='color']):not([type='file']):not([type='range']),
+#ui select {
   color: var(--ui-text);
   background: var(--ui-well);
   border: 1px solid var(--frame-edge);
@@ -1305,7 +1301,7 @@ input[type='range'] {
   border-top: 1px solid rgba(0, 0, 0, 0.45);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
-.panel-row > :last-child {
+.panel-row > :last-child:not(:first-child) {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -1553,7 +1549,7 @@ input[type='range'] {
 .start-btn:hover:not(:disabled) {
   filter: brightness(1.07);
 }
-.title-file::file-selector-button {
+input[type='file']::file-selector-button {
   margin-right: 0.5rem;
   padding: 0.2rem 0.6rem;
   color: var(--ui-text);
@@ -1563,6 +1559,9 @@ input[type='range'] {
   box-shadow: var(--ui-chip-shadow);
   font: inherit;
   cursor: pointer;
+}
+#ui input::placeholder {
+  color: var(--ui-muted);
 }
 /* The rim is 4 px wider than the 1 px border it replaced (the legend had none): each panel's
    padding gives that room back, and its outer box is what the layout reserved (PLAN 3.12Rh). */
