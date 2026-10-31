@@ -440,6 +440,8 @@ entries are kept and marked **RESOLVED** with the date and fix.
 - **Left:** `npm run check:review` again (the code key moved: from the start, alone on
   the machine), then the critic. Not verified: `zoomDemo1938`'s red here (a strength over 64 at its
   line 315) is a claim's too, not the GPU's; it was red here at `896ff779` as well.
+- **2026-10-31:** confirmed and fixed by PLAN 7.161 (ADR-772): the red was the battle's history (0.726 of
+  its men on day 30, bar < 0.5); the test now searches for its day, and leaves `knownRed.json`.
 
 ### RESOLVED 2026-10-23 (option a, the user's decision: 7.101 closed not done, no rule) · PLAN 7.101: the scramble and the narrowed sweep, sweeps that fought 1.6–1.8 % against half (ADR-674)
 - **The bar:** on 10 unseen seeds × 20 years late air battles at least a tenth of year 1's, at least half

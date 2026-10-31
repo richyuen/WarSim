@@ -48,10 +48,6 @@
   {
    "id": "tests/e2e/ticker1938.spec.ts › a view 1,100 px wide: the bar is inside the view at every UI size offered there, and a wider size is not",
    "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
-  },
-  {
-   "id": "tests/e2e/zoomDemo1938.spec.ts › one zoom from the whole world to the men of a battle: eight stops, every tier, no layer in a jump",
-   "why": "Fails alone in a cloud container with a software GPU (frames and ticks counted against wall time); green on the machine the budgets were set on. BLOCKERS: the browser suite at PLAN 4.2f, 4.7 and 4.8."
   }
  ]
 }

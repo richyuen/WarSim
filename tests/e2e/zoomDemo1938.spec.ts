@@ -11,7 +11,7 @@ import { assets1938 } from '../helpers/earth';
 import { leg, steps, type LegResult } from './flight';
 
 // PLAN 2.10a: the semantic zoom in one piece. One camera path from the whole world down to
-// 3 m/px on a battle of the 1938 scenario's own, a month into the year, in eight stops that
+// 3 m/px on a battle of the 1938 scenario's own, a month or more into the year, in eight stops that
 // cross all three tier boundaries (2000, 300 and 30 m/px), two stops in each tier.
 //
 // The battle is found by a run of the same sim in Node (the worker runs the same sim: I4): of
@@ -65,6 +65,13 @@ import { leg, steps, type LegResult } from './flight';
 // seeds tried, nearest first: 1940, 1942 and 1939 have battalions at 0.81, 0.52 and 0.58 of their
 // men; 1943 passes all of this spec (a Japanese division: 40 battalions of 192 to 249 men of 500,
 // five batteries, 135 shots by or at it an hour).
+// And no day pinned since PLAN 7.161 (ADR-772): a rule change after ADR-533 (not bisected) gave
+// seed 1943's day 30 a Nationalist Spanish division at 0.726 of its men, and the seed was moved
+// for the eighth time in this file's history. Instead the search goes on day by day from day 30
+// until a division holds every condition here: it fires and stood a day, every battalion under
+// half its men and over 64, two batteries or more with guns lost, it fits the picture, and in
+// each of the four close hours it lives, has a march, is in contact and has more than 10 shots by
+// or at it. A rule change now moves the day, not the test. Seed 1943 is kept.
 //
 // The clock is the test's. The game is paused and stepped; the view's own loop is stopped and
 // its turns (`frameAt`: the camera eases, the view subscribes, the frame is drawn) are given
@@ -78,7 +85,9 @@ import { leg, steps, type LegResult } from './flight';
 // the camera moves, every edge moves. `fades1938.spec.ts` has that measure at each boundary.)
 
 const { w: W } = SIZE_1938;
-const START = 24 * 30;
+/** The battle's search: from the start of this day, to this one's at the latest (PLAN 7.161). */
+const FIRST_DAY = 30;
+const LAST_DAY = 120;
 const SEED = 1943;
 const VIEW = { width: 1400, height: 800 };
 /** Screen px to a cell at the stop that asks for the whole division. */
@@ -121,18 +130,20 @@ interface El {
   y: number;
 }
 interface Battle {
+  /** The tick the battle is found at: the close stops' hours follow it. */
+  start: number;
   formation: number;
   nation: number;
   x: number;
   y: number;
   /** Between its batteries and the battalions next to them: where the camera closes in. */
   anchor: [number, number];
-  /** At START and after each stepped hour: its elements, its men, the state's hash, the shots by or at it in that hour. */
+  /** At `start` and after each stepped hour: its elements, its men, the state's hash, the shots by or at it in that hour. */
   elements: El[][];
   men: number[];
   hashes: number[];
   shots: number[];
-  /** After each stepped hour: whether it has a march, and whether it is in contact (index 0: at START). */
+  /** After each stepped hour: whether it has a march, and whether it is in contact (index 0: at `start`). */
   moving: boolean[];
   engaged: boolean[];
 }
@@ -145,71 +156,91 @@ function nodeBattle(): Battle {
   const ec = w.elements.cols;
   const units = w.rules!.units;
   const size = (e: number): number => units[ec.unit[e]!]!.size;
-  sim.step(START - 24);
-  const dayBefore = new Map(w.formations.ids().map((f) => [f, [fc.x[f]!, fc.y[f]!] as const]));
-  sim.step(23);
-  const firing = new Set<number>();
-  sim.step(1, (wd) => {
-    for (let i = 0; i < wd.out.fires.length; i += FIRE_STRIDE) firing.add(ec.formation[wd.out.fires.data[i + FireField.shooter]!]!);
+  const clear = (wd: typeof w): void => {
     wd.out.fires.length = 0;
     wd.out.events.length = 0;
-  });
-  const idx = elementIndex(w);
-  const battalions = (f: number): number[] => (idx.get(f) ?? []).filter((e) => size(e) > 64);
-  const batteries = (f: number): number[] => (idx.get(f) ?? []).filter((e) => size(e) <= 16);
-  const kept = (f: number): number => battalions(f).reduce((s, e) => s + ec.strength[e]!, 0) / battalions(f).reduce((s, e) => s + size(e), 0);
-  const read = (formation: number): El[] => {
-    const count = w.rules!.templates[fc.template[formation]!]!.elements.reduce((s, x) => s + x.count, 0);
-    return (elementIndex(w).get(formation) ?? []).map((e) => {
-      // Where the sim has the element: the division is in contact, and its block is deployed against the enemy (PLAN 2.14c1).
-      const [x, y] = elementPlace(w, formation, ec.slot[e]!, count, e);
-      return { id: e, strength: ec.strength[e]!, size: size(e), x, y };
-    });
   };
-  /** The anchor: the batteries and, for each, the battalion nearest to it. */
-  const anchorOf = (els: El[]): [number, number] => {
-    const guns = els.filter((e) => e.size <= 16);
-    const men = els.filter((e) => e.size > 64);
-    const group = new Set(guns);
-    for (const g of guns) group.add([...men].sort((a, b) => Math.hypot(a.x - g.x, a.y - g.y) - Math.hypot(b.x - g.x, b.y - g.y))[0]!);
-    return [[...group].reduce((s, e) => s + e.x, 0) / group.size, [...group].reduce((s, e) => s + e.y, 0) / group.size];
-  };
-  /** Every element within a quarter of the view of the anchor at 12 m/px. */
-  const fits = (f: number): boolean => {
-    const els = read(f);
-    const [ax, ay] = anchorOf(els);
-    return els.every((e) => Math.abs(e.x - ax) * PX_PER_CELL_AT_12 < VIEW.width / 4 && Math.abs(e.y - ay) * PX_PER_CELL_AT_12 < VIEW.height / 4);
-  };
-  const candidates = [...firing].filter((f) => {
-    if (!w.formations.has(f)) return false;
-    const was = dayBefore.get(f);
-    if (!was || was[0] !== fc.x[f] || was[1] !== fc.y[f]) return false;
-    return battalions(f).length >= 8 && battalions(f).every((e) => ec.strength[e]! > 64) && batteries(f).length >= 2 && batteries(f).some((e) => ec.strength[e]! < size(e)) && fits(f);
-  });
-  const formation = candidates.sort((a, b) => kept(a) - kept(b) || a - b)[0];
-  if (formation === undefined) throw new Error('no division that fires, stands, has lost men and fits the picture: the demo has no battle');
-  const first = read(formation);
-  const anchor = anchorOf(first);
-
-  const own = new Set(first.map((e) => e.id));
-  const out: Battle = { formation, nation: fc.nation[formation]!, x: fc.x[formation]!, y: fc.y[formation]!, anchor, elements: [first], men: [fc.strength[formation]!], hashes: [sim.hash()], shots: [0], moving: [fc.moving[formation] === 1], engaged: [fc.engaged[formation] === 1] };
-  for (let k = 0; k < CLOSE; k++) {
-    let n = 0;
+  sim.step(FIRST_DAY * 24 - 24, clear);
+  /** At the start of `day - 1`: the battle at the start of `day`, 'none', or 'failed' (then at the start of `day + 1`). */
+  function dayBattle(day: number): Battle | 'none' | 'failed' {
+    const dayBefore = new Map(w.formations.ids().map((f) => [f, [fc.x[f]!, fc.y[f]!] as const]));
+    sim.step(23, clear);
+    const firing = new Set<number>();
     sim.step(1, (wd) => {
-      const f = wd.out.fires.slice();
-      for (let i = 0; i < f.length; i += FIRE_STRIDE) if (own.has(f[i + FireField.shooter]!) || own.has(f[i + FireField.target]!)) n++;
-      wd.out.fires.length = 0;
-      wd.out.events.length = 0;
+      for (let i = 0; i < wd.out.fires.length; i += FIRE_STRIDE) firing.add(ec.formation[wd.out.fires.data[i + FireField.shooter]!]!);
+      clear(wd);
     });
-    if (!w.formations.has(formation)) throw new Error(`formation ${formation} did not live through hour ${k + 1} of the demo`);
-    out.elements.push(read(formation));
-    out.men.push(fc.strength[formation]!);
-    out.hashes.push(sim.hash());
-    out.shots.push(n);
-    out.moving.push(fc.moving[formation] === 1);
-    out.engaged.push(fc.engaged[formation] === 1);
+    const idx = elementIndex(w);
+    const battalions = (f: number): number[] => (idx.get(f) ?? []).filter((e) => size(e) > 64);
+    const batteries = (f: number): number[] => (idx.get(f) ?? []).filter((e) => size(e) <= 16);
+    const kept = (f: number): number => battalions(f).reduce((s, e) => s + ec.strength[e]!, 0) / battalions(f).reduce((s, e) => s + size(e), 0);
+    const read = (formation: number): El[] => {
+      const count = w.rules!.templates[fc.template[formation]!]!.elements.reduce((s, x) => s + x.count, 0);
+      return (elementIndex(w).get(formation) ?? []).map((e) => {
+        // Where the sim has the element: the division is in contact, and its block is deployed against the enemy (PLAN 2.14c1).
+        const [x, y] = elementPlace(w, formation, ec.slot[e]!, count, e);
+        return { id: e, strength: ec.strength[e]!, size: size(e), x, y };
+      });
+    };
+    /** The anchor: the batteries and, for each, the battalion nearest to it. */
+    const anchorOf = (els: El[]): [number, number] => {
+      const guns = els.filter((e) => e.size <= 16);
+      const men = els.filter((e) => e.size > 64);
+      const group = new Set(guns);
+      for (const g of guns) group.add([...men].sort((a, b) => Math.hypot(a.x - g.x, a.y - g.y) - Math.hypot(b.x - g.x, b.y - g.y))[0]!);
+      return [[...group].reduce((s, e) => s + e.x, 0) / group.size, [...group].reduce((s, e) => s + e.y, 0) / group.size];
+    };
+    /** Every element within a quarter of the view of the anchor at 12 m/px. */
+    const fits = (f: number): boolean => {
+      const els = read(f);
+      const [ax, ay] = anchorOf(els);
+      return els.every((e) => Math.abs(e.x - ax) * PX_PER_CELL_AT_12 < VIEW.width / 4 && Math.abs(e.y - ay) * PX_PER_CELL_AT_12 < VIEW.height / 4);
+    };
+    const candidates = [...firing].filter((f) => {
+      if (!w.formations.has(f)) return false;
+      const was = dayBefore.get(f);
+      if (!was || was[0] !== fc.x[f] || was[1] !== fc.y[f]) return false;
+      const men = battalions(f);
+      return men.length >= 8 && men.every((e) => ec.strength[e]! > 64 && ec.strength[e]! / size(e) < 0.5) && batteries(f).length >= 2 && batteries(f).some((e) => ec.strength[e]! < size(e)) && fits(f);
+    });
+    const formation = candidates.sort((a, b) => kept(a) - kept(b) || a - b)[0];
+    if (formation === undefined) return 'none';
+    const first = read(formation);
+    const anchor = anchorOf(first);
+
+    const own = new Set(first.map((e) => e.id));
+    const out: Battle = { start: day * 24, formation, nation: fc.nation[formation]!, x: fc.x[formation]!, y: fc.y[formation]!, anchor, elements: [first], men: [fc.strength[formation]!], hashes: [sim.hash()], shots: [0], moving: [fc.moving[formation] === 1], engaged: [fc.engaged[formation] === 1] };
+    for (let k = 0; k < CLOSE; k++) {
+      let n = 0;
+      sim.step(1, (wd) => {
+        const f = wd.out.fires.slice();
+        for (let i = 0; i < f.length; i += FIRE_STRIDE) if (own.has(f[i + FireField.shooter]!) || own.has(f[i + FireField.target]!)) n++;
+        clear(wd);
+      });
+      // Each close stop's hour: the division lives, fires (more than 10 shots by or at it), has a march and is in contact.
+      if (!w.formations.has(formation) || n <= 10 || fc.moving[formation] !== 1 || fc.engaged[formation] !== 1) {
+        sim.step(24 - (k + 1), clear);
+        return 'failed';
+      }
+      out.elements.push(read(formation));
+      out.men.push(fc.strength[formation]!);
+      out.hashes.push(sim.hash());
+      out.shots.push(n);
+      out.moving.push(fc.moving[formation] === 1);
+      out.engaged.push(fc.engaged[formation] === 1);
+    }
+    return out;
   }
-  return out;
+
+  // Day by day until a battle holds all of this spec (PLAN 7.161): a day with none, or one whose
+  // division fails an hour, and the search goes on, the world stepped forward only, never back.
+  for (let day = FIRST_DAY; day <= LAST_DAY; ) {
+    const found = dayBattle(day);
+    if (found === 'none') day += 1;
+    else if (found === 'failed') day += 2;
+    else return found;
+  }
+  throw new Error(`no division from day ${FIRST_DAY} to ${LAST_DAY} that fires, stands, has lost over half its men, fits the picture and fights four hours on the march: the demo has no battle`);
 }
 
 interface Seen {
@@ -302,13 +333,14 @@ async function open(page: Page): Promise<void> {
 }
 
 test('one zoom from the whole world to the men of a battle: eight stops, every tier, no layer in a jump', async ({ page }, info) => {
-  test.setTimeout(300_000);
+  // A hang guard, not a measure: eight legs of up to 90 s each, and a slow page makes each longer (ADR-772).
+  test.setTimeout(600_000);
   const node = nodeBattle();
   const tag = NATIONS_1938[node.nation - 1]!.tag;
   const start = node.elements[0]!;
   const battalions = start.filter((e) => e.size > 64);
   const batteries = start.filter((e) => e.size <= 16);
-  console.log(`the battle: formation ${node.formation} of ${tag} at ${node.x.toFixed(2)}, ${node.y.toFixed(2)}, ${node.men[0]} men in ${start.length} elements; its ${battalions.length} battalions have ${Math.min(...battalions.map((e) => e.strength))} to ${Math.max(...battalions.map((e) => e.strength))} of ${battalions[0]!.size} men, its ${batteries.length} batteries ${batteries.map((e) => e.strength).join(', ')} of ${batteries[0]!.size} guns; shots by or at it in the four hours: ${node.shots.slice(1).join(', ')}`);
+  console.log(`the battle, on day ${node.start / 24}: formation ${node.formation} of ${tag} at ${node.x.toFixed(2)}, ${node.y.toFixed(2)}, ${node.men[0]} men in ${start.length} elements; its ${battalions.length} battalions have ${Math.min(...battalions.map((e) => e.strength))} to ${Math.max(...battalions.map((e) => e.strength))} of ${battalions[0]!.size} men, its ${batteries.length} batteries ${batteries.map((e) => e.strength).join(', ')} of ${batteries[0]!.size} guns; shots by or at it in the four hours: ${node.shots.slice(1).join(', ')}`);
   // What the close pictures are there to show: battalions well under strength (and with more
   // than 64 men: under the cap of ADR-69 these drew 64 figures each).
   expect(Math.max(...battalions.map((e) => e.strength / e.size))).toBeLessThan(0.5);
@@ -319,13 +351,13 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
   mkdirSync(out, { recursive: true });
 
   await open(page);
-  // A month, stepped: the page's world is Node's.
+  // To the battle's day, stepped: the page's world is Node's.
   expect(await page.evaluate(async (n) => {
     const sim = window.__warsim!.sim;
     await sim.step(n);
     const s = await sim.hash();
     return { tick: s.tick, hash: s.hash };
-  }, START)).toEqual({ tick: START, hash: node.hashes[0] });
+  }, node.start)).toEqual({ tick: node.start, hash: node.hashes[0] });
 
   // The view's own loop stops; the test gives the frames their times. The whole world, the battle's meridian in the middle.
   let now = await page.evaluate(({ ax, ay }) => {
@@ -370,7 +402,7 @@ test('one zoom from the whole world to the men of a battle: eight stops, every t
       hour++;
       fire = await page.evaluate(volley, { now, frameMs: FRAME_MS });
       now = fire.now;
-      expect(fire.status, `${name}: the page's world after the hour`).toEqual({ tick: START + hour, hash: node.hashes[hour] });
+      expect(fire.status, `${name}: the page's world after the hour`).toEqual({ tick: node.start + hour, hash: node.hashes[hour] });
     }
     const seen: Seen = await page.evaluate(look, { ax, ay, mapW: W });
     await page.screenshot({ path: path.join(out, `stop-${i + 1}-${stop.name}.png`) });

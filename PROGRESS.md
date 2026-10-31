@@ -24791,3 +24791,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   of size, bar < 0.5), not the GPU its known-red entry names; the soak and the full sweep last ran on
   2026-10-16 and 2026-10-19. Filed PLAN 7.161 (the demo) and 7.162 (the DONE runs on HEAD).
 - **Next:** PLAN 7.161.
+
+## 2026-10-31 — PLAN 7.161: the zoom demo searches for its battle's day (ADR-772)
+
+- Cause: seed 1943's day 30 gave a division at 0.726 of its men (bar < 0.5): the history moved, not the GPU
+  `knownRed.json` named. The eighth move of this test's battle.
+- Fix: `nodeBattle` steps day by day from day 30 (to 120) and takes the first day whose division holds every
+  condition the test asserts, the four close hours included (alive, on the march, in contact, > 10 shots). One
+  sim forward only; the page steps to the found tick. Every assertion unchanged, seed unchanged. Found: day 60,
+  Japanese division 384, 40 battalions of 65–112 of 500 men, 57 shots an hour.
+- Its time limit 300 → 600 s (a hang guard; the legs are allowed 90 s each). Six runs alone: green 2.8, 3.8 min;
+  two cut off at 300 s with the page's legs 2–2.5× slower (load not logged then); then, at 600 s, green twice,
+  3.0 and 3.0 min, the machine quiet but for the test's Chrome (logged every 10 s).
+- AT: `zoomDemo1938` green alone twice on the committed code; off `tools/gate/knownRed.json`. No sim input, pin
+  unchanged.
+- **Next:** PLAN 7.163.

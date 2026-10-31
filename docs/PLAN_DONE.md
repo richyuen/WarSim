@@ -16352,3 +16352,25 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   Fix: while playing, a click that selects a formation opens that formation's panel (or one pick, own first).
   AT: an e2e test replays `c20_sx`'s twelve clicks (seed 4441, day 60, Germany played): 12 of 12 panels show the
   formation the click selected; red on `a3edf009`.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.161 The DONE condition's zoom demo: `zoomDemo1938` red here for its history, not the GPU (critic
+  run 21's review, 2026-10-31). Its battle (seed 1943, formation 773 of NSP) has battalions of 322–363 of
+  500 men: the most 0.726 of size, bar under 0.5 (`tests/e2e/zoomDemo1938.spec.ts:314`), red twice alone,
+  the same figures each run; `tools/gate/knownRed.json` lists it as a software-GPU failure. Find the
+  battle again the way the test means it (step until the event, not a pinned day), never the bar moved.
+  AT: `npx playwright test tests/e2e/zoomDemo1938.spec.ts` green alone on this machine, twice, with every
+  assertion as it stands; the test off `knownRed.json` in the same commit.

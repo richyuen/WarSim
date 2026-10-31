@@ -33,13 +33,6 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
-- [ ] 7.161 The DONE condition's zoom demo: `zoomDemo1938` red here for its history, not the GPU (critic
-  run 21's review, 2026-10-31). Its battle (seed 1943, formation 773 of NSP) has battalions of 322–363 of
-  500 men: the most 0.726 of size, bar under 0.5 (`tests/e2e/zoomDemo1938.spec.ts:314`), red twice alone,
-  the same figures each run; `tools/gate/knownRed.json` lists it as a software-GPU failure. Find the
-  battle again the way the test means it (step until the event, not a pinned day), never the bar moved.
-  AT: `npx playwright test tests/e2e/zoomDemo1938.spec.ts` green alone on this machine, twice, with every
-  assertion as it stands; the test off `knownRed.json` in the same commit.
 - [ ] 7.163 While playing, a click on an enemy counter at the front opens the enemy's panel (critic run 21,
   non-blocking 1 and 2; the user's request, 2026-10-31). ADR-769's own-first pick hides the enemy beside an own
   counter: the clicked enemy's panel 5 of 12 on seed 4441 (scale 12), 0 of 12 on 6827; and the fallback
@@ -474,3 +467,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.158 (closed not done, ADR-757, the user's decision) The plans of a shared front made cheaper (from 7.157's AT, ADR-756): on one world coalition's front each […]
 - [x] 7.159 R19-B1: on a phone the map modes cannot be chosen; the map-mode menu (`c689c2e4`) is clipped by the […]
 - [x] 7.160 R20-B1: the formation panel is not the formation the click selected. Playing Germany at a front (seed […]
+- [x] 7.161 The DONE condition's zoom demo: `zoomDemo1938` red here for its history, not the GPU (critic […]

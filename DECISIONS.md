@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-772 · 2026-10-31 · accepted — PLAN 7.161: the zoom demo searches for its battle's day instead of pinning day 30
+
+- **Context.** `zoomDemo1938` (the DONE condition's zoom demo) was red in critic run 21's review: seed 1943's
+  day 30 gave a Nationalist Spanish division (773) with battalions at up to 0.726 of their men, bar under 0.5.
+  The same figures on every run: the history moved, not the GPU that `knownRed.json` named. The test had moved
+  its seed seven times before (ADR-142 to ADR-533) for the same reason.
+- **Decision.** The test's Node run steps day by day from day 30 (to day 120 at most) and takes the first day
+  whose best candidate holds every condition the test asserts of the battle: fires and stood a day, every
+  battalion over 64 men and under half, two batteries or more with guns lost, fits the 12 m/px picture, and in
+  each of the four close hours lives, has a march, is in contact and has more than 10 shots by or at it. One
+  sim, stepped forward only, so the page's hash at the found tick equals Node's. Every assertion unchanged;
+  the seed stays 1943. Found on HEAD: day 60, Japanese division 384 (40 battalions of 65–112 of 500 men).
+- **Time limit 300 s → 600 s.** Six runs alone here: 2.8, 3.8, 3.0, 3.0 min green; two cut off at 300 s. In
+  the cut-off runs the legs ran 2–2.5× slower, at world zoom as well as close in (stop 1: 266 ms a frame against
+  112), and one green run had stops 1–4 slow and 5–8 fast on the same battle: the page's speed, not the battle.
+  Their load was not logged; during the last two runs (logged every 10 s) only the test's headless Chrome was
+  busy. The search adds about 30 s (60 days stepped in Node and in the page instead of 30). The limit is a hang
+  guard, not a measure: the test's legs are allowed 90 s each (eight legs, 720 s) and its header says a slow
+  machine makes it longer without changing what a frame sees. No assertion changed.
+- **Cost.** A rule change now moves the day, not the test, unless no day to 120 holds.
+- `zoomDemo1938` leaves `tools/gate/knownRed.json`. No sim input: the pin is unchanged.
+
 ### ADR-771 · 2026-10-31 · accepted (the user's decision) — critic run 21's quick fixes and interface items filed; a wing's mark and camera stay on its hourly point
 
 - **Context.** Critic run 21 scored every dimension at its bar with no blocking issue, and listed non-blocking
