@@ -171,7 +171,7 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 
 - **Context.** Critic run 21 scored every dimension at its bar with no blocking issue, and listed non-blocking
   items unchanged since runs 19–20. The user chose the quick fixes and the interface items: PLAN 7.164–7.171,
-  after 7.163 and before 7.162 (the DONE runs).
+  after 7.163 and before 7.162 (the DONE runs); then land "To its fight" framing its own fight, PLAN 7.172.
 - **Decision.** Not filed: a followed wing's mark and camera ride the wing's hourly sim point, not the planes
   drawn at T2/T3 ("the wing mark off the planes close in", runs 20–21). The user's reason: planes move too fast
   for a mark or a camera to ride their drawn place. A critic finding on it is answered by this ADR. Also not

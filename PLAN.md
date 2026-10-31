@@ -82,6 +82,14 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   click does with the mouse (critic runs 20–21, `critic/c20_pt_touch.json`; ADR-771). AT: e2e with touch at
   390 × 844, playing Germany: a long press on Poland's land opens its menu (1 of 1), "Declare war" there
   starts the war; a long press on own land still box-selects as before.
+- [ ] 7.172 A land formation's "To its fight" frames the formation and its own fight: the formation on screen
+  with the enemy it is in contact with (critic runs 18–21, `critic/c20_ft_5381_d21.json`: seed 5381 day 21,
+  8 formations in contact, the formation itself off screen on 6 of 8, no enemy on screen on 2 of 8; the user's
+  request, ADR-771). Land formations are slow enough to frame where they are drawn (unlike wings, ADR-771).
+  AT: e2e replaying the critic's case (5381, day 21, the 8 formations of `c20_ft_5381_d21.json`, 1600 × 900):
+  after the press the formation's drawn counter or elements inside the view on 8 of 8, and at least one enemy
+  formation it is in contact with inside the view on 8 of 8; the fleet's "To its fight" (`c21_fp2_4877.json`'s
+  case) unchanged.
 - [ ] 7.162 The DONE condition's runs on the HEAD after 7.161 (the last soak was 2026-10-16, the last full
   sweep 2026-10-19): `npm run check:full` (green but for `knownRed.json`), a 30-minute `npm run soak` of the
   1938 scenario, a sweep of 10+ unseen seeds over decades, the performance budgets (`npm run bench`).
