@@ -16439,3 +16439,23 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   a declared war (critic runs 19–21, `critic/c19_k_2203.json`, `critic/c19_q_6421.json`; ADR-771). AT: e2e on
   1938: Breakthrough on a nation at peace shows a message saying why nothing broke through (1 of 1); a God
   revolt in Poland adds a history and ticker row of the revolt's kind, and 0 rows of "declared war" for it.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.166 The history export's a/b give a side's nation, not the packed side id (critic runs 19–21,
+  `critic/c21_dl_7019.csv`: SeaBattle a 458771 for France, AirWar, AirRaids, ConvoyRaided, NukeCasualties the same;
+  ADR-771). AT (amended before the code: the first text asked for names in a/b, but names are in aName/bName
+  already, right on every row of the critic's file): unit test `history.test.ts`: a row of each packed kind
+  exports a and b as the nation's id (5 of 5), a count that is not a nation stays as it is; red without the change.

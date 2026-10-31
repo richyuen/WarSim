@@ -238,8 +238,21 @@ export interface HistoryExport {
   text: string;
 }
 
+/**
+ * The id an export gives a side of a row (PLAN 7.166): a side (a sea or air battle's, a raid's)
+ * and a strike are a nation packed with a count, which the export's `a` and `b` gave raw
+ * ("458771" for France and its 7 ships lost); the nation's id is what the column means. The count
+ * is in the row's text.
+ */
+function exportId(role: HistoryRole | undefined, v: number): number {
+  return role === 'side' || role === 'strike' ? roleNation(role, v) : v;
+}
+
 export function toExport(rows: readonly HistoryRow[], startDay: number, display: (key: string) => string, text: (r: HistoryRow) => string): HistoryExport[] {
-  return rows.map((r) => ({ date: isoDate(startDay, r.tick), tick: r.tick, type: kindName(r.kind), a: r.a, aName: r.an ? display(r.an) : '', b: r.b, bName: r.bn ? display(r.bn) : '', text: text(r) }));
+  return rows.map((r) => {
+    const [ra, rb] = HISTORY_ROLES[r.kind] ?? [undefined, undefined];
+    return { date: isoDate(startDay, r.tick), tick: r.tick, type: kindName(r.kind), a: exportId(ra, r.a), aName: r.an ? display(r.an) : '', b: exportId(rb, r.b), bName: r.bn ? display(r.bn) : '', text: text(r) };
+  });
 }
 
 const CSV_COLUMNS = ['date', 'tick', 'type', 'a', 'aName', 'b', 'bName', 'text'] as const;

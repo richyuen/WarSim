@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EventKind } from '../../src/shared/events';
-import { filterHistory, HISTORY_ROLES as HISTORY_ROLES_ALL, kindName, NO_FILTER, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, toCsv, toExport, type HistoryRow } from '../../src/shared/history';
+import { filterHistory, HISTORY_ROLES as HISTORY_ROLES_ALL, kindName, NO_FILTER, NUKE_YIELDS, SIDE_SHIPS, TICKER_HOURS, TICKER_KINDS, TICKER_ROWS, toCsv, toExport, type HistoryRow } from '../../src/shared/history';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { HISTORY_STRIDE } from '../../src/sim/history';
@@ -63,6 +63,25 @@ describe('history log (PLAN 1.34a)', () => {
     expect(lines[3]).toContain('"Poland, ""the brave"""');
     const json = JSON.parse(JSON.stringify(recs)) as typeof recs;
     expect(json[2]).toMatchObject({ tick: yearTick + 5, type: 'PeaceSigned', bName: 'Poland, "the brave"' });
+  });
+
+  // PLAN 7.166 (critic runs 19–21, `c21_dl_7019.csv`: "458771" for France at sea): a side or a
+  // strike exports its nation's id, as a nation does; the count packed with it is in the text.
+  it('exports the nation of a side or a strike as its a or b, not the packed number', () => {
+    const side = (nation: number, count: number): number => nation + SIDE_SHIPS * count;
+    const strike = (nation: number): number => nation + SIDE_SHIPS * (2 + NUKE_YIELDS * 300);
+    const packed: HistoryRow[] = [
+      { tick: 1, kind: EventKind.SeaBattle, a: side(GER!, 7), b: side(POL!, 8), x: null, y: null, an: 'nation.GER', bn: 'nation.POL', of: '' },
+      { tick: 2, kind: EventKind.AirWar, a: side(GER!, 27), b: side(POL!, 36), x: null, y: null, an: 'nation.GER', bn: 'nation.POL', of: '' },
+      { tick: 3, kind: EventKind.AirRaids, a: GER!, b: side(POL!, 6568), x: null, y: null, an: 'nation.GER', bn: 'nation.POL', of: '' },
+      { tick: 4, kind: EventKind.ConvoyRaided, a: GER!, b: side(POL!, 33), x: null, y: null, an: 'nation.GER', bn: 'nation.POL', of: '' },
+      { tick: 5, kind: EventKind.NukeCasualties, a: GER!, b: strike(POL!), x: null, y: null, an: 'nation.GER', bn: 'nation.POL', of: '' },
+    ];
+    const recs = toExport(packed, startDay, (k) => k, () => '');
+    for (const r of recs) expect([r.type, r.a, r.b]).toEqual([r.type, GER, POL]);
+    // A number that is not a nation stays as it is.
+    const n = toExport([{ tick: 6, kind: EventKind.FormationsDisbanded, a: GER!, b: 3, x: null, y: null, an: 'nation.GER', bn: '', of: '' }], startDay, (k) => k, () => '');
+    expect([n[0]!.a, n[0]!.b]).toEqual([GER, 3]);
   });
 });
 

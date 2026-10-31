@@ -33,9 +33,6 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
-- [ ] 7.166 The history export names the sides: columns a/b are nation names, not side ids (critic runs 19–21,
-  `critic/c21_dl_7019.csv`; ADR-771). AT: unit test on an export of a 1938 run with 50+ wars: every a/b cell
-  of a war row is a nation's name (0 bare numbers); the CSV still loads in the history view's import, if any.
 - [ ] 7.167 The ticker merges repeated rows: "⚓ Carrier strike ashore: United States on Greece" three times in a
   row is one row with a count (critic runs 20–21, `critic/c21_lw_8243.json`; ADR-771). AT: unit test of the
   ticker's model: N equal rows in a row show as 1 row "×N"; e2e on seed 8243 to year 10 at Max: no two
@@ -454,3 +451,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.163 While playing, a click on an enemy counter at the front opens the enemy's panel (critic run 21, […]
 - [x] 7.164 The Actions tab's diplomacy select opens on no nation, not "Afghanistan" one click from "Declare […]
 - [x] 7.165 God Mode's Breakthrough tells what it did, at peace too, and a God revolt is told as a revolt, not […]
+- [x] 7.166 The history export's a/b give a side's nation, not the packed side id (critic runs 19–21, […]

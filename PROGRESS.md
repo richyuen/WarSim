@@ -24848,3 +24848,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - e2e by hand: godBreakthrough1938, godRevolt1938, godUi1938, godMode1938, ticker1938 (24 passed). The pin is
   unchanged (no command in it; the ticker is the worker's).
 - **Next:** PLAN 7.166.
+
+## 2026-10-31 — PLAN 7.166: the history export gives a side's nation in a/b
+
+- Read the critic's `c21_dl_7019.csv`: names (aName, bName) are right on every row; the "raw" a/b were the packed
+  numbers of a side or a strike (SeaBattle, AirWar, AirRaids, ConvoyRaided, NukeCasualties: "458771" for France
+  and 7 ships). `toExport` gives the nation's id there (`roleNation`); the count is in the text. Counts in b
+  that are not nations (FormationsDisbanded, NuclearPower's rank) stay.
+- AT amended before the code (the first asked for names in a/b, which the name columns hold already).
+  `history.test.ts`: 5 of 5 packed kinds export the nation's id; red without the change. No e2e touches it.
+- **Next:** PLAN 7.167.
