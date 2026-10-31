@@ -2257,6 +2257,12 @@ export class MapView {
     return out;
   }
 
+  /** The nation of a formation in the last snapshot, or 0. */
+  formationNation(id: number): number {
+    const i = this.formIds.indexOf(id);
+    return i < 0 ? 0 : this.formNation[i]!;
+  }
+
   /** The formation of `nation` nearest a CSS-px point within `radius` px, or 0. */
   formationAt(sx: number, sy: number, nation: number, radius = 14): number {
     const cam = this.controller.cam;

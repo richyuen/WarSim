@@ -232,7 +232,7 @@ export class PlayerControl {
    * toggles it in the selection). Elsewhere with a selection: order the selected formations to
    * march there. Returns true when the click was used.
    */
-  click(x: number, y: number, sx: number, sy: number, shift: boolean): boolean {
+  click(x: number, y: number, sx: number, sy: number, shift: boolean, own?: number): boolean {
     const n = this.nation.value;
     if (n === 0) return false;
     // God Mode's placing armed: one of the template's at the click, and it stays armed.
@@ -258,7 +258,8 @@ export class PlayerControl {
       return true;
     }
     const sel = this.view.selectedFormations;
-    const f = this.view.formationAt(sx, sy, n);
+    // The player's formation the click is on: the map's pick when given (PLAN 7.163), else the nearest within 14 px.
+    const f = own ?? this.view.formationAt(sx, sy, n);
     if (f !== 0) {
       if (!shift) sel.clear();
       if (shift && sel.has(f)) sel.delete(f);

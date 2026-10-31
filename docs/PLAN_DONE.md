@@ -16374,3 +16374,30 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   battle again the way the test means it (step until the event, not a pinned day), never the bar moved.
   AT: `npx playwright test tests/e2e/zoomDemo1938.spec.ts` green alone on this machine, twice, with every
   assertion as it stands; the test off `knownRed.json` in the same commit.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.163 While playing, a click on an enemy counter at the front opens the enemy's panel (critic run 21,
+  non-blocking 1 and 2; the user's request, 2026-10-31). ADR-769's own-first pick hides the enemy beside an own
+  counter: the clicked enemy's panel 5 of 12 on seed 4441 (scale 12), 0 of 12 on 6827; and the fallback
+  (`formationPick`) can open a panel with nothing selected (6827, Japanese division 382). Rule: when the drawn
+  top of the click is an enemy counter and the click selects no own formation, the panel is the enemy's; a panel
+  never names a formation of the played nation that is not selected.
+  AT (amended 2026-10-31 before the code, ADR-773: the first bars, clicked enemy's panel ≥ 10 and ≥ 9 of 12, were
+  set unmeasured; a stack's marker opens its lead, so the clicked one's panel is capped by what is drawn): an e2e
+  replaying the critic's EX2 (4441, day 60) and SXG (6827, day 45), 12 enemy clicks each at scale 12: the panel is
+  what is drawn under the click 12 of 12 on each; where an enemy's counter is drawn there, its panel and nothing
+  selected; an own panel without its selection 0 of 24; the clicked enemy's panel ≥ 9 of 12 on 4441 (critic: 5)
+  and ≥ 1 on 6827 (critic: 0); `formationClickPanel1938` (own clicks 12 of 12) green, aimed at the drawn marker.

@@ -24806,3 +24806,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - AT: `zoomDemo1938` green alone twice on the committed code; off `tools/gate/knownRed.json`. No sim input, pin
   unchanged.
 - **Next:** PLAN 7.163.
+
+## 2026-10-31 — PLAN 7.163: what is drawn under a click wins, for the panel and the selection (ADR-773)
+
+- Probe first: 4 of 12 cases asked opposite answers of the same input (7.160's test clicked German 10 at its sim
+  position, inside Polish 562's marker; the critic's click on Polish 546 landed there too). The user chose "what is
+  drawn wins" (ADR-773); 7.160's test now clicks each German marker where it is drawn, assertions unchanged.
+- Fix: `game.tsx` picks with `formationPick`; the played nation's formation drawn there is selected and opened,
+  another's opens with nothing selected, nothing drawn falls back to own within 14 px. `PlayerControl.click`
+  takes that pick. `MapView.formationNation`.
+- AT (amended before the code, ADR-773): `enemyClickPanel1938` (new): 4441 panel = drawn 12/12, German panels 0
+  (critic 3), clicked Polish 9 (critic 5); 6827 panel = drawn 12/12, Japanese 4 (7), unselected own 0 (1). Red
+  without the change. Evidence `docs/evidence/7.163/`.
+- e2e by hand: enemyClickPanel1938, formationClickPanel1938, player1938, formationPanel1938, playerActions1938,
+  airOrders1938 (22 passed).
+- **Next:** PLAN 7.164.

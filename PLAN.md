@@ -33,15 +33,6 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
-- [ ] 7.163 While playing, a click on an enemy counter at the front opens the enemy's panel (critic run 21,
-  non-blocking 1 and 2; the user's request, 2026-10-31). ADR-769's own-first pick hides the enemy beside an own
-  counter: the clicked enemy's panel 5 of 12 on seed 4441 (scale 12), 0 of 12 on 6827; and the fallback
-  (`formationPick`) can open a panel with nothing selected (6827, Japanese division 382). Rule: when the drawn
-  top of the click is an enemy counter and the click selects no own formation, the panel is the enemy's; a panel
-  never names a formation of the played nation that is not selected.
-  AT: an e2e replaying the critic's EX2 (4441, day 60, 12 Polish formations nearest a German, scale 12) and SXG
-  (6827, day 45): clicked enemy's panel ≥ 10 of 12 on 4441 and ≥ 9 of 12 on 6827; an own panel without its
-  selection 0 of 24; `formationClickPanel1938` (own clicks 12 of 12) still green.
 - [ ] 7.164 The Actions tab's diplomacy select opens on no nation, not "Afghanistan" one click from "Declare
   war" (critic runs 20–21, `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e, playing Germany on 1938: the
   select's value on opening is empty, and "Declare war" is disabled until a nation is chosen (0 wars declared
@@ -468,3 +459,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.159 R19-B1: on a phone the map modes cannot be chosen; the map-mode menu (`c689c2e4`) is clipped by the […]
 - [x] 7.160 R20-B1: the formation panel is not the formation the click selected. Playing Germany at a front (seed […]
 - [x] 7.161 The DONE condition's zoom demo: `zoomDemo1938` red here for its history, not the GPU (critic […]
+- [x] 7.163 While playing, a click on an enemy counter at the front opens the enemy's panel (critic run 21, […]

@@ -167,6 +167,30 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-773 · 2026-10-31 · accepted (the user's decision) — PLAN 7.163: what is drawn under a click wins, for the panel and the selection
+
+- **Context.** ADR-769 (PLAN 7.160) made a click while playing select and open the played nation's formation
+  within 14 px of it, before what is drawn there. Critic run 21: a click on an enemy's counter beside one's own
+  then opened one's own panel (4441: 3 of 12; 6827: 7 of 12, one with nothing selected). A probe of both click
+  sets (`tests/e2e/enemyClickPanel1938.spec.ts`'s first form) found the same input asked opposite answers:
+  7.160's test clicked German 10 at its sim position, where only Polish 562's marker is drawn (German 10's own
+  marker laid out a few px away), and the critic's click on Polish 546 landed on that same marker with German 10
+  within 14 px. No rule could pass both as written.
+- **Options put to the user:** (a) what is drawn wins, 7.160's test aimed at the drawn marker (recommended);
+  (b) own first, a second click on the spot switches to the enemy; (c) close 7.163. **Chosen: (a).**
+- **Decision.** `game.tsx`: the pick is `formationPick` (what is drawn: tag, marker, element). The played
+  nation's formation drawn there is selected and opened; another nation's opens its panel and selects nothing
+  (a selection is ordered to the place, as on open ground); with nothing drawn there, the played nation's
+  formation within 14 px (ADR-769's rule). `PlayerControl.click` takes that pick instead of its own search.
+  `formationClickPanel1938` clicks each German formation's marker where it is drawn, not its sim position; its
+  assertions unchanged (12 of 12).
+- **Measured** (`enemyClickPanel1938`): 4441 the panel is the drawn one 12 of 12 (9 before), German panels 0
+  (3), the clicked Polish one 9 (7 here, 5 in the critic's run); 6827 the drawn one 12 (7), Japanese panels 4,
+  each where a Japanese counter is drawn on top and each selected (7, one unselected), the clicked Chinese one 1.
+  Red without the change. UI only, no sim input.
+- **PLAN 7.163's AT** was amended before the code: its first bars (the clicked enemy's panel ≥ 10 and ≥ 9 of 12)
+  were set without measuring; a stack's marker opens its lead, so what is drawn caps them.
+
 ### ADR-772 · 2026-10-31 · accepted — PLAN 7.161: the zoom demo searches for its battle's day instead of pinning day 30
 
 - **Context.** `zoomDemo1938` (the DONE condition's zoom demo) was red in critic run 21's review: seed 1943's

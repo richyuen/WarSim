@@ -96,15 +96,18 @@ export async function startGame(canvas: HTMLCanvasElement, uiRoot: HTMLElement |
       if (hud.editorClick(x, y, view.cityNear(x, y), view.provinceAt(x, y)) || hud.pick(x, y, view.provinceAt(x, y), view.cityNear(x, y))) return true;
       // A formation under the click opens its panel (PLAN 2.14b), the player's own too (which
       // the click also selects for orders); a click anywhere else closes the panel, and goes on
-      // to the player's order or to the nation of the ground. While playing, a click on one of the
-      // player's own formations opens that one, the one the click selects (PLAN 7.160, ADR-769);
-      // else the panel is of what is drawn there, of any nation.
+      // to the player's order or to the nation of the ground. One pick for the panel and the
+      // selection (PLAN 7.160, ADR-769): what is drawn under the click wins (PLAN 7.163, ADR-773).
+      // The player's own formation drawn there is selected and opened; another nation's opens its
+      // panel and selects nothing (a selection is ordered there); with nothing drawn there, the
+      // player's own formation within 14 px of the click.
       const n = p.nation.value;
       const armed = p.wingOrder.value !== null || p.dropArmed.value;
-      const own = n !== 0 && !armed ? view.formationAt(sx, sy, n) : 0;
-      const formation = own !== 0 ? own : view.formationPick(sx, sy);
+      const drawn = view.formationPick(sx, sy);
+      const own = n === 0 || armed ? 0 : drawn !== 0 ? (view.formationNation(drawn) === n ? drawn : 0) : view.formationAt(sx, sy, n);
+      const formation = own !== 0 ? own : drawn;
       hud.selectFormation(formation);
-      return p.click(x, y, sx, sy, shift) || formation !== 0;
+      return p.click(x, y, sx, sy, shift, own) || formation !== 0;
     };
     // A right-click on another nation's ground opens its menu for the player (declare war, peace,
     // alliance); a press of any button on the map or a wheel turn closes it.
