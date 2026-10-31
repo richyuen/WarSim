@@ -2456,6 +2456,28 @@ It was dropped: a camera resting on a curve showed two layers half there.
 | **T2 Tactical** | 30–300 | + hillshade, procedural ground texture, tree, rock and building instances, the coast from the fine land mask, the sea shaded by its depth (the elevation's sea floor, lighter over shallows: PLAN 4.7f, ADR-283) (roads near cities: not built, a line under PLAN 7.4) | element sprites (facing, walk/drive animation, firing, tracers, impacts, wrecks, casualties), sorties in flight (and at T0 and T1, smaller: PLAN 5.7a), ships by class with wakes under way (PLAN 4.7b, ADR-276), a sea battle's gunfire on a long arc, torpedo tracks and a ship going down into its slick (PLAN 4.7c, ADR-277) |
 | **T3 Close** | < 30 | the same ground, worked out for each pixel with finer octaves down to 1 m/px, and the things on it at their own size (not tiles kept in textures: ADR-78) | element → individuals: where an element holds up to 64 units (vehicles, guns, ships and planes: 1 to 12), one figure for each unit it has; a battalion of 500 has 64 figures when whole and its share of them while it loses men, rounded up [ADR-80, in place of ADR-69's cap]; a battalion in contact lies in 4 ranks of 16 across the front of its ground, facing the enemy, the front rank first, a loss a man of the rear rank (PLAN 7.21a, ADR-496); a ship its own length, at least 26 px for a battleship and up to 0.9 of the gap between two slots on the screen (40 px at most), the other classes in proportion to their length or at their class's share of it where more (a cruiser 0.88, a transport 0.85, a destroyer 0.8, a submarine 0.65), each its own length again once that is more (PLAN 4.12c, 7.22b, 7.35c, ADR-499, ADR-548) |
 
+*The look of the forces (PLAN 7.174, ADR-777, ADR-778):* two looks, chosen in the settings
+("Unit look"). The table's Forces column is Classic. The countryballs ('balls'), the default from
+PLAN 7.174h, draw every unit as a ball of its nation's flag with two eyes, wearing a prop for its
+class, at each tier:
+- T0: a counter's flag chip a ball over its box's left end (`COUNTER_BALL_R` 8 px); its strength
+  and "+n" as before (`counters.ts`, `ball2d.ts`).
+- T1: a marker's box a ball (radius 9.5 px) wearing its symbol's prop (`markerProp`: armour
+  treads, motorised wheels, a fleet a hull, the rest a helmet), its eyes the way of its order, a
+  red ring while engaged; its pips, number, "×n" and the click as Classic's (`markers.ts`).
+- Sorties at every tier: each plane a ball with wings, its radius half the plane's span
+  (`PLANE_BALL`, `sorties.ts`). The sea battles' marks are as Classic's.
+- T2 and T3: one ball an element (a battalion, a tank company, a battery, a ship), at T3 too and
+  no figures, by a second program of the proxy renderer (`ballShader.ts`): the flag from one
+  texture of every living nation's flag (`flagAtlas.ts`, 38 × 26 slots), shaded round, a dark
+  outline, eyes toward the facing (the flag never mirrored), from 6 px faded in by 11; props by
+  class (a helmet, treads and barrel, a gun's barrel and wheel, a hull, wings; a turret's barrel
+  over its hull's ball). They move on the render clock: a bob on the march, a blink every few
+  seconds, slanted eyes in contact, a flinch when hit; a destroyed element's ball fades with ✕
+  eyes (`deadBalls.ts`). The same number of draws as Classic.
+- Held to the performance budget's GPU line (§8, "Performance budgets": T2 with 10k proxies ≤ 2.0 ms GPU; ADR-778), not to Classic's time:
+  0.39 ms at 10k on bench B (`&look=balls`) against Classic's 0.35.
+
 *How far the ground reaches (PLAN 7.34a, ADR-532):* the ground and what stands on it come and
 go with the zoom alone, the same in and out: none from 750 m/px, all of it from 300 (T2's
 edge), linear in the zoom's log between (`groundShareAt`, 1.32 octaves). It is the one change
@@ -3318,7 +3340,8 @@ on screen.
     image differs.
 - **Settings** (implemented PLAN 1.39a, `src/app/settings.ts`, `src/ui/SettingsPanel.tsx`):
   interface size 85–130% (root font size, also on the title screen), unit size 50–200% (marker
-  size multiplier), both persisted; the sound's volume and mute (PLAN 3.12d, see Sound); F2 or
+  size multiplier), both persisted; the unit look, Countryballs or Classic (`warsim.unitLook`,
+  `src/shared/unitLooks.ts`; PLAN 7.174a, see §8), switched at once and persisted; the sound's volume and mute (PLAN 3.12d, see Sound); F2 or
   the panel saves a PNG of the map with its overlays;
   Main menu; seed field, random seed and New game (reloads with `?seed=`, paused).
 - **New-game options** (PLAN 1.39b1, `src/sim/gameOptions.ts`, `src/app/gameUrl.ts`): looping map

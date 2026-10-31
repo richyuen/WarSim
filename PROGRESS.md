@@ -25112,3 +25112,11 @@ No rule changed and nothing on screen changed. One task came out of it.
   greyed by the plane's shadow. Classic specs `counters1938`, `markers1938`, `airT3_1938`, `settings1938` green.
   Evidence `docs/evidence/7.174/f-*.png`. No sim input.
 - **Next:** PLAN 7.174g.
+
+## 2026-10-31 — PLAN 7.174g: the ball look in SPEC (done)
+
+- **Written:** SPEC §8 "The look of the forces" after the tier table: the two looks, the balls at T0 (counter chip),
+  T1 (marker ball with its symbol's prop), sorties (winged balls), T2/T3 (one ball an element by the ball program,
+  the flag atlas, eyes, props, motion, dead balls), and the GPU budget they are held to (ADR-778). §9 Settings:
+  the unit look and its key. **AT:** parity green.
+- **Next:** PLAN 7.174h.

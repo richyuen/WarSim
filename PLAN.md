@@ -42,7 +42,7 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   - [x] 7.174d The class by props (the user's choice): infantry a helmet, tanks treads and a barrel (turning as the […]
   - [x] 7.174e Animation, on the render clock only (nothing of it sim state): a bob on the march (the walk phase, […]
   - [x] 7.174f T0, T1 and the sky (the user's choice: every level). Counters and markers as balls of the flag […]
-  - [ ] 7.174g SPEC §8: the ball look in the Forces column and a note of the setting. AT: parity green.
+  - [x] 7.174g SPEC §8: the ball look in the Forces column and a note of the setting. AT: parity green.
   - [ ] 7.174h Countryballs the default, last (the user's decision, 2026-10-31): `DEFAULT_UNIT_LOOK` 'balls', and
     Playwright's config pins Classic (`use.storageState`) in the same commit, so the pixel specs keep the look
     they measure. AT: unit test: the default 'balls', the pin at the config's `baseURL`; `settings1938`: 'balls'
