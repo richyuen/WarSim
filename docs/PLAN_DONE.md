@@ -16542,3 +16542,22 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   (critic runs 20–21: Germany's 28 rows read "Fighter group at an airbase · no mission", four lines, no base;
   `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e playing Germany on 1938 at 1600 × 900: 28 of 28 rows have
   distinct text, each names a base or place, each row ≤ 2 lines high.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.171 On touch, a long press on a foreign nation opens the same nation menu (declare war and the rest) as a
+  click does with the mouse (critic runs 20–21, `critic/c20_pt_touch.json`; ADR-771). AT: e2e with touch at
+  390 × 844, playing Germany: a long press on Poland's land opens its menu (1 of 1), "Declare war" there
+  starts the war; a long press on own land still box-selects as before.

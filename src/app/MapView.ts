@@ -432,6 +432,16 @@ export class MapView {
         if (b.active) {
           const [sx, sy] = local(e);
           [b.x1, b.y1] = [sx, sy];
+          // A long press held still on another nation's land: its menu, as the mouse's right click
+          // (PLAN 7.171; critic runs 20–21: on touch there was no way to declare war). Dragged, or on
+          // the player's own land or the sea, it is the box as before.
+          const other = b.touch && Math.hypot(sx - b.x0, sy - b.y0) <= BOX_SLACK_PX ? this.nationAt(sx, sy) : 0;
+          if (other !== 0 && this.selectionNation !== 0 && other !== this.selectionNation && this.onContextClick) {
+            this.onContextClick(other, sx, sy, e.clientX, e.clientY);
+            endBox();
+            down = null;
+            return;
+          }
           this.onBoxSelect?.(this.formationsInBox(b.x0, b.y0, b.x1, b.y1, this.selectionNation), b.remove);
           endBox();
           down = null;

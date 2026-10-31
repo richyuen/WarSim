@@ -24911,3 +24911,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - Not covered by an e2e: a carrier wing's "on Carrier group N" (Germany has none on seed 5557).
 - e2e by hand: airOrders1938 (6 passed).
 - **Next:** PLAN 7.171.
+
+## 2026-10-31 — PLAN 7.171: on touch, a long press held still on another nation's land opens its menu
+
+- Cause: on a touch screen a long press only ever became a selection box (`MapView`, PLAN 7.4), and the nation
+  menu opened only on the mouse's right click, so a war could not be declared by touch. Now a long press that is
+  lifted without moving (within `BOX_SLACK_PX`) on another nation's land, while playing, opens that nation's menu
+  where the right click does (`onContextClick`). A long press that drags is the box wherever it starts (a box
+  begun near a front still works); one on the player's own land or the sea is the box as before.
+- AT: new `touchMenu1938` (390 × 844, touch, playing Germany): a still long press on Poland opens Poland's menu,
+  "Declare war" starts the war; a long press then drag from German land selects what `formationsInBox` counts
+  there; a still long press on German land and a short press on Poland open no menu. Red on the old code.
+  Evidence `docs/evidence/7.171/`.
+- e2e by hand: touchMenu1938, player1938, playerActions1938, phoneLayout1938 (23 passed).
+- **Next:** PLAN 7.172.
