@@ -11,6 +11,7 @@ import type { Camera } from '../camera';
 import { isShipFrame, smallFrameOf } from '../../shared/unitLooks';
 import { hash2 } from '../hash';
 import { ATLAS_FRAMES } from './atlas';
+import { BALL_FS, BALL_VS } from './ballShader';
 
 /** The share of a frame's fraction above a half that carries a marching sprite's phase. */
 const MARCH_SPAN = 0.49;
@@ -114,6 +115,11 @@ const NO_MAX_PX = 1e9;
 /** Floats per instance in the position/misc buffer. */
 export const PROXY_STRIDE = 8;
 const STRIDE = PROXY_STRIDE;
+/**
+ * The attributes' places, the same in both programs (the classic sprites and the countryballs,
+ * PLAN 7.174c), so that one vertex array serves both.
+ */
+const ATTRIBS = { aCorner: 0, aPrevCur: 1, aMisc: 2, aColor: 3, aFlag: 4 } as const;
 
 export class ProxyRenderer {
   readonly gl: WebGL2RenderingContext;
@@ -121,6 +127,9 @@ export class ProxyRenderer {
   private readonly vao: WebGLVertexArrayObject;
   private readonly instBuf: WebGLBuffer;
   private readonly colorBuf: WebGLBuffer;
+  private readonly flagBuf: WebGLBuffer;
+  /** The countryballs' program (PLAN 7.174c), compiled the first time balls are drawn. */
+  private ballProgram: twgl.ProgramInfo | null = null;
   private readonly atlas: WebGLTexture;
   private capacity = 0;
   count = 0;
@@ -138,7 +147,7 @@ export class ProxyRenderer {
 
   constructor(gl: WebGL2RenderingContext, atlasCanvas: HTMLCanvasElement) {
     this.gl = gl;
-    this.program = twgl.createProgramInfo(gl, [VS, FS]);
+    this.program = twgl.createProgramInfo(gl, [VS, FS], { attribLocations: ATTRIBS });
     // Premultiplied (PLAN 7.21b, ADR-497): the mipmaps are averages of colour by its alpha. Straight,
     // the clear texels' black went into every smaller level, and a sprite of a few px was drawn
     // near black, whatever its nation: at 25 m/px German and Polish men 25 apart in RGB (132 at 10).
@@ -148,7 +157,7 @@ export class ProxyRenderer {
     const corner = gl.createBuffer()!;
     gl.bindBuffer(gl.ARRAY_BUFFER, corner);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5]), gl.STATIC_DRAW);
-    const loc = (n: string): number => gl.getAttribLocation(this.program.program, n);
+    const loc = (n: keyof typeof ATTRIBS): number => ATTRIBS[n];
     gl.enableVertexAttribArray(loc('aCorner'));
     gl.vertexAttribPointer(loc('aCorner'), 2, gl.FLOAT, false, 0, 0);
     this.instBuf = gl.createBuffer()!;
@@ -164,6 +173,11 @@ export class ProxyRenderer {
     gl.enableVertexAttribArray(loc('aColor'));
     gl.vertexAttribPointer(loc('aColor'), 4, gl.UNSIGNED_BYTE, true, 0, 0);
     gl.vertexAttribDivisor(loc('aColor'), 1);
+    this.flagBuf = gl.createBuffer()!;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.flagBuf);
+    gl.enableVertexAttribArray(loc('aFlag'));
+    gl.vertexAttribPointer(loc('aFlag'), 1, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribDivisor(loc('aFlag'), 1);
     gl.bindVertexArray(null);
   }
 
@@ -191,11 +205,15 @@ export class ProxyRenderer {
       gl.bufferData(gl.ARRAY_BUFFER, this.capacity * STRIDE * 4, gl.DYNAMIC_DRAW);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuf);
       gl.bufferData(gl.ARRAY_BUFFER, this.capacity * 4, gl.DYNAMIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.flagBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, this.capacity * 4, gl.DYNAMIC_DRAW);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.instBuf);
     }
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.data, 0, count * STRIDE);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuf);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.colors, 0, count * 4);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.flagBuf);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.flagSlots, 0, count);
   }
 
   /**
@@ -243,6 +261,43 @@ export class ProxyRenderer {
       // A copy shifted by +off appears where the camera is shifted by −off.
       twgl.setUniforms(this.program, { uCam: [cam.cx - off - this.originX, cam.cy - this.originY] });
       gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, this.count);
+    }
+    gl.bindVertexArray(null);
+    gl.disable(gl.BLEND);
+  }
+
+  /**
+   * Draws the first `count` instances as countryballs (PLAN 7.174c, `ballShader.ts`): sized as `draw`
+   * sizes them, upright, each with its nation's flag from `flags` (the flag atlas's texture,
+   * `flagH` texels high) by its slot in `flagSlots`. Turrets and wakes, written after the elements,
+   * are left out by `count`.
+   */
+  drawBalls(cam: Camera, dpr: number, t: number, count: number, flags: WebGLTexture, flagH: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, alpha = 1, maxPx = NO_MAX_PX, frameMinPx: readonly number[] = NO_FRAME_MIN): void {
+    const n = Math.min(count, this.count);
+    if (n <= 0) return;
+    const gl = this.gl;
+    this.ballProgram ??= twgl.createProgramInfo(gl, [BALL_VS, BALL_FS], { attribLocations: ATTRIBS });
+    const program = this.ballProgram;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.useProgram(program.program);
+    twgl.setUniforms(program, {
+      uFlags: flags,
+      uFlagH: flagH,
+      uDpr: dpr,
+      uScale: cam.scale * dpr,
+      uViewport: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+      uT: Math.min(1, Math.max(0, t)),
+      uMinPx: minPx * dpr,
+      uMaxPx: maxPx * dpr,
+      uSizeMul: sizeMul,
+      uAlpha: alpha,
+      uFrameMinPx: frameMinPx.map((v) => v * dpr),
+    });
+    gl.bindVertexArray(this.vao);
+    for (const off of wrapOffsets) {
+      twgl.setUniforms(program, { uCam: [cam.cx - off - this.originX, cam.cy - this.originY] });
+      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, n);
     }
     gl.bindVertexArray(null);
     gl.disable(gl.BLEND);

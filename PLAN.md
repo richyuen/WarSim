@@ -38,13 +38,7 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   look of today ("Classic"). View only: no sim input, the seed-99 pin unchanged by every part.
   - [x] 7.174a The setting. `Settings.unitLook` ('balls' | 'classic', key `warsim.unitLook`), a row in […]
   - [x] 7.174b The flags on the GPU. One texture of every nation's flag (`FlagStore.pixelsOf`, 36×24 a slot), […]
-  - [ ] 7.174c The ball at T2 and T3 (the user's choice: one ball per element at T3, not its figures). A second
-    program of `ProxyRenderer` (SPEC §8's two-program precedent, no branch in the classic one): a disc filled with
-    the flag, shaded round, a dark outline, two white eyes; upright, mirrored left or right by its facing, the eyes
-    toward it; under a few px a flag dot without eyes (the `uSmall` mix). At T3 the element is one ball sized to
-    its footprint; no turrets or wakes in ball mode. AT: e2e on a 1938 fight at 100 and 15 m/px: inside each sampled
-    element's ball the flag's colours, the outline at its edge, eye whites where the eyes are; one units draw call
-    as Classic; bench P frame time within 10 % of Classic's.
+  - [x] 7.174c The ball at T2 and T3 (the user's choice: one ball per element at T3, not its figures). A second […]
   - [ ] 7.174d The class by props (the user's choice): infantry a helmet, tanks treads and a barrel (turning as the
     turret did), guns a barrel and wheels, ships the ball in a hull, planes wings. AT: e2e evidence of each class
     at T2 and T3 (`docs/evidence/7.174/`); each class's prop pixels found by its ball.

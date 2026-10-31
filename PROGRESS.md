@@ -25035,3 +25035,24 @@ No rule changed and nothing on screen changed. One task came out of it.
   a painted flag is in it at the next sync, an unchanged one not written again; past the last slot a nation has none.
   In the built game with 'balls': the GPU texture's texels at ten slots' middles equal the CPU copy's, no GL error.
 - **Next:** PLAN 7.174c.
+
+## 2026-10-31 — PLAN 7.174c: the countryball at T2 and T3 (done)
+
+- **Built:** `render/units/ballShader.ts`, a second program of `ProxyRenderer` (`drawBalls`; both programs on fixed
+  attribute places, one vertex array, the flag slots a fifth attribute): a disc of the flag (the 36 × 24 squashed
+  into it, never turned or mirrored), darker to the rim with a light at the top left, a dark outline (8 % of the
+  ball, at least 1.2 px where the eyes are drawn), two white eyes on the side it faces, a little up or down with
+  the facing; eyes from 6 to 11 px; under that a flag dot. A nation without a slot is its tint. `MapView`: in the
+  ball look the element sprites are balls at T2 and T3 (one ball an element, not its figures: the close handover
+  does not fade them), stand-ins too; turrets and wakes not drawn (the balls are the first `elementCount`
+  instances). Bench B takes `&look=balls`.
+- **AT:** `countryballs1938` e2e, a German and a Polish infantry division in contact west of Poznań: 100 m/px, 13
+  balls of 5.1 px clear of the others, each its flag's colour at its middle (within 40 of the atlas's filtered,
+  shaded texels; worst 13); 15 m/px, 13 balls of 33.9 px, 39 of 39 flag points (worst 7), the outline dark and both
+  eyes white on 13 of 13; instanced draws in a frame 2 and 2, balls and classic, at both zooms. Bench B on the RTX
+  4070 Ti (two runs each): frame GPU time 30k 0.390/0.426 ms classic, 0.408/0.407 balls; 10k 0.348/0.349, 0.352/0.353
+  (within 10 %); the units' draw alone 0.057 → 0.067 ms at 30k. Evidence `docs/evidence/7.174/c-fight-*.png`. The AT
+  said bench P, the precision bench: amended to B. No sim input.
+- **Left for later parts:** at T3 the fire effects still start from the (undrawn) figures' places, inside each
+  ball's footprint; the balls do not yet move (7.174e).
+- **Next:** PLAN 7.174d.

@@ -1176,6 +1176,10 @@ export class MapView {
   elementFacing(i: number): number {
     return this.elementProxies.data[i * PROXY_STRIDE + 4]!;
   }
+  /** The flag-atlas slot element sprite `i` was uploaded with (PLAN 7.174b; tests). */
+  elementFlagSlot(i: number): number {
+    return this.elementProxies.flagSlots[i]!;
+  }
   /** Whether element sprite `i` was uploaded as walking (tests). */
   elementWalks(i: number): boolean {
     return this.elementProxies.data[i * PROXY_STRIDE + 6]! % 1 > 0.25;
@@ -1594,7 +1598,13 @@ export class MapView {
     const offs = wrapOffsets(cam, this.geo, this.canvas.clientWidth, SEAM_MARGIN);
     const figures = this.shares.individuals;
     this.turnTurrets(now);
-    if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn, STAND_IN_MAX_PX);
+    const flags = this.flagTexture;
+    if (flags) {
+      // Countryballs (PLAN 7.174c): one ball an element at T2 and at T3 (the user's choice: not its
+      // figures), so the close handover does not fade the balls; turrets and wakes are none.
+      if (this.elementCount === 0) this.proxies.drawBalls(cam, dpr, t, this.proxies.count, flags, this.flagAtlas.height, 8, offs, this.unitScale, unitsIn, STAND_IN_MAX_PX);
+      else this.elementProxies.drawBalls(cam, dpr, t, this.elementCount, flags, this.flagAtlas.height, ELEMENT_MIN_PX, offs, this.unitScale, unitsIn, undefined, ELEMENT_FRAME_MIN_PX);
+    } else if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn, STAND_IN_MAX_PX);
     else {
       // Where a sprite is too small for a hull, a tank is its small mark (PLAN 3.6e3b).
       this.elementSmall = smallShare(this.elementPx);
@@ -2315,6 +2325,8 @@ export class MapView {
    */
   readonly flagAtlas = new FlagAtlas();
   private flagAtlasVersion = -1;
+  /** The flag atlas's texture this frame, while the look is 'balls'. */
+  private flagTexture: WebGLTexture | null = null;
 
   private syncFlagAtlas(): void {
     this.flagAtlas.sync(this.capitals.keys(), (id) => this.flags.pixelsOf(id));
@@ -2704,7 +2716,7 @@ export class MapView {
     this.tierShares(now);
     // A flag painted since the last frame is in the atlas in this one (PLAN 7.174b).
     if (this.flags.version !== this.flagAtlasVersion) this.syncFlagAtlas();
-    if (this.unitLook === 'balls') this.flagAtlas.upload(this.gl);
+    this.flagTexture = this.unitLook === 'balls' ? this.flagAtlas.upload(this.gl) : null;
     this.drawWebGl(now);
     this.drawLabels(cam, dpr, now);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep

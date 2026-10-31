@@ -16671,3 +16671,28 @@ Of 7.174 (open in PLAN.md):
     rebuilt when `FlagStore.version` moves or a nation is founded, and each element instance's slot beside its
     tint. AT: unit test: each living nation of the 1938 start and of a world after a forced revolt has a slot;
     the texel at a slot's middle equals its flag's; a painted flag is in the texture on the next frame.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.174 (open in PLAN.md):
+
+  - [x] 7.174c The ball at T2 and T3 (the user's choice: one ball per element at T3, not its figures). A second
+    program of `ProxyRenderer` (SPEC §8's two-program precedent, no branch in the classic one): a disc filled with
+    the flag, shaded round, a dark outline, two white eyes; upright, mirrored left or right by its facing, the eyes
+    toward it; under a few px a flag dot without eyes (the `uSmall` mix). At T3 the element is one ball sized to
+    its footprint; no turrets or wakes in ball mode. AT: e2e on a 1938 fight at 100 and 15 m/px: inside each sampled
+    element's ball the flag's colours, the outline at its edge, eye whites where the eyes are; one units draw call
+    as Classic; bench B's frame time within 10 % of Classic's (bench B, the unit proxies: "P" named the precision
+    bench by mistake, amended 2026-10-31).
