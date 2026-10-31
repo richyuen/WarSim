@@ -219,9 +219,20 @@ export function tickerRows(world: World, nationName: (id: number) => string, cit
       if (told) continue;
     }
     if (kind === EventKind.PeaceSigned && annexedThen(i, b, a)) continue;
-    out.push(tickerRowAt(world, i, nation, cityName, defName));
+    // A revolt is a war of independence: the holder's war on the rebels, declared in the hour they
+    // rose, is told as the revolt (PLAN 7.165: a God Mode revolt read "Germany declared war on Free Saxony").
+    const rose = kind === EventKind.WarDeclared ? roseThen(rows, i, b, a) : -1;
+    out.push(tickerRowAt(world, rose >= 0 ? rose : i, nation, cityName, defName));
   }
   return out.reverse();
+}
+
+/** The index of the row of the hour of row `i` in which `rebel` rose against `holder` (a `RevoltSpawned`), or -1. */
+function roseThen(rows: ArrayLike<number>, i: number, rebel: number, holder: number): number {
+  const is = (j: number): boolean => rows[j + 1] === EventKind.RevoltSpawned && rows[j + 2] === rebel && rows[j + 3] === holder;
+  for (let j = i - HISTORY_STRIDE; j >= 0 && rows[j] === rows[i]; j -= HISTORY_STRIDE) if (is(j)) return j;
+  for (let j = i + HISTORY_STRIDE; j < rows.length && rows[j] === rows[i]; j += HISTORY_STRIDE) if (is(j)) return j;
+  return -1;
 }
 
 /** The ticker's row of the log's row at `i` (an index into `rows`, a multiple of HISTORY_STRIDE). */

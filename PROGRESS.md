@@ -24833,3 +24833,18 @@ No rule changed and nothing on screen changed. One task came out of it.
 - e2e by hand: playerActions1938, godPanelMore1938, godUi1938, scenarioEditor1938, sound1938, ticker1938
   (22 passed).
 - **Next:** PLAN 7.165.
+
+## 2026-10-31 — PLAN 7.165: Breakthrough at peace refused and told; a revolt told as a revolt
+
+- Breakthrough (c14ca07c): for a nation at war with no one it added a corridor nobody could use and said nothing.
+  Now `Refusal.AtPeace`, told in the God tab ("at war with no one: there is no front to break through").
+- Revolt: every revolt, God's or the world's, logs `RevoltSpawned` (not a ticker kind) and the holder's
+  `WarDeclared` on the rebels in the same hour, so the ticker told each as "Germany declared war on Free
+  Saxony". `tickerRows` now tells that war as its revolt ("Free Saxony broke away from Germany"); the history
+  keeps both rows (the war is real). A revolt that starts no war stays out of the ticker, as before.
+- AT: unit `refusal.test.ts` (refused at peace, no corridor; done at war) and `godActsHistory1938` (one revolt
+  row, no war row for it; another war told as before), each red without its change; e2e godBreakthrough1938
+  (the God tab's words, no corridor), godRevolt1938 (1 revolt row, 0 "Poland declared war on" rows).
+- e2e by hand: godBreakthrough1938, godRevolt1938, godUi1938, godMode1938, ticker1938 (24 passed). The pin is
+  unchanged (no command in it; the ticker is the worker's).
+- **Next:** PLAN 7.166.

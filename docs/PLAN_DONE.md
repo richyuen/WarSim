@@ -16420,3 +16420,22 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   war" (critic runs 20–21, `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e, playing Germany on 1938: the
   select's value on opening is empty, and "Declare war" is disabled until a nation is chosen (0 wars declared
   by a click on it with none chosen).
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.165 God Mode's Breakthrough tells what it did, at peace too, and a God revolt is told as a revolt, not
+  a declared war (critic runs 19–21, `critic/c19_k_2203.json`, `critic/c19_q_6421.json`; ADR-771). AT: e2e on
+  1938: Breakthrough on a nation at peace shows a message saying why nothing broke through (1 of 1); a God
+  revolt in Poland adds a history and ticker row of the revolt's kind, and 0 rows of "declared war" for it.

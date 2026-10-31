@@ -138,3 +138,29 @@ describe("God Mode's acts in the history (PLAN 7.33b)", () => {
     expect(filterHistory(rows, { ...NO_FILTER, nation: CZE! }, s.world.startDay).map((r) => r.kind)).toEqual([EventKind.CityRazed]);
   });
 });
+
+describe("God Mode's revolt in the ticker (PLAN 7.165)", () => {
+  it('told as the revolt, not as the war its holder declares on the rebels in that hour', () => {
+    const s = fresh();
+    const [x, y] = cellOf(21.0, 52.23, W, H);
+    const p = s.world.cells.province[Math.floor(y) * W + Math.floor(x)]!;
+    const n = s.world.nations.highWater;
+    s.command({ kind: 'spawnRevolt', province: p });
+    s.step(1);
+    // The sim's log has both: the rising (a new nation, the next id), and the war of independence it is.
+    const rows = rowsOf(s.world);
+    const rebel = rows.find((r) => r.kind === EventKind.RevoltSpawned && r.b === POL)!.a;
+    expect(rebel).toBe(n);
+    expect(rows.some((r) => r.kind === EventKind.WarDeclared && r.a === POL && r.b === rebel)).toBe(true);
+    // The ticker tells the revolt, once, and no war declared on the rebels.
+    const ticker = tickerOf(s.world);
+    const revolt = ticker.filter((r) => r.kind === EventKind.RevoltSpawned && r.a === rebel && r.b === POL);
+    expect(revolt).toHaveLength(1);
+    expect(historyText(revolt[0]!)).toMatch(/^.+ broke away from Poland$/);
+    expect(ticker.filter((r) => r.kind === EventKind.WarDeclared && r.a === POL && r.b === rebel)).toEqual([]);
+    // A war declared otherwise is told as before.
+    s.command({ kind: 'declareWar', attacker: CZE!, defender: POL! });
+    s.step(1);
+    expect(tickerOf(s.world).filter((r) => r.kind === EventKind.WarDeclared && r.a === CZE && r.b === POL)).toHaveLength(1);
+  });
+});
