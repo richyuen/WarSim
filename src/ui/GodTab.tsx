@@ -41,6 +41,7 @@ export const REFUSAL_KEY: Record<Exclude<Refusal, 0>, MessageKey> = {
   [Refusal.NoWarhead]: 'refusal.noWarhead',
   [Refusal.NoDelivery]: 'refusal.noDelivery',
   [Refusal.OutOfRange]: 'refusal.outOfRange',
+  [Refusal.AtPeace]: 'refusal.atPeace',
 };
 
 export interface GodTabProps {

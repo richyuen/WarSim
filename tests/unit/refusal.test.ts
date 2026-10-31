@@ -335,3 +335,16 @@ describe('Recolor and Donate of God Mode (PLAN 7.4f16)', () => {
     expect(send(new Sim({ scenario: 'toy', seed: 7 }), { kind: 'recolorNation', nation: 1, color: 0x1000000 }).refused).toEqual([Refusal.OutOfRange]);
   });
 });
+
+describe("God Mode's Breakthrough (PLAN 7.165)", () => {
+  it('for a nation at war with no one: refused with its reason, no corridor; at war: done', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    expect(s.world.wars.nations().has(1)).toBe(false);
+    const corridors = s.world.battles.corridors.length;
+    expect(send(s, { kind: 'forceBreakthrough', nation: 1, x: 3, y: 3, toX: 9, toY: 3 }).refused).toEqual([Refusal.AtPeace]);
+    expect(s.world.battles.corridors).toHaveLength(corridors);
+    s.world.wars.set(1, 2, true);
+    expect(send(s, { kind: 'forceBreakthrough', nation: 1, x: 3, y: 3, toX: 9, toY: 3 }).refused).toEqual([]);
+    expect(s.world.battles.corridors).toHaveLength(corridors + 1);
+  });
+});

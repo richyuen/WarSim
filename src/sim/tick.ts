@@ -184,6 +184,8 @@ function applyCommand(world: World, cmd: Command): Refusal {
     case 'forceBreakthrough': {
       const why = whyNotNation(world, cmd.nation);
       if (why) return why;
+      // At peace there is no front to break: refused and told, not a corridor nobody can use (PLAN 7.165).
+      if (!world.wars.nations().has(cmd.nation)) return Refusal.AtPeace;
       const id = world.battles.nextId++;
       world.battles.history.push({ tick: world.tick, kind: EventKind.MajorBattleEnded, a: id, b: cmd.nation, x: cmd.x, y: cmd.y });
       world.out.emit(world.tick, EventKind.MajorBattleEnded, id, cmd.nation, cmd.x, cmd.y);

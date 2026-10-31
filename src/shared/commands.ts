@@ -290,6 +290,8 @@ export const Refusal = {
   NotAtSea: 29,
   /** An air wing set down where no airbase of the nation's with room is near (PLAN 7.13a). */
   NoAirbase: 30,
+  /** God Mode's Breakthrough for a nation at war with no one: there is no front to break (PLAN 7.165). */
+  AtPeace: 31,
 } as const;
 export type Refusal = (typeof Refusal)[keyof typeof Refusal];
 
