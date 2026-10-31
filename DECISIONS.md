@@ -167,6 +167,17 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-771 · 2026-10-31 · accepted (the user's decision) — critic run 21's quick fixes and interface items filed; a wing's mark and camera stay on its hourly point
+
+- **Context.** Critic run 21 scored every dimension at its bar with no blocking issue, and listed non-blocking
+  items unchanged since runs 19–20. The user chose the quick fixes and the interface items: PLAN 7.164–7.171,
+  after 7.163 and before 7.162 (the DONE runs).
+- **Decision.** Not filed: a followed wing's mark and camera ride the wing's hourly sim point, not the planes
+  drawn at T2/T3 ("the wing mark off the planes close in", runs 20–21). The user's reason: planes move too fast
+  for a mark or a camera to ride their drawn place. A critic finding on it is answered by this ADR. Also not
+  filed: the map's dense fronts (map visuals), the late fronts' cadre divisions and idle fronts (emergent
+  dynamics) and the late tick's cost (performance): larger bets left for the user to choose.
+
 ### ADR-770 · 2026-10-30 · accepted (the user's decision) — outside PLAN: a critic run's evidence is committed with its report
 
 - **Context.** The critic never commits, and PROMPT step 2a named only the report, PLAN.md and PROGRESS.md, so

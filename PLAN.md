@@ -49,6 +49,39 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   AT: an e2e replaying the critic's EX2 (4441, day 60, 12 Polish formations nearest a German, scale 12) and SXG
   (6827, day 45): clicked enemy's panel ≥ 10 of 12 on 4441 and ≥ 9 of 12 on 6827; an own panel without its
   selection 0 of 24; `formationClickPanel1938` (own clicks 12 of 12) still green.
+- [ ] 7.164 The Actions tab's diplomacy select opens on no nation, not "Afghanistan" one click from "Declare
+  war" (critic runs 20–21, `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e, playing Germany on 1938: the
+  select's value on opening is empty, and "Declare war" is disabled until a nation is chosen (0 wars declared
+  by a click on it with none chosen).
+- [ ] 7.165 God Mode's Breakthrough tells what it did, at peace too, and a God revolt is told as a revolt, not
+  a declared war (critic runs 19–21, `critic/c19_k_2203.json`, `critic/c19_q_6421.json`; ADR-771). AT: e2e on
+  1938: Breakthrough on a nation at peace shows a message saying why nothing broke through (1 of 1); a God
+  revolt in Poland adds a history and ticker row of the revolt's kind, and 0 rows of "declared war" for it.
+- [ ] 7.166 The history export names the sides: columns a/b are nation names, not side ids (critic runs 19–21,
+  `critic/c21_dl_7019.csv`; ADR-771). AT: unit test on an export of a 1938 run with 50+ wars: every a/b cell
+  of a war row is a nation's name (0 bare numbers); the CSV still loads in the history view's import, if any.
+- [ ] 7.167 The ticker merges repeated rows: "⚓ Carrier strike ashore: United States on Greece" three times in a
+  row is one row with a count (critic runs 20–21, `critic/c21_lw_8243.json`; ADR-771). AT: unit test of the
+  ticker's model: N equal rows in a row show as 1 row "×N"; e2e on seed 8243 to year 10 at Max: no two
+  adjacent ticker rows with the same text.
+- [ ] 7.168 An old save or scenario that cannot load is refused at the preview with its reason (its format),
+  and a refused save is not offered again (critic runs 19–21, `critic/c21_os2_c10.json`,
+  `critic/c19_os_c10fmt1.json`; ADR-771). AT: e2e with a format-1 save and run 10's scenario file
+  (`critic/c21_critic_standoff.warsim-scenario`): the title says it is an older version and offers no Start
+  (0 trips to `?failed=scenario`); the refused save is absent on the next visit; a current file loads as before.
+- [ ] 7.169 The phone's portrait bar shows every tab and God Mode's tools whole (critic runs 19–21,
+  `critic/c21_p.json`: at 390 × 844 Map, Statistics, History, Editor, Settings off screen; Revolt, Spawn nation,
+  Breakthrough, Territory, Nuke, Found city, Raze city clipped; ADR-771). AT: e2e at 390 × 844 and 844 × 390:
+  every tab and every God tool inside the view and hit-testable at its centre, no label truncated (scrollWidth
+  ≤ clientWidth of each), a tap on each opens it.
+- [ ] 7.170 The air list tells wings apart: each row names its wing and its base or place, on at most two lines
+  (critic runs 20–21: Germany's 28 rows read "Fighter group at an airbase · no mission", four lines, no base;
+  `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e playing Germany on 1938 at 1600 × 900: 28 of 28 rows have
+  distinct text, each names a base or place, each row ≤ 2 lines high.
+- [ ] 7.171 On touch, a long press on a foreign nation opens the same nation menu (declare war and the rest) as a
+  click does with the mouse (critic runs 20–21, `critic/c20_pt_touch.json`; ADR-771). AT: e2e with touch at
+  390 × 844, playing Germany: a long press on Poland's land opens its menu (1 of 1), "Declare war" there
+  starts the war; a long press on own land still box-selects as before.
 - [ ] 7.162 The DONE condition's runs on the HEAD after 7.161 (the last soak was 2026-10-16, the last full
   sweep 2026-10-19): `npm run check:full` (green but for `knownRed.json`), a 30-minute `npm run soak` of the
   1938 scenario, a sweep of 10+ unseen seeds over decades, the performance budgets (`npm run bench`).
