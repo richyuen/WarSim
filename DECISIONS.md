@@ -167,6 +167,21 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-777 · 2026-10-31 · accepted (the user's decision) — PLAN 7.174: units are countryballs by default; Classic is a setting
+
+- **Context.** The user asked for every unit to look like a countryball (a circle of its nation's flag with eyes,
+  animated) by default, with an option back to the look of today. Units are drawn four ways: T0 counters and T1
+  markers on a Canvas2D overlay, T2 sprites and T3 figures by one instanced WebGL draw of tinted silhouettes,
+  turned to their facing; planes in flight by `sorties.ts`. Of 181 e2e specs 146 read pixels of the classic look.
+- **Options put to the user:** the class by props or by size alone; every level or T2/T3 only; at T3 a ball a
+  figure or one ball an element; file the task or not. **Chosen:** props; every level; one ball an element; filed.
+- **Decision.** `Settings.unitLook`, default 'balls'. Balls are upright and mirror to their facing (the eyes show
+  it); the flag comes from a texture of every nation's flag, so the one draw call stays. Classic draws as before
+  and is the look the existing pixel specs are pinned to (Playwright's `storageState`); the balls get specs of
+  their own. All of it is view: no sim input, the pin unchanged.
+- **Consequences.** The critic plays the default and judges the balls' readability. The T3 figures (ADR-69,
+  ADR-80) and the turrets (PLAN 3.6a) stay Classic's; in ball mode an element is one ball at T2 and T3.
+
 ### ADR-776 · 2026-10-31 · accepted — PLAN 7.173: at war, full suppression keeps the war's reserve; the pin moves
 
 - **Context.** The 762u sweep (1481–1490) broke up on 5 of 10 seeds, against 10 of 10 on 741–750 (727d,

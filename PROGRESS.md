@@ -25002,3 +25002,10 @@ No rule changed and nothing on screen changed. One task came out of it.
   revolting again and again; built up over the landing work 7.46c–7.90d, the largest step PLAN 7.69 (`91d596b8`).
   Fixed in `71650e6e` (ADR-776).
 - **Next:** PLAN 7.5.
+
+## 2026-10-31 — PLAN 7.174 filed: countryball units by default (the user's request)
+
+- **Filed:** PLAN 7.174a–g and ADR-777: every unit a countryball (its flag in a circle, eyes, animated) at every
+  level, the class shown by props, one ball an element at T3; a "Unit look" setting back to Classic, which the
+  existing pixel specs are pinned to. View only, no sim input.
+- **Next:** PLAN 7.174a.

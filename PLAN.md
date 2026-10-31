@@ -33,6 +33,39 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
+- [ ] 7.174 Countryball units by default (the user's request, 2026-10-31; ADR-777): every unit drawn as a
+  countryball, a circle filled with its nation's flag, with eyes, animated; a setting turns back to the
+  look of today ("Classic"). View only: no sim input, the seed-99 pin unchanged by every part.
+  - [ ] 7.174a The setting. `Settings.unitLook` ('balls' | 'classic', key `warsim.unitLook`, default 'balls'), a
+    row in `SettingsPanel.tsx`, applied through `Settings.apply()` to `MapView`; Classic draws as HEAD does.
+    Playwright's config pins Classic (`use.storageState`), so the pixel specs keep the look they measure; specs of
+    the balls set 'balls' themselves. AT: unit test of the setting's load (default 'balls', a bad value falls back);
+    `settings1938` e2e: the choice switches the look at once and survives a reload; the full e2e run green with
+    Classic pinned (a config every spec stands on: one full run).
+  - [ ] 7.174b The flags on the GPU. One texture of every nation's flag (`FlagStore.pixelsOf`, 36×24 a slot),
+    rebuilt when `FlagStore.version` moves or a nation is founded, and each element instance's slot beside its
+    tint. AT: unit test: each living nation of the 1938 start and of a world after a forced revolt has a slot;
+    the texel at a slot's middle equals its flag's; a painted flag is in the texture on the next frame.
+  - [ ] 7.174c The ball at T2 and T3 (the user's choice: one ball per element at T3, not its figures). A second
+    program of `ProxyRenderer` (SPEC §8's two-program precedent, no branch in the classic one): a disc filled with
+    the flag, shaded round, a dark outline, two white eyes; upright, mirrored left or right by its facing, the eyes
+    toward it; under a few px a flag dot without eyes (the `uSmall` mix). At T3 the element is one ball sized to
+    its footprint; no turrets or wakes in ball mode. AT: e2e on a 1938 fight at 100 and 15 m/px: inside each sampled
+    element's ball the flag's colours, the outline at its edge, eye whites where the eyes are; one units draw call
+    as Classic; bench P frame time within 10 % of Classic's.
+  - [ ] 7.174d The class by props (the user's choice): infantry a helmet, tanks treads and a barrel (turning as the
+    turret did), guns a barrel and wheels, ships the ball in a hull, planes wings. AT: e2e evidence of each class
+    at T2 and T3 (`docs/evidence/7.174/`); each class's prop pixels found by its ball.
+  - [ ] 7.174e Animation, on the render clock only (nothing of it sim state): a bob on the march (the walk phase,
+    `marchFraction`), blinks at a hashed phase, angry eyes in contact, a flinch when hit (`hit`), ✕ eyes then a
+    fade where destroyed. AT: unit tests of the pure functions (phase → bob, state → eyes); a recorded clip in the
+    evidence; two frames of one ball 0.3 s apart on the march differ in its place.
+  - [ ] 7.174f T0, T1 and the sky (the user's choice: every level). Counters and markers as balls of the flag
+    with eyes, keeping the number, the pips, "×n" and the engaged ring; sorties as winged balls; the sea battles'
+    marks as they are. AT: e2e at 3000 and 800 m/px: a counter and a marker are discs of their flag's colours; a
+    click on a ball opens its formation's panel as on Classic's marker; `sortie` e2e finds a winged ball where the
+    sortie is.
+  - [ ] 7.174g SPEC §8: the ball look in the Forces column and a note of the setting. AT: parity green.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
