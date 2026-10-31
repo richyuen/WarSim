@@ -24990,3 +24990,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   early (years 1–15) 174 → 113. A variant without the peace reserve read no better. Unit test in `economicAi.test.ts`.
   Pin b22bcdd1 → dc41c283. Gate green.
 - **Next:** the AT sweep, seeds 1491–1500 × 50 years.
+
+## 2026-10-31 — PLAN 7.173: the AT sweep on 1491–1500, no break-up 10 of 10 (done)
+
+- **Sweep** (`npm run sweep -- --first 1491 --tag 773`, on 71650e6e; `docs/sweeps/2026-10-31-sweep-773.md`, copy in
+  `docs/evidence/7.173/`): no break-up **10 of 10** (the living at most × 1.09 of their earlier most; 1481–1490 5 of 10,
+  up to × 1.36). The other judged criteria not worse than 1481–1490's: limits 9 of 10 (7 of 10; 1494's largest income
+  42.1 %, over 40 %), riser 10 of 10, faller 10 of 10; land moving in the last 5 years 37.3–75.0 %, ≥ 1 % on 10 of 10.
+  Reported, not judged: no stasis 8 of 10 (10 of 10; 1497 and 1500 at 20 years). The AT met; 7.173 ticked.
+- **Cause and commit:** the treasuries of the great powers at war under full suppression's bar, the far core land
+  revolting again and again; built up over the landing work 7.46c–7.90d, the largest step PLAN 7.69 (`91d596b8`).
+  Fixed in `71650e6e` (ADR-776).
+- **Next:** PLAN 7.5.

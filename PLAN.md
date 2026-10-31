@@ -33,13 +33,6 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
-- [ ] 7.173 The living nations stop outgrowing their own past late in the game: the sweep's "no break-up" (the
-  living nations never more than 1.1 × the most they were 20 years or more before, ADR-428) holds again (PLAN
-  7.162's sweeps: 4 of 10 on seeds 751–760 and 5 of 10 on 1481–1490, up to × 1.36, against 10 of 10 on 741–750 of
-  2026-10-19, at most × 0.97; `docs/evidence/7.162/sweep-*.md`). First find what adds the nations (revolts, a
-  break-away, a spawn, a puppet freed) and since which commit, from the sweeps' years over the line and a bisect
-  of the rule; then fix that cause. AT: a sweep of 10 unseen seeds × 50 years, no break-up on ≥ 8 of 10, the
-  other judged criteria not worse than 1481–1490's, the cause and its commit in PROGRESS.md.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 
@@ -430,3 +423,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.171 On touch, a long press on a foreign nation opens the same nation menu (declare war and the rest) as a […]
 - [x] 7.172 A land formation's "To its fight" frames the formation and its own fight: the formation on screen […]
 - [x] 7.162 The DONE condition's runs on the HEAD after 7.161 (the last soak was 2026-10-16, the last full […]
+- [x] 7.173 The living nations stop outgrowing their own past late in the game: the sweep's "no break-up" (the […]

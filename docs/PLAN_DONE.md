@@ -16605,3 +16605,25 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   AT: soak 30 min, 0 crashes, 0 desyncs; the sweep's last decade with borders moving on 10 of 10 seeds;
   strategic ≥ 60 fps with 100+ nations, tactical ≥ 30 fps at 10,000+ proxies; each figure in PROGRESS.md
   with its file under `docs/evidence/7.162/`.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.173 The living nations stop outgrowing their own past late in the game: the sweep's "no break-up" (the
+  living nations never more than 1.1 × the most they were 20 years or more before, ADR-428) holds again (PLAN
+  7.162's sweeps: 4 of 10 on seeds 751–760 and 5 of 10 on 1481–1490, up to × 1.36, against 10 of 10 on 741–750 of
+  2026-10-19, at most × 0.97; `docs/evidence/7.162/sweep-*.md`). First find what adds the nations (revolts, a
+  break-away, a spawn, a puppet freed) and since which commit, from the sweeps' years over the line and a bisect
+  of the rule; then fix that cause. AT: a sweep of 10 unseen seeds × 50 years, no break-up on ≥ 8 of 10, the
+  other judged criteria not worse than 1481–1490's, the cause and its commit in PROGRESS.md.
