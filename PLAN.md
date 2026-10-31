@@ -33,10 +33,6 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
-- [ ] 7.164 The Actions tab's diplomacy select opens on no nation, not "Afghanistan" one click from "Declare
-  war" (critic runs 20–21, `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e, playing Germany on 1938: the
-  select's value on opening is empty, and "Declare war" is disabled until a nation is chosen (0 wars declared
-  by a click on it with none chosen).
 - [ ] 7.165 God Mode's Breakthrough tells what it did, at peace too, and a God revolt is told as a revolt, not
   a declared war (critic runs 19–21, `critic/c19_k_2203.json`, `critic/c19_q_6421.json`; ADR-771). AT: e2e on
   1938: Breakthrough on a nation at peace shows a message saying why nothing broke through (1 of 1); a God
@@ -460,3 +456,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.160 R20-B1: the formation panel is not the formation the click selected. Playing Germany at a front (seed […]
 - [x] 7.161 The DONE condition's zoom demo: `zoomDemo1938` red here for its history, not the GPU (critic […]
 - [x] 7.163 While playing, a click on an enemy counter at the front opens the enemy's panel (critic run 21, […]
+- [x] 7.164 The Actions tab's diplomacy select opens on no nation, not "Afghanistan" one click from "Declare […]

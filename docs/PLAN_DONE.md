@@ -16401,3 +16401,22 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   what is drawn under the click 12 of 12 on each; where an enemy's counter is drawn there, its panel and nothing
   selected; an own panel without its selection 0 of 24; the clicked enemy's panel ≥ 9 of 12 on 4441 (critic: 5)
   and ≥ 1 on 6827 (critic: 0); `formationClickPanel1938` (own clicks 12 of 12) green, aimed at the drawn marker.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.164 The Actions tab's diplomacy select opens on no nation, not "Afghanistan" one click from "Declare
+  war" (critic runs 20–21, `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e, playing Germany on 1938: the
+  select's value on opening is empty, and "Declare war" is disabled until a nation is chosen (0 wars declared
+  by a click on it with none chosen).

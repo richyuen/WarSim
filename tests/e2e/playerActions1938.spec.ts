@@ -280,3 +280,39 @@ test('God Mode places any unit of the played nation at once: a division, a fleet
   await expect(page.getByTestId(`act-place-${panzer}`)).toHaveCount(0);
   expect(await page.evaluate(() => window.__warsim!.player!.placing.value)).toBeNull();
 });
+
+// PLAN 7.164 AT (critic runs 20–21): the Actions tab's diplomacy list, and God Mode's, open on no
+// nation, not on the first by name ("Afghanistan", one click from "Declare war" or "Annex"); the
+// buttons that act on the nation chosen wait for one.
+test('the diplomacy lists open on no nation: war, alliance and annexation wait for a choice', async ({ page }) => {
+  test.setTimeout(120_000);
+  const GER = id('GER');
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto('/?scenario=1938&paused=1&seed=1938');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const wars = async (): Promise<number> => (await inspect(page)).wars.filter((w) => w.attackers.includes(GER)).length;
+  const before = await wars();
+  await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
+  await page.getByTestId('take-control').click();
+  await page.getByTestId('tab-actions').click();
+  await expect(page.getByTestId('act-target')).toHaveValue('0');
+  await expect(page.getByTestId('act-target').locator('option:checked')).toHaveText('Choose a nation…');
+  for (const b of ['act-war', 'act-ally']) await expect(page.getByTestId(b), b).toBeDisabled();
+  // A click on the disabled button declares nothing.
+  await page.getByTestId('act-war').click({ force: true });
+  await page.evaluate(() => window.__warsim!.sim.step(24));
+  expect(await wars()).toBe(before);
+  // Once chosen, the war is declared.
+  await page.getByTestId('act-target').selectOption({ label: 'Poland' });
+  await expect(page.getByTestId('act-war')).toBeEnabled();
+  await page.getByTestId('act-war').click();
+  await expect.poll(wars).toBe(before + 1);
+
+  // God Mode's list the same.
+  await page.getByTestId('god-btn').click();
+  await page.getByTestId('tab-god').click();
+  await expect(page.getByTestId('god-target')).toHaveValue('0');
+  for (const b of ['god-war', 'god-ally', 'god-puppet', 'god-annex', 'god-donate']) await expect(page.getByTestId(b), b).toBeDisabled();
+  await page.getByTestId('god-target').selectOption({ label: 'Italy' });
+  for (const b of ['god-war', 'god-ally', 'god-puppet', 'god-annex', 'god-donate']) await expect(page.getByTestId(b), b).toBeEnabled();
+});

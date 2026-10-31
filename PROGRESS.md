@@ -24821,3 +24821,15 @@ No rule changed and nothing on screen changed. One task came out of it.
 - e2e by hand: enemyClickPanel1938, formationClickPanel1938, player1938, formationPanel1938, playerActions1938,
   airOrders1938 (22 passed).
 - **Next:** PLAN 7.164.
+
+## 2026-10-31 — PLAN 7.164: the diplomacy lists open on no nation
+
+- The Actions tab's list (and God Mode's, the same cause: a target that fell back to the first nation by name)
+  opens on "Choose a nation…"; Declare war and Propose alliance (God Mode: war, ally, puppet, annex, donate) are
+  disabled until a nation is chosen. `act.chooseNation`.
+- AT: `playerActions1938` "the diplomacy lists open on no nation": value 0 on opening, buttons disabled, a forced
+  click declares 0 wars, a chosen nation's war declared; God Mode's buttons the same. Red without the change
+  (opened on nation 58). UI only.
+- e2e by hand: playerActions1938, godPanelMore1938, godUi1938, scenarioEditor1938, sound1938, ticker1938
+  (22 passed).
+- **Next:** PLAN 7.165.

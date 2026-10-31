@@ -61,7 +61,8 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
   const [target, setTarget] = useState(0);
-  const tgt = target !== 0 && others.some((o) => o.id === target) ? target : (others[0]?.id ?? 0);
+  // No nation until one is chosen (PLAN 7.164): the list opened on the first by name, one click from war.
+  const tgt = target !== 0 && others.some((o) => o.id === target) ? target : 0;
   const myWars = wars.filter((w) => w.attackers.includes(n) || w.defenders.includes(n));
   const nameOf = (id: number): string => {
     const o = nations.find((x) => x.id === id);
@@ -87,6 +88,9 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
       <div class="panel-sub">{t('god.diplomacy')}</div>
       <div class="god-row">
         <select data-testid="act-target" value={tgt} onChange={(e) => setTarget(Number((e.currentTarget as HTMLSelectElement).value))}>
+          <option value={0} disabled>
+            {t('act.chooseNation')}
+          </option>
           {others.map((o) => (
             <option key={o.id} value={o.id}>
               {displayName(o.name)}
@@ -95,10 +99,10 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
         </select>
       </div>
       <div class="god-row">
-        <button type="button" class="god-btn" data-testid="act-war" onClick={() => onCommand({ kind: 'declareWar', attacker: n, defender: tgt })}>
+        <button type="button" class="god-btn" data-testid="act-war" disabled={tgt === 0} onClick={() => onCommand({ kind: 'declareWar', attacker: n, defender: tgt })}>
           {t('god.war')}
         </button>
-        <button type="button" class="god-btn" data-testid="act-ally" onClick={() => onCommand({ kind: 'proposeAlliance', from: n, to: tgt })}>
+        <button type="button" class="god-btn" data-testid="act-ally" disabled={tgt === 0} onClick={() => onCommand({ kind: 'proposeAlliance', from: n, to: tgt })}>
           {t('act.proposeAlliance')}
         </button>
       </div>

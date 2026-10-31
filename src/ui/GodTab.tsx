@@ -91,7 +91,8 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, r
   const colorField = useRef<HTMLInputElement>(null);
   const armKill = armed === n;
   const setArmKill = (on: boolean) => setArmed(on ? n : 0);
-  const tgt = target !== 0 && others.some((o) => o.id === target) ? target : (others[0]?.id ?? 0);
+  // No nation until one is chosen (PLAN 7.164): the list opened on the first by name, one click from war or annexation.
+  const tgt = target !== 0 && others.some((o) => o.id === target) ? target : 0;
   // The nation chosen while it is dead: one revived since is no longer in the list.
   const toRevive = dead.some((d) => d.id === revive) ? revive : (dead[0]?.id ?? 0);
   const myWars =wars.filter((w) => w.attackers.includes(n) || w.defenders.includes(n));
@@ -99,8 +100,8 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, r
     const o = nations.find((x) => x.id === id);
     return o ? displayName(o.name) : `#${id}`;
   };
-  const btn = (testid: string, label: string, onClick: () => void, active = false) => (
-    <button type="button" class={active ? 'god-btn active' : 'god-btn'} data-testid={testid} onClick={onClick}>
+  const btn = (testid: string, label: string, onClick: () => void, active = false, disabled = false) => (
+    <button type="button" class={active ? 'god-btn active' : 'god-btn'} data-testid={testid} disabled={disabled} onClick={onClick}>
       {label}
     </button>
   );
@@ -203,6 +204,9 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, r
       <div class="panel-sub">{t('god.diplomacy')}</div>
       <div class="god-row">
         <select data-testid="god-target" value={tgt} onChange={(e) => setTarget(Number((e.currentTarget as HTMLSelectElement).value))}>
+          <option value={0} disabled>
+            {t('act.chooseNation')}
+          </option>
           {others.map((o) => (
             <option key={o.id} value={o.id}>
               {displayName(o.name)}
@@ -211,13 +215,15 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, r
         </select>
       </div>
       <div class="god-row">
-        {btn('god-war', t('god.war'), () => onCommand({ kind: 'declareWar', attacker: n, defender: tgt }))}
+        {btn('god-war', t('god.war'), () => onCommand({ kind: 'declareWar', attacker: n, defender: tgt }), false, tgt === 0)}
         {btn('god-ally', t('god.ally'), () =>
           onCommand(nation.alliance ? { kind: 'joinAlliance', nation: tgt, alliance: nation.alliance.id } : { kind: 'createAlliance', leader: n, members: [tgt], nameKey: 'alliance.defensive' }),
+          false,
+          tgt === 0,
         )}
-        {btn('god-puppet', t('god.puppet'), () => onCommand({ kind: 'createPuppet', overlord: n, subject: tgt, autonomy: 50 }))}
+        {btn('god-puppet', t('god.puppet'), () => onCommand({ kind: 'createPuppet', overlord: n, subject: tgt, autonomy: 50 }), false, tgt === 0)}
         {nation.alliance ? btn('god-leave', t('god.leave'), () => onCommand({ kind: 'leaveAlliance', nation: n })) : null}
-        {btn('god-annex', t('god.annex'), () => onCommand({ kind: 'annexNation', annexer: n, target: tgt }))}
+        {btn('god-annex', t('god.annex'), () => onCommand({ kind: 'annexNation', annexer: n, target: tgt }), false, tgt === 0)}
       </div>
       <div class="god-row">
         <input ref={giftField} data-testid="god-donate-input" inputMode="numeric" value={giftText} placeholder={t('god.donateAmount')} onInput={(e) => setGiftTyped({ nation: n, value: (e.currentTarget as HTMLInputElement).value })} />
@@ -226,7 +232,7 @@ export function GodTab({ nation, nations, wars, dead, aiEnabled, nukesEnabled, r
           const v = Number(typedNow);
           if (typedNow.trim() !== '' && Number.isFinite(v) && v > 0) onCommand({ kind: 'donateGold', from: n, to: tgt, amount: v });
           setGiftTyped({ nation: n, value: '' });
-        })}
+        }, false, tgt === 0)}
       </div>
       {myWars.map((w) => (
         <div class="god-row" key={w.id}>
