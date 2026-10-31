@@ -134,6 +134,11 @@ export const TANK_ELEMENT_MIN_PX = 8;
 const ELEMENT_FRAME_MIN_PX: readonly number[] = Array.from({ length: ATLAS_FRAMES }, (_, f) =>
   isShipFrame(f) ? shipElementMinPx(f) : turretOf(f) >= 0 || f === Frame.tankSmall ? TANK_ELEMENT_MIN_PX : 0,
 );
+/**
+ * The same for the countryballs (PLAN 7.174d): a turret, drawn as its hull's barrel, is its hull's
+ * size, so the barrel reaches out of that ball.
+ */
+const BALL_FRAME_MIN_PX: readonly number[] = ELEMENT_FRAME_MIN_PX.map((v, f) => (f === Frame.turretLight || f === Frame.turretMedium || f === Frame.turretHeavy ? TANK_ELEMENT_MIN_PX : v));
 /** Where the camera goes for an event of the ticker (`showPlace`, PLAN 3.12c): this many km across the view, a country and its neighbours. */
 const PLACE_VIEW_KM = 1500;
 /** T3 (PLAN 2.6): a figure is at least this many px, so that a block reads at 30 m/px. */
@@ -1180,6 +1185,15 @@ export class MapView {
   elementFlagSlot(i: number): number {
     return this.elementProxies.flagSlots[i]!;
   }
+  /** The aim of element `i`'s turret as last uploaded, radians, or null for an element without one (PLAN 7.174d; tests). */
+  elementTurretAim(i: number): number | null {
+    for (let k = 0; k < this.elementTurrets; k++) if (this.elementTurretOwner[k] === i) return this.elementProxies.data[(this.elementCount + k) * PROXY_STRIDE + 4]!;
+    return null;
+  }
+  /** The side of element `i`'s ball in CSS px, by the ball program's rule (PLAN 7.174d; tests). */
+  elementBallPx(i: number): number {
+    return Math.max(ELEMENT_CELLS * sizeScale * this.controller.cam.scale, ELEMENT_MIN_PX, BALL_FRAME_MIN_PX[this.elementFrame(i)]!) * this.unitScale;
+  }
   /** Whether element sprite `i` was uploaded as walking (tests). */
   elementWalks(i: number): boolean {
     return this.elementProxies.data[i * PROXY_STRIDE + 6]! % 1 > 0.25;
@@ -1271,7 +1285,7 @@ export class MapView {
     this.elementTurretOwner = new Uint32Array(hulls);
     const withTurrets = appendTurrets(p.data, p.colors, e.count, this.elementTurretOwner);
     const all = appendWakes(p.data, p.colors, e.count, withTurrets);
-    // Turrets and wakes are no ball's (PLAN 7.174c draws neither in that look).
+    // Turrets and wakes have no flag (PLAN 7.174d draws a turret as its hull's barrel, no wake).
     p.flagSlots.fill(NO_FLAG_SLOT, e.count, all);
     this.elementWakes = all - withTurrets;
     p.upload(all);
@@ -1601,9 +1615,10 @@ export class MapView {
     const flags = this.flagTexture;
     if (flags) {
       // Countryballs (PLAN 7.174c): one ball an element at T2 and at T3 (the user's choice: not its
-      // figures), so the close handover does not fade the balls; turrets and wakes are none.
+      // figures), so the close handover does not fade the balls; a tank's turret is its barrel
+      // (PLAN 7.174d), the wakes after the turrets are not drawn.
       if (this.elementCount === 0) this.proxies.drawBalls(cam, dpr, t, this.proxies.count, flags, this.flagAtlas.height, 8, offs, this.unitScale, unitsIn, STAND_IN_MAX_PX);
-      else this.elementProxies.drawBalls(cam, dpr, t, this.elementCount, flags, this.flagAtlas.height, ELEMENT_MIN_PX, offs, this.unitScale, unitsIn, undefined, ELEMENT_FRAME_MIN_PX);
+      else this.elementProxies.drawBalls(cam, dpr, t, this.elementCount + this.elementTurrets, flags, this.flagAtlas.height, ELEMENT_MIN_PX, offs, this.unitScale, unitsIn, undefined, BALL_FRAME_MIN_PX);
     } else if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn, STAND_IN_MAX_PX);
     else {
       // Where a sprite is too small for a hull, a tank is its small mark (PLAN 3.6e3b).

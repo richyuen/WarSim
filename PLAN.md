@@ -39,9 +39,7 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   - [x] 7.174a The setting. `Settings.unitLook` ('balls' | 'classic', key `warsim.unitLook`), a row in […]
   - [x] 7.174b The flags on the GPU. One texture of every nation's flag (`FlagStore.pixelsOf`, 36×24 a slot), […]
   - [x] 7.174c The ball at T2 and T3 (the user's choice: one ball per element at T3, not its figures). A second […]
-  - [ ] 7.174d The class by props (the user's choice): infantry a helmet, tanks treads and a barrel (turning as the
-    turret did), guns a barrel and wheels, ships the ball in a hull, planes wings. AT: e2e evidence of each class
-    at T2 and T3 (`docs/evidence/7.174/`); each class's prop pixels found by its ball.
+  - [x] 7.174d The class by props (the user's choice): infantry a helmet, tanks treads and a barrel (turning as the […]
   - [ ] 7.174e Animation, on the render clock only (nothing of it sim state): a bob on the march (the walk phase,
     `marchFraction`), blinks at a hashed phase, angry eyes in contact, a flinch when hit (`hit`), ✕ eyes then a
     fade where destroyed. AT: unit tests of the pure functions (phase → bob, state → eyes); a recorded clip in the

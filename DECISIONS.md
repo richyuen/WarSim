@@ -167,6 +167,20 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-778 · 2026-10-31 · proposed (the user's decision) — PLAN 7.174d: the props' GPU cost against 7.174c's bar
+
+- **Context.** PLAN 7.174c's AT set its own bar: bench B's frame GPU time within 10 % of Classic's (met then:
+  30k 0.408 ms against 0.390–0.426). The props of 7.174d (the user's choice) draw past the ball: quads by class
+  of 1.12 (infantry) to 1.9 (ships) of the ball's side, and more shading. Bench B on the RTX 4070 Ti, three runs
+  each, after a quad by class (a quad of 1.75 for all: 30k frame 0.63 ms) and trimming the eyes and road wheels
+  (flat, 0.57 → 0.56): frame 10k 0.349 ms Classic, 0.388 balls (+11 %); 30k 0.39–0.42 Classic, 0.554–0.569 balls
+  (+37 %); the units' draw alone 0.015 → 0.055 ms and 0.06 → 0.18 ms. SPEC §10's budget, T2 with 10k proxies
+  ≤ 2.0 ms GPU at 1080p on the bench machine: 0.39 ms.
+- **Options:** (a) the bar is SPEC's budget (T2 with 10k proxies ≤ 2.0 ms GPU), not 10 % of Classic (recommended:
+  the budget holds five times over); (b) cheaper props: drawn only from a larger ball (T3) or fewer of them, to
+  get back within 10 %; (c) keep the 10 % bar and file the props' cost as a numbered task.
+- **Until decided:** 7.174d is ticked on its own AT (the props' pixels); 7.174c's bar is not met at HEAD.
+
 ### ADR-777 · 2026-10-31 · accepted (the user's decision) — PLAN 7.174: units are countryballs by default; Classic is a setting
 
 - **Context.** The user asked for every unit to look like a countryball (a circle of its nation's flag with eyes,

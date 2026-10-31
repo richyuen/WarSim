@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
-import { BALL_R, ballShade, EYES_FULL_PX, EYES_NONE_PX, eyeCentres, OUTLINE_SHARE } from '../../src/render/units/ballShader';
+import { BALL_R, BallClass, ballClassOf, ballShade, EYES_FULL_PX, EYES_NONE_PX, eyeCentres, OUTLINE_SHARE, propPoint } from '../../src/render/units/ballShader';
 import { FLAG_ATLAS_COLS, FLAG_PAD, FLAG_SLOT_H, FLAG_SLOT_W } from '../../src/render/units/flagAtlas';
 import { FLAG_H, FLAG_W } from '../../src/shared/flagPixels';
 import { FormationFlag } from '../../src/shared/protocol';
@@ -204,7 +204,7 @@ test('countryballs at T2 and T3: the flag in the ball, the outline, the eyes tow
       // inside the band where the shader blends the rim and the outline (a device px of it each).
       const inner = BALL_R - OUTLINE_SHARE - 2 / b.half;
       const dotEyes = eyeCentres(b.facing).filter(([x, y]) => Math.hypot(x, y) < inner);
-      const points: [number, number][] = size >= EYES_FULL_PX ? [[0.45 * away, 0.45], [0.45 * away, -0.3], [0, 0.55]] : size <= EYES_NONE_PX ? [[0, 0], ...dotEyes] : [[0, 0]];
+      const points: [number, number][] = size >= EYES_FULL_PX ? [[0.45 * away, 0.45], [0.45 * away, -0.15], [0, 0.55]] : size <= EYES_NONE_PX ? [[0, 0], ...dotEyes] : [[0, 0]];
       for (const [x, y] of points) {
         const { rgb, p } = at(b, x, y);
         const d = dist(rgb, flagAt(b, p));
@@ -238,5 +238,109 @@ test('countryballs at T2 and T3: the flag in the ball, the outline, the eyes tow
     await page.evaluate(() => window.__warsim!.settings.setUnitLook('balls'));
     console.log(`${m} m/px: instanced draws in a frame, balls ${balls}, classic ${classic}`);
     expect(balls, `${m} m/px`).toBe(classic);
+  }
+});
+
+// PLAN 7.174d (ADR-777): the class by props. A German panzer and infantry division west of Berlin
+// and a battle squadron in the Baltic, at 15 m/px (T3) and 60 m/px (T2, where a ball is still over
+// EYES_FULL_PX): for each ball whose prop point (`propPoint`) is clear of every other element's
+// ball, the pixel there is the prop's colour. Infantry's helmet, a tank's treads and its turret's
+// barrel (along the turret's aim, as the classic turret turned), a gun's barrel, a ship's hull.
+test('countryballs wear their class: helmet, treads and barrel, the gun, the hull', async ({ page }, info) => {
+  test.setTimeout(300_000);
+  await open(page);
+  await page.waitForFunction(() => window.__warsim!.hud.templates.value.length > 0, null, { timeout: 30_000 });
+  const GER = id('GER');
+  const [bx, by] = cellOf(12.6, 52.5, W, H);
+  const [sx, sy] = cellOf(14.5, 54.8, W, H);
+  await page.evaluate(
+    async ({ GER, bx, by, sx, sy }) => {
+      const { sim, view, hud } = window.__warsim!;
+      const t = hud.templates.value;
+      const idx = (k: string): number => t.findIndex((x) => x.nameKey === k);
+      // After the first hour: the month's start at tick 0 lays up a fleet (as hullsSea1938 does).
+      await sim.step(1);
+      sim.command({ kind: 'spawnFormation', nation: GER, x: bx - 0.4, y: by, strength: 0, template: idx('template.panzer_div') });
+      sim.command({ kind: 'spawnFormation', nation: GER, x: bx + 0.4, y: by, strength: 0, template: idx('template.infantry_div') });
+      sim.command({ kind: 'spawnFleet', nation: GER, x: sx, y: sy, template: idx('template.battle_squadron') });
+      const tick = (await sim.step(1)).tick;
+      await new Promise<void>((done) => {
+        const wait = (): void => (view!.lastTick === tick ? done() : void setTimeout(wait, 5));
+        wait();
+      });
+    },
+    { GER, bx, by, sx, sy },
+  );
+  const found = new Map<number, { checked: number; ok: number; worst: number }>();
+  for (const [name, x, y] of [
+    ['panzer', bx - 0.4, by],
+    ['infantry', bx + 0.4, by],
+    ['fleet', sx, sy],
+  ] as const) {
+    for (const m of [15, 60]) {
+      await page.evaluate(({ x, y, m }) => {
+        const v = window.__warsim!.view!;
+        v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+      }, { x, y, m });
+      await page.waitForFunction(() => (window.__warsim!.view!.subscription?.tier ?? 0) >= 2 && window.__warsim!.view!.elementCount > 0, null, { timeout: 20_000 });
+      await page.waitForTimeout(1500);
+      // The elements on the screen: where, how big, what, which way.
+      const els = await page.evaluate(() => {
+        const v = window.__warsim!.view!;
+        const canvas = document.getElementById('map') as HTMLCanvasElement;
+        const cam = v.controller.cam;
+        const [vw, vh] = [canvas.clientWidth, canvas.clientHeight];
+        const out: { sx: number; sy: number; px: number; frame: number; facing: number; aim: number | null }[] = [];
+        for (let i = 0; i < v.elementCount; i++) out.push({ sx: (v.elementX[i]! - cam.cx) * cam.scale + vw / 2, sy: (v.elementY[i]! - cam.cy) * cam.scale + vh / 2, px: v.elementBallPx(i), frame: v.elementFrame(i), facing: v.elementFacing(i), aim: v.elementTurretAim(i) });
+        return { out, dpr: canvas.width / vw, vw, vh };
+      });
+      // Each ball's prop points (the turret's too), where no other element's ball is.
+      const probes: { cls: number; x: number; y: number; rgb: readonly number[] }[] = [];
+      for (const [k, e] of els.out.entries()) {
+        if (e.px < EYES_FULL_PX) continue;
+        const cls = ballClassOf(e.frame);
+        const props = [{ cls, pt: propPoint(cls, e.facing) }];
+        if (e.aim !== null) props.push({ cls: BallClass.turret, pt: propPoint(BallClass.turret, e.aim) });
+        for (const { cls: c, pt } of props) {
+          if (!pt) continue;
+          const x = e.sx + (pt.p[0] * e.px) / 2;
+          const y = e.sy + (pt.p[1] * e.px) / 2;
+          if (x < 4 || y < 4 || x > els.vw - 4 || y > els.vh - 4) continue;
+          // A turret's barrel is drawn over every ball (the turrets come after the elements).
+          const clear = c === BallClass.turret || els.out.every((o, j) => j === k || Math.hypot(o.sx - x, o.sy - y) > (o.px / 2) * BALL_R + 3);
+          if (clear) probes.push({ cls: c, x, y, rgb: pt.rgb });
+        }
+      }
+      const got = await page.evaluate(
+        ({ probes, dpr }) => {
+          const canvas = document.getElementById('map') as HTMLCanvasElement;
+          const gl = canvas.getContext('webgl2')!;
+          window.__warsim!.view!.draw(performance.now());
+          const out = new Uint8Array(4);
+          return probes.map((p) => {
+            gl.readPixels(Math.floor(p.x * dpr), canvas.height - 1 - Math.floor(p.y * dpr), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, out);
+            return [out[0]!, out[1]!, out[2]!];
+          });
+        },
+        { probes, dpr: els.dpr },
+      );
+      await page.screenshot({ path: path.join(info.outputPath(), `props-${name}-${m}m.png`) });
+      probes.forEach((p, i) => {
+        const d = dist(got[i]!, p.rgb.map((c) => c * 255));
+        const f = found.get(p.cls) ?? { checked: 0, ok: 0, worst: 0 };
+        f.checked++;
+        if (d <= 40) f.ok++;
+        else console.log(`${name} at ${m} m/px, class ${p.cls}: (${p.x.toFixed(1)}, ${p.y.toFixed(1)}) got ${got[i]!.join(',')}, want ${p.rgb.map((c) => Math.round(c * 255)).join(',')}`);
+        f.worst = Math.max(f.worst, d);
+        found.set(p.cls, f);
+      });
+    }
+  }
+  const name = (c: number): string => Object.entries(BallClass).find(([, v]) => v === c)![0];
+  for (const [c, f] of [...found].sort((a, b) => a[0] - b[0])) console.log(`${name(c)}: prop colour at ${f.ok} of ${f.checked} points (worst ${f.worst.toFixed(0)})`);
+  for (const c of [BallClass.infantry, BallClass.tank, BallClass.turret, BallClass.gun, BallClass.ship]) {
+    const f = found.get(c);
+    expect(f?.checked ?? 0, `${name(c)}: points read`).toBeGreaterThanOrEqual(3);
+    expect(f!.ok, `${name(c)}: the prop's colour`).toBe(f!.checked);
   }
 });

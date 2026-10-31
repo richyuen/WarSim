@@ -25056,3 +25056,21 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Left for later parts:** at T3 the fire effects still start from the (undrawn) figures' places, inside each
   ball's footprint; the balls do not yet move (7.174e).
 - **Next:** PLAN 7.174d.
+
+## 2026-10-31 — PLAN 7.174d: the class by props (done; ADR-778 waits on the user)
+
+- **Built (`ballShader.ts`):** props by class (`ballClassOf`): a helmet on infantry (in front), treads with road
+  wheels under tanks and half-tracks (behind), a gun's barrel and wheel (behind), a ship's ball in a hull (in front,
+  bow toward the facing), wings on planes (behind). A tank's turret instance, which turns as the classic turret did,
+  is drawn as a barrel out of its hull's ball, over every ball; it takes its hull's least size (`BALL_FRAME_MIN_PX`).
+  Each class's quad holds its props and no more (`BALL_QUAD`, 1.12–1.9 of the ball); props and their quad go with
+  the eyes (6–11 px). Barrels thicker than first drawn (half 0.12) with a thinner outline, a prop's outline at most
+  0.1 ball: a 0.09 barrel and a small hull were all edge.
+- **AT:** `countryballs1938` "wear their class": a panzer and an infantry division west of Berlin and a battle
+  squadron in the Baltic, at 15 and 60 m/px, each prop point clear of other balls: helmet 32 of 32, treads 34 of 34,
+  the turret's barrel along its aim 34 of 34, the gun's barrel 6 of 6, the hull 18 of 18, each its colour within 40.
+  No aircraft element in the 1938 world to read (planes in flight are 7.174f's). `tests/unit/ballShader.test.ts`:
+  every frame's class, each quad holds its props within 0.25. Evidence `docs/evidence/7.174/d-*.png`.
+- **Cost:** bench B, RTX 4070 Ti, three runs each: frame 10k 0.349 ms Classic, 0.388 balls; 30k 0.39–0.42, 0.554–0.569;
+  under SPEC's 2.0 ms for 10k, over 7.174c's own 10 % bar. ADR-778 (proposed) puts the bar to the user.
+- **Next:** PLAN 7.174e.

@@ -16696,3 +16696,23 @@ Of 7.174 (open in PLAN.md):
     element's ball the flag's colours, the outline at its edge, eye whites where the eyes are; one units draw call
     as Classic; bench B's frame time within 10 % of Classic's (bench B, the unit proxies: "P" named the precision
     bench by mistake, amended 2026-10-31).
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.174 (open in PLAN.md):
+
+  - [x] 7.174d The class by props (the user's choice): infantry a helmet, tanks treads and a barrel (turning as the
+    turret did), guns a barrel and wheels, ships the ball in a hull, planes wings. AT: e2e evidence of each class
+    at T2 and T3 (`docs/evidence/7.174/`); each class's prop pixels found by its ball.
