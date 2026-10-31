@@ -2,6 +2,7 @@ import { t } from './i18n';
 import { NewGameForm } from './NewGameForm';
 import type { GameOptions } from '../shared/gameOptions';
 import type { MapSize } from '../shared/scenarios';
+import { UNIT_LOOKS, type UnitLook } from '../shared/unitLooks';
 
 export interface SettingsPanelProps {
   uiScale: number;
@@ -14,6 +15,8 @@ export interface SettingsPanelProps {
   volumes: readonly number[];
   muted: boolean;
   nukePause: boolean;
+  /** How units are drawn (PLAN 7.174): countryballs or classic. */
+  unitLook: UnitLook;
   seed: number;
   /** This game's options (the new-game form starts from them). */
   options: GameOptions;
@@ -27,6 +30,7 @@ export interface SettingsPanelProps {
   onVolume: (v: number) => void;
   onMuted: (v: boolean) => void;
   onNukePause: (v: boolean) => void;
+  onUnitLook: (v: UnitLook) => void;
   onScreenshot: () => void;
   /** Starts a new game of this scenario with `seed` and new-game options (PLAN 1.39b1). */
   onNewGame: (seed: number, options: GameOptions) => void;
@@ -36,12 +40,12 @@ export interface SettingsPanelProps {
 }
 
 /**
- * Settings (PLAN 1.39a): UI size, unit size, the sound's volume and mute (PLAN 3.12d),
+ * Settings (PLAN 1.39a): UI size, unit size, the units' look (PLAN 7.174), the sound's volume and mute (PLAN 3.12d),
  * screenshot (also F2), the way back to the title screen, and the seed with a new game (or a
  * random seed). Speed and pause persist on their own
  * (bottom bar).
  */
-export function SettingsPanel({ uiScale, unitScale, uiScales, uiOffered, unitScales, volume, volumes, muted, nukePause, seed, options, nationsRange, sizes, defaultSize, onUiScale, onUnitScale, onVolume, onMuted, onNukePause, onScreenshot, onNewGame, onMenu, onClose }: SettingsPanelProps) {
+export function SettingsPanel({ uiScale, unitScale, uiScales, uiOffered, unitScales, volume, volumes, muted, nukePause, unitLook, seed, options, nationsRange, sizes, defaultSize, onUiScale, onUnitScale, onVolume, onMuted, onNukePause, onUnitLook, onScreenshot, onNewGame, onMenu, onClose }: SettingsPanelProps) {
   const pct = (v: number): string => `${Math.round(v * 100)}%`;
   return (
     <aside class="history-panel settings-panel" data-testid="settings-panel">
@@ -67,6 +71,16 @@ export function SettingsPanel({ uiScale, unitScale, uiScales, uiOffered, unitSca
           {unitScales.map((v) => (
             <option key={v} value={v}>
               {pct(v)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label class="form-row">
+        <span class="form-name">{t('settings.unitLook')}</span>
+        <select data-testid="settings-unit-look" value={unitLook} onChange={(e) => onUnitLook((e.currentTarget as HTMLSelectElement).value as UnitLook)}>
+          {UNIT_LOOKS.map((v) => (
+            <option key={v} value={v}>
+              {t(`settings.unitLook.${v}`)}
             </option>
           ))}
         </select>

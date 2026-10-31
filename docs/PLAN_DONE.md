@@ -16627,3 +16627,26 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   break-away, a spawn, a puppet freed) and since which commit, from the sweeps' years over the line and a bisect
   of the rule; then fix that cause. AT: a sweep of 10 unseen seeds × 50 years, no break-up on ≥ 8 of 10, the
   other judged criteria not worse than 1481–1490's, the cause and its commit in PROGRESS.md.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.174 (open in PLAN.md):
+
+  - [x] 7.174a The setting. `Settings.unitLook` ('balls' | 'classic', key `warsim.unitLook`), a row in
+    `SettingsPanel.tsx`, applied through `Settings.apply()` to `MapView`; Classic draws as HEAD does. The default
+    stays 'classic' until 7.174h (amended 2026-10-31, the user's decision: the pin and the full e2e run it costs
+    once, at the end); specs of the balls set 'balls' themselves. AT: unit test of the setting's load (the
+    default, a bad value falls back to it); `settings1938` e2e: the choice switches the look at once and survives
+    a reload.

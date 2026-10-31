@@ -221,6 +221,8 @@ export function App({
           onMuted={(v) => settings.setMuted(v)}
           nukePause={settings.nukePause.value}
           onNukePause={(v) => settings.setNukePause(v)}
+          unitLook={settings.unitLook.value}
+          onUnitLook={(v) => settings.setUnitLook(v)}
           onScreenshot={() => {
             if (view) void saveScreenshot(view, screenshotLabel(hud));
           }}

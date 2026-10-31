@@ -36,12 +36,7 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
 - [ ] 7.174 Countryball units by default (the user's request, 2026-10-31; ADR-777): every unit drawn as a
   countryball, a circle filled with its nation's flag, with eyes, animated; a setting turns back to the
   look of today ("Classic"). View only: no sim input, the seed-99 pin unchanged by every part.
-  - [ ] 7.174a The setting. `Settings.unitLook` ('balls' | 'classic', key `warsim.unitLook`, default 'balls'), a
-    row in `SettingsPanel.tsx`, applied through `Settings.apply()` to `MapView`; Classic draws as HEAD does.
-    Playwright's config pins Classic (`use.storageState`), so the pixel specs keep the look they measure; specs of
-    the balls set 'balls' themselves. AT: unit test of the setting's load (default 'balls', a bad value falls back);
-    `settings1938` e2e: the choice switches the look at once and survives a reload; the full e2e run green with
-    Classic pinned (a config every spec stands on: one full run).
+  - [x] 7.174a The setting. `Settings.unitLook` ('balls' | 'classic', key `warsim.unitLook`), a row in […]
   - [ ] 7.174b The flags on the GPU. One texture of every nation's flag (`FlagStore.pixelsOf`, 36×24 a slot),
     rebuilt when `FlagStore.version` moves or a nation is founded, and each element instance's slot beside its
     tint. AT: unit test: each living nation of the 1938 start and of a world after a forced revolt has a slot;
@@ -66,6 +61,11 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
     click on a ball opens its formation's panel as on Classic's marker; `sortie` e2e finds a winged ball where the
     sortie is.
   - [ ] 7.174g SPEC §8: the ball look in the Forces column and a note of the setting. AT: parity green.
+  - [ ] 7.174h Countryballs the default, last (the user's decision, 2026-10-31): `DEFAULT_UNIT_LOOK` 'balls', and
+    Playwright's config pins Classic (`use.storageState`) in the same commit, so the pixel specs keep the look
+    they measure. AT: unit test: the default 'balls', the pin at the config's `baseURL`; `settings1938`: 'balls'
+    with nothing stored; the full e2e run green with Classic pinned (a config every spec stands on: the one full
+    run of 7.174).
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

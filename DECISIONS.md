@@ -179,6 +179,9 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
   it); the flag comes from a texture of every nation's flag, so the one draw call stays. Classic draws as before
   and is the look the existing pixel specs are pinned to (Playwright's `storageState`); the balls get specs of
   their own. All of it is view: no sim input, the pin unchanged.
+- **Order (amended 2026-10-31, the user's decision).** A change of `playwright.config.ts` runs every e2e spec
+  (hours). The default stays Classic while the balls are built (7.174a–g), and 7.174h flips it with the pin in
+  one commit, so the full run happens once, at the end, not at 7.174a.
 - **Consequences.** The critic plays the default and judges the balls' readability. The T3 figures (ADR-69,
   ADR-80) and the turrets (PLAN 3.6a) stay Classic's; in ball mode an element is one ball at T2 and T3.
 

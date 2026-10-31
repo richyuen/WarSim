@@ -25009,3 +25009,15 @@ No rule changed and nothing on screen changed. One task came out of it.
   level, the class shown by props, one ball an element at T3; a "Unit look" setting back to Classic, which the
   existing pixel specs are pinned to. View only, no sim input.
 - **Next:** PLAN 7.174a.
+
+## 2026-10-31 — PLAN 7.174a: the Unit look setting (done)
+
+- **Built:** `UNIT_LOOKS`, `parseUnitLook` (`shared/unitLooks.ts`); `Settings.unitLook` / `setUnitLook` (key
+  `warsim.unitLook`, an unknown value falls back to the default), applied to `MapView.unitLook`; a "Unit look:
+  Countryballs / Classic" row in the settings panel. Nothing draws balls until 7.174c.
+- **Changed with the user:** the default stays Classic until 7.174h, which flips it and pins the e2e specs to Classic
+  in `playwright.config.ts` together: a change of that config runs every e2e spec (hours), now once at the end.
+  The full run started for the pin was stopped. PLAN 7.174a amended, 7.174h added, ADR-777 noted.
+- **AT:** `tests/unit/unitLook.test.ts` (the default, the fallback); `settings1938` e2e: the view's look follows the
+  select at once, survives a reload, and an unknown stored value is the default. UI only, no sim input.
+- **Next:** PLAN 7.174b.

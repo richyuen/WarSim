@@ -7,6 +7,21 @@
 import type { UnitSymbol } from './protocol';
 
 /**
+ * How units are drawn (PLAN 7.174, ADR-777): as countryballs, a disc of the nation's flag with
+ * eyes, or as the tinted sprites, markers and counters drawn until then. The default stays
+ * classic while the balls are built; PLAN 7.174h makes it countryballs and pins the e2e specs
+ * to classic in the same commit (one full e2e run, the user's decision).
+ */
+export const UNIT_LOOKS = ['balls', 'classic'] as const;
+export type UnitLook = (typeof UNIT_LOOKS)[number];
+export const DEFAULT_UNIT_LOOK: UnitLook = 'classic';
+
+/** The look a stored value names, or the default for anything else (none stored, an unknown word). */
+export function parseUnitLook(v: string | null | undefined): UnitLook {
+  return (UNIT_LOOKS as readonly string[]).includes(v ?? '') ? (v as UnitLook) : DEFAULT_UNIT_LOOK;
+}
+
+/**
  * Frames of the unit sprite atlas (`render/units/atlas`), in its order. `tank`, `tankMedium` and
  * `tankHeavy` are hulls (PLAN 3.6a): the turret of each is a frame of its own (`turretOf`),
  * drawn over the hull as a second sprite, so that it can turn. No class has a turret's frame.

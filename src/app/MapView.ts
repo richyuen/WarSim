@@ -38,7 +38,7 @@ const FLAG_MOVE_MS = 150;
 const FLAG_MAX_RISE = 40;
 import { drawNationLabels, fadeNationLabels, GlyphSprites, layoutNationLabels, type Measure, type PlacedNationLabel } from '../render/labels/nationLabels';
 import { t, type MessageKey } from '../ui/i18n';
-import { Frame, isShipFrame, shownFrame, smallFrameOf, turretOf } from '../shared/unitLooks';
+import { DEFAULT_UNIT_LOOK, Frame, isShipFrame, shownFrame, smallFrameOf, turretOf, type UnitLook } from '../shared/unitLooks';
 import { modeColor, type MapMode, type Relation } from '../shared/mapModes';
 import { NATION_STRIDE, NationField, RAID_STRIDE, SEA_STRIDE, type Snapshot } from '../shared/protocol';
 import { SEAM_MARGIN, cellOfPoint, itemOffsets, screenToWorld, worldToScreen, wrapOffsets, type Camera, type MapGeometry } from '../render/camera';
@@ -885,6 +885,9 @@ export class MapView {
 
   /** Unit-size setting (PLAN 1.39a): multiplies formation marker sizes. */
   unitScale = 1;
+
+  /** Unit-look setting (PLAN 7.174, ADR-777): countryballs or the classic sprites and markers. */
+  unitLook: UnitLook = DEFAULT_UNIT_LOOK;
 
   /** Asks for a redraw on the next frame. */
   requestDraw(): void {
