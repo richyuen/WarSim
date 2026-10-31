@@ -1,0 +1,10 @@
+s12 7/12 panel=clicked, 0 panel German, 3 selected a German, 3 with a German within 14px
+s40 7/12 panel=clicked, 1 panel German, 1 selected a German, 1 with a German within 14px
+s120 12/12 panel=clicked, 0 panel German, 0 selected a German, 0 with a German within 14px
+obs12 undefined
+obs40 undefined
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByTestId('release-control')[22m
+
+    at C:\Git\Warism\critic\scripts\c21_ex2old_enemypanel.mjs:84:45 []

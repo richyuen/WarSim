@@ -33,6 +33,19 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
+- [ ] 7.161 The DONE condition's zoom demo: `zoomDemo1938` red here for its history, not the GPU (critic
+  run 21's review, 2026-10-31). Its battle (seed 1943, formation 773 of NSP) has battalions of 322–363 of
+  500 men: the most 0.726 of size, bar under 0.5 (`tests/e2e/zoomDemo1938.spec.ts:314`), red twice alone,
+  the same figures each run; `tools/gate/knownRed.json` lists it as a software-GPU failure. Find the
+  battle again the way the test means it (step until the event, not a pinned day), never the bar moved.
+  AT: `npx playwright test tests/e2e/zoomDemo1938.spec.ts` green alone on this machine, twice, with every
+  assertion as it stands; the test off `knownRed.json` in the same commit.
+- [ ] 7.162 The DONE condition's runs on the HEAD after 7.161 (the last soak was 2026-10-16, the last full
+  sweep 2026-10-19): `npm run check:full` (green but for `knownRed.json`), a 30-minute `npm run soak` of the
+  1938 scenario, a sweep of 10+ unseen seeds over decades, the performance budgets (`npm run bench`).
+  AT: soak 30 min, 0 crashes, 0 desyncs; the sweep's last decade with borders moving on 10 of 10 seeds;
+  strategic ≥ 60 fps with 100+ nations, tactical ≥ 30 fps at 10,000+ proxies; each figure in PROGRESS.md
+  with its file under `docs/evidence/7.162/`.
 - [ ] 7.5 Run the critic (`CRITIC_PROMPT.md`), fix blocking issues, repeat until the DONE condition.
   AT: `critic/CRITIC_REPORT.json` for HEAD: parity dims ≥ 7, differentiators ≥ 8, zero blocking.
 

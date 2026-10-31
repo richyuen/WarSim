@@ -1,0 +1,8 @@
+{
+ "bin": "critic/c10_seed4219_y10.bin",
+ "seed": 4219,
+ "format": 1,
+ "steps": [],
+ "fatal": "Error: ENOENT: no such file or directory, open 'C:\\Git\\Warism\\critic\\c10_seed4219_y10.bin'\n    at Object.openSync (node:fs:621:18)\n    at readFileSync (node:fs:487:35)\n    at file:///C:/Git/Warism/critic/scripts/c21_oldsave.mjs:13:17\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:541:9)",
+ "errors": []
+}

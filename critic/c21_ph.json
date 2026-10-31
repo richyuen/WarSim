@@ -1,0 +1,990 @@
+{
+ "views": [
+  {
+   "name": "portrait",
+   "w": 390,
+   "h": 844,
+   "steps": [
+    {
+     "s": "start",
+     "parts": {
+      "ticker": [
+       7,
+       769,
+       383,
+       769
+      ],
+      "banners": [
+       7,
+       771,
+       383,
+       799
+      ],
+      "legend": null,
+      "ranking": [
+       306,
+       46,
+       383,
+       78
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       805,
+       383,
+       837
+      ],
+      "top": [
+       7,
+       7,
+       383,
+       33
+      ]
+     },
+     "coveredShare": 0.11,
+     "tickerRows": 0,
+     "banners": 2,
+     "more": null,
+     "bar": [
+      814,
+      366,
+      23,
+      23
+     ],
+     "offBtns": [
+      "Map: Political",
+      "Statistics",
+      "History",
+      "Editor",
+      "Settings"
+     ],
+     "cancel": false
+    },
+    {
+     "s": "actions tab",
+     "parts": {
+      "ticker": [
+       7,
+       751,
+       383,
+       769
+      ],
+      "banners": [
+       7,
+       771,
+       383,
+       799
+      ],
+      "legend": null,
+      "ranking": null,
+      "panel": [
+       7,
+       46,
+       383,
+       694
+      ],
+      "bar": [
+       7,
+       805,
+       383,
+       837
+      ],
+      "top": [
+       7,
+       7,
+       383,
+       33
+      ]
+     },
+     "coveredShare": 0.86,
+     "tickerRows": 1,
+     "banners": 2,
+     "more": "+1",
+     "bar": [
+      821,
+      366,
+      23,
+      23
+     ],
+     "offBtns": [
+      "Map: Political",
+      "Statistics",
+      "History",
+      "Editor",
+      "Settings",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Supply",
+      "Rebase",
+      "",
+      "Supply",
+      "Rebase",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build"
+     ],
+     "cancel": false
+    },
+    {
+     "s": "day 60",
+     "parts": {
+      "ticker": [
+       7,
+       706,
+       383,
+       769
+      ],
+      "banners": [
+       7,
+       771,
+       383,
+       799
+      ],
+      "legend": null,
+      "ranking": [
+       306,
+       46,
+       383,
+       78
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       805,
+       383,
+       837
+      ],
+      "top": [
+       7,
+       7,
+       383,
+       33
+      ]
+     },
+     "coveredShare": 0.18,
+     "tickerRows": 2,
+     "banners": 2,
+     "more": "+4",
+     "bar": [
+      821,
+      366,
+      23,
+      23
+     ],
+     "offBtns": [
+      "Map: Political",
+      "Statistics",
+      "History",
+      "Editor",
+      "Settings"
+     ],
+     "cancel": false,
+     "tickerText": "1 March 1938 Germany and Estonia fought in the air this month: Germany lost 18 aircraft, Estonia 0\n1 March 1938 Germany's air force struck Poland this month: 30,507 men, guns and vehicles lost"
+    },
+    {
+     "s": "+N opened",
+     "parts": {
+      "ticker": [
+       7,
+       706,
+       383,
+       769
+      ],
+      "banners": [
+       7,
+       708,
+       383,
+       799
+      ],
+      "legend": null,
+      "ranking": [
+       306,
+       46,
+       383,
+       78
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       805,
+       383,
+       837
+      ],
+      "top": [
+       7,
+       7,
+       383,
+       33
+      ]
+     },
+     "coveredShare": 0.25,
+     "tickerRows": 2,
+     "banners": 6,
+     "more": "−",
+     "bar": [
+      821,
+      366,
+      23,
+      23
+     ],
+     "offBtns": [
+      "Map: Political",
+      "Statistics",
+      "History",
+      "Editor",
+      "Settings"
+     ],
+     "cancel": false
+    },
+    {
+     "s": ".map-legend tapped",
+     "parts": {
+      "ticker": [
+       7,
+       706,
+       383,
+       769
+      ],
+      "banners": [
+       7,
+       771,
+       383,
+       799
+      ],
+      "legend": null,
+      "ranking": [
+       306,
+       46,
+       383,
+       78
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       805,
+       383,
+       837
+      ],
+      "top": [
+       7,
+       7,
+       383,
+       33
+      ]
+     },
+     "coveredShare": 0.18,
+     "tickerRows": 2,
+     "banners": 2,
+     "more": "+4",
+     "bar": [
+      821,
+      366,
+      23,
+      23
+     ],
+     "offBtns": [
+      "Map: Political",
+      "Statistics",
+      "History",
+      "Editor",
+      "Settings"
+     ],
+     "cancel": false
+    },
+    {
+     "s": ".stats-ranking tapped",
+     "parts": {
+      "ticker": [
+       7,
+       706,
+       383,
+       769
+      ],
+      "banners": [
+       7,
+       771,
+       383,
+       799
+      ],
+      "legend": null,
+      "ranking": [
+       161,
+       46,
+       383,
+       390
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       805,
+       383,
+       837
+      ],
+      "top": [
+       7,
+       7,
+       383,
+       33
+      ]
+     },
+     "coveredShare": 0.4,
+     "tickerRows": 2,
+     "banners": 2,
+     "more": "+4",
+     "bar": [
+      821,
+      366,
+      23,
+      23
+     ],
+     "offBtns": [
+      "Map: Political",
+      "Statistics",
+      "History",
+      "Editor",
+      "Settings"
+     ],
+     "cancel": false
+    },
+    {
+     "s": "formation tapped",
+     "sel": 1,
+     "parts": {
+      "ticker": [
+       7,
+       705,
+       383,
+       768
+      ],
+      "banners": [
+       7,
+       770,
+       383,
+       798
+      ],
+      "legend": null,
+      "ranking": null,
+      "panel": [
+       7,
+       46,
+       383,
+       285
+      ],
+      "bar": [
+       7,
+       804,
+       383,
+       837
+      ],
+      "top": [
+       7,
+       7,
+       383,
+       33
+      ]
+     },
+     "coveredShare": 0.44,
+     "tickerRows": 2,
+     "banners": 2,
+     "more": "+4",
+     "bar": [
+      895,
+      366,
+      24,
+      24
+     ],
+     "offBtns": [
+      "Map: Political",
+      "Statistics",
+      "History",
+      "Editor",
+      "Settings"
+     ],
+     "cancel": true
+    },
+    {
+     "s": "cancel box",
+     "box": {
+      "x": 15.9609375,
+      "y": 808.6875,
+      "width": 67.953125,
+      "height": 23.4375
+     }
+    },
+    {
+     "s": "after cancel",
+     "sel": 0,
+     "cancel": 0
+    }
+   ],
+   "errors": []
+  },
+  {
+   "name": "landscape",
+   "w": 844,
+   "h": 390,
+   "steps": [
+    {
+     "s": "start",
+     "parts": {
+      "ticker": [
+       7,
+       315,
+       415,
+       315
+      ],
+      "banners": [
+       7,
+       317,
+       837,
+       345
+      ],
+      "legend": null,
+      "ranking": [
+       760,
+       7,
+       837,
+       39
+      ],
+      "panel": null,
+      "bar": [
+       10,
+       351,
+       834,
+       383
+      ],
+      "top": [
+       7,
+       7,
+       197,
+       33
+      ]
+     },
+     "coveredShare": 0.17,
+     "tickerRows": 0,
+     "banners": 2,
+     "more": null,
+     "bar": [
+      814,
+      814,
+      23,
+      23
+     ],
+     "offBtns": [],
+     "cancel": false
+    },
+    {
+     "s": "actions tab",
+     "parts": {
+      "ticker": [
+       7,
+       279,
+       415,
+       297
+      ],
+      "banners": [
+       7,
+       299,
+       837,
+       327
+      ],
+      "legend": null,
+      "ranking": [
+       760,
+       7,
+       837,
+       39
+      ],
+      "panel": [
+       7,
+       46,
+       259,
+       222
+      ],
+      "bar": [
+       7,
+       333,
+       837,
+       383
+      ],
+      "top": [
+       7,
+       7,
+       197,
+       33
+      ]
+     },
+     "coveredShare": 0.38,
+     "tickerRows": 1,
+     "banners": 2,
+     "more": "+1",
+     "bar": [
+      820,
+      820,
+      40,
+      40
+     ],
+     "offBtns": [
+      "×",
+      "Release control",
+      "Overview",
+      "Economy",
+      "Actions",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Patrol",
+      "Strike",
+      "Rebase",
+      "",
+      "Supply",
+      "Rebase",
+      "",
+      "Supply",
+      "Rebase",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build",
+      "Build"
+     ],
+     "cancel": false
+    },
+    {
+     "s": "day 60",
+     "parts": {
+      "ticker": [
+       7,
+       234,
+       415,
+       297
+      ],
+      "banners": [
+       7,
+       299,
+       837,
+       327
+      ],
+      "legend": null,
+      "ranking": [
+       760,
+       7,
+       837,
+       39
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       333,
+       837,
+       383
+      ],
+      "top": [
+       7,
+       7,
+       197,
+       33
+      ]
+     },
+     "coveredShare": 0.3,
+     "tickerRows": 2,
+     "banners": 2,
+     "more": "+4",
+     "bar": [
+      820,
+      820,
+      40,
+      40
+     ],
+     "offBtns": [],
+     "cancel": false,
+     "tickerText": "1 March 1938 Germany and Estonia fought in the air this month: Germany lost 18 aircraft, Estonia 0\n1 March 1938 Germany's air force struck Poland this month: 30,507 men, guns and vehicles lost"
+    },
+    {
+     "s": "+N opened",
+     "parts": {
+      "ticker": [
+       7,
+       234,
+       415,
+       297
+      ],
+      "banners": [
+       7,
+       268,
+       837,
+       327
+      ],
+      "legend": null,
+      "ranking": [
+       760,
+       7,
+       837,
+       39
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       333,
+       837,
+       383
+      ],
+      "top": [
+       7,
+       7,
+       197,
+       33
+      ]
+     },
+     "coveredShare": 0.38,
+     "tickerRows": 2,
+     "banners": 6,
+     "more": "−",
+     "bar": [
+      820,
+      820,
+      40,
+      40
+     ],
+     "offBtns": [],
+     "cancel": false
+    },
+    {
+     "s": ".map-legend tapped",
+     "parts": {
+      "ticker": [
+       7,
+       234,
+       415,
+       297
+      ],
+      "banners": [
+       7,
+       299,
+       837,
+       327
+      ],
+      "legend": null,
+      "ranking": [
+       760,
+       7,
+       837,
+       39
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       333,
+       837,
+       383
+      ],
+      "top": [
+       7,
+       7,
+       197,
+       33
+      ]
+     },
+     "coveredShare": 0.3,
+     "tickerRows": 2,
+     "banners": 2,
+     "more": "+4",
+     "bar": [
+      820,
+      820,
+      40,
+      40
+     ],
+     "offBtns": [],
+     "cancel": false
+    },
+    {
+     "s": ".stats-ranking tapped",
+     "parts": {
+      "ticker": [
+       7,
+       234,
+       415,
+       297
+      ],
+      "banners": [
+       7,
+       299,
+       837,
+       327
+      ],
+      "legend": null,
+      "ranking": [
+       615,
+       7,
+       837,
+       351
+      ],
+      "panel": null,
+      "bar": [
+       7,
+       333,
+       837,
+       383
+      ],
+      "top": [
+       7,
+       7,
+       197,
+       33
+      ]
+     },
+     "coveredShare": 0.52,
+     "tickerRows": 2,
+     "banners": 2,
+     "more": "+4",
+     "bar": [
+      820,
+      820,
+      40,
+      40
+     ],
+     "offBtns": [],
+     "cancel": false
+    },
+    {
+     "s": "formation tapped",
+     "sel": 1,
+     "parts": {
+      "ticker": [
+       7,
+       226,
+       415,
+       289
+      ],
+      "banners": [
+       7,
+       291,
+       837,
+       319
+      ],
+      "legend": null,
+      "ranking": [
+       760,
+       7,
+       837,
+       39
+      ],
+      "panel": [
+       7,
+       46,
+       259,
+       214
+      ],
+      "bar": [
+       7,
+       324,
+       837,
+       383
+      ],
+      "top": [
+       7,
+       7,
+       197,
+       33
+      ]
+     },
+     "coveredShare": 0.45,
+     "tickerRows": 2,
+     "banners": 2,
+     "more": "+4",
+     "bar": [
+      820,
+      820,
+      49,
+      49
+     ],
+     "offBtns": [],
+     "cancel": true
+    },
+    {
+     "s": "cancel box",
+     "box": {
+      "x": 16.1640625,
+      "y": 329.53125,
+      "width": 67.953125,
+      "height": 23.4375
+     }
+    },
+    {
+     "s": "after cancel",
+     "sel": 0,
+     "cancel": 0
+    }
+   ],
+   "errors": []
+  }
+ ]
+}

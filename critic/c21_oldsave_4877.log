@@ -1,0 +1,32 @@
+{
+ "bin": "critic/c10_seed4877_y20.bin",
+ "seed": 4877,
+ "format": 1,
+ "steps": [
+  {
+   "s": "title",
+   "text": "Warism\n\nWORLD WAR SIMULATOR\n\nSAVED GAME\nWorld, 1938\n27 December 1957\nSaved 10/30/2026, 12:56:07 AM\nContinue\nSCENARIOS\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nSCENARIO FILE\n\nStart from a .warism-scenario file, as the editor exports them.\n\nWORLD, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNEW GAME OPTIONS\nMap size\nSmall, 1024 × 512\nMedium, 2048 × 1024\nLarge, 4096 × 2048\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting gold\nAs in the scenario\nRandom\nEqual for all\nCombat efficiency\nAs in the scenario\nDynamic\nProgressive\nStatic\nLocked\nRandom\nStart",
+   "hasContinue": 1,
+   "shot": "critic/shots/c21os_c10fmt1_00_title.png"
+  },
+  {
+   "s": "after continue 20s",
+   "url": "http://127.0.0.1:5399/?failed=save",
+   "text": "Warism\n\nWORLD WAR SIMULATOR\n\nSAVED GAME\nWorld, 1938\n27 December 1957\nSaved 10/30/2026, 12:56:07 AM\nThis saved game could not be loaded: it is not whole, or it was made by an older version of Warism. Start a new game.\nSCENARIOS\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nSCENARIO FILE\n\nStart from a .warism-scenario file, as the editor exports them.\n\nWORLD, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNEW GAME OPTIONS\nMap size\nSmall, 1024 × 512\nMedium, 2048 × 1024\nLarge, 4096 × 2048\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting gold\nAs in the scenario\nRandom\nEqual for all\nCombat efficiency\nAs in the scenario\nDynamic\nProgressive\nStatic\nLocked\nRandom\nStart",
+   "tick": null,
+   "shot": "critic/shots/c21os_c10fmt1_01_after_continue.png"
+  },
+  {
+   "s": "title again",
+   "text": "Warism\n\nWORLD WAR SIMULATOR\n\nSAVED GAME\nWorld, 1938\n27 December 1957\nSaved 10/30/2026, 12:56:07 AM\nContinue\nSCENARIOS\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nSCENARIO FILE\n\nStart from a .warism-scenario file, as the editor exports them.\n\nWORLD, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNEW GAME OPTIONS\nMap size\nSmall, 1024 × 512\nMedium, 2048 × 1024\nLarge, 4096 × 2048\nLooping map\nOn\nOff\nNation aggr",
+   "shot": "critic/shots/c21os_c10fmt1_02_title_again.png"
+  }
+ ],
+ "hasContinueAfter": 0,
+ "startButtons": [
+  "Start"
+ ],
+ "errors": [
+  "warning: Warism: the autosave could not be loaded: missing section formations.struck"
+ ]
+}

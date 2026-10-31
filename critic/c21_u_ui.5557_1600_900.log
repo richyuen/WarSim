@@ -1,0 +1,249 @@
+{
+ "seed": 5557,
+ "W": 1600,
+ "H": 900,
+ "steps": [
+  {
+   "s": "world",
+   "bar": "Resume | − | Speed ×5 | + | God Mode | Map: Political | Statistics | History | Editor | 1 January 1938 · Paused | Settings",
+   "title": [
+    "Warism",
+    "Warism"
+   ]
+  },
+  {
+   "s": "contrast world",
+   "n": 72,
+   "under45": 1,
+   "under3": 0,
+   "worst": [
+    {
+     "t": "·",
+     "cls": "bar-paused",
+     "fg": "rgb(239, 91, 76)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 4.36,
+     "px": "14.4px"
+    },
+    {
+     "t": "Warism",
+     "cls": "topbar-title",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "14.4px"
+    },
+    {
+     "t": "Speed ×5",
+     "cls": "bar-speed bar-reserve",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "14.4px"
+    },
+    {
+     "t": "Ranking",
+     "cls": "",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "12.8px"
+    },
+    {
+     "t": "Political",
+     "cls": "legend-title",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "12px"
+    },
+    {
+     "t": "⚔",
+     "cls": "war-swords",
+     "fg": "rgb(241, 230, 210)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 9.67,
+     "px": "12px"
+    },
+    {
+     "t": "⚔",
+     "cls": "war-swords",
+     "fg": "rgb(241, 230, 210)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 9.67,
+     "px": "12px"
+    },
+    {
+     "t": "Nationalist Spain",
+     "cls": "war-side",
+     "fg": "rgba(242, 244, 247, 0.72)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 10.84,
+     "px": "12px"
+    },
+    {
+     "t": "Spanish Republic",
+     "cls": "war-side",
+     "fg": "rgba(242, 244, 247, 0.72)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 10.84,
+     "px": "12px"
+    },
+    {
+     "t": "Japan",
+     "cls": "war-side",
+     "fg": "rgba(242, 244, 247, 0.72)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 10.84,
+     "px": "12px"
+    },
+    {
+     "t": "+",
+     "cls": "war-allies",
+     "fg": "rgba(242, 244, 247, 0.72)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 10.84,
+     "px": "12px"
+    },
+    {
+     "t": "China",
+     "cls": "war-side",
+     "fg": "rgba(242, 244, 247, 0.72)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 10.84,
+     "px": "12px"
+    }
+   ]
+  },
+  {
+   "s": "germany overview",
+   "allies": "Italy\nJapan",
+   "alliance": "ANTI-COMINTERN PACT\nAlliance unity\n55\nALLIES\nItaly\nJapan"
+  },
+  {
+   "s": "contrast panel",
+   "n": 100,
+   "under45": 2,
+   "under3": 1,
+   "worst": [
+    {
+     "t": "Overview",
+     "cls": "tab active",
+     "fg": "rgb(46, 33, 0)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 1.08,
+     "px": "13.3333px"
+    },
+    {
+     "t": "·",
+     "cls": "bar-paused",
+     "fg": "rgb(239, 91, 76)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 4.36,
+     "px": "14.4px"
+    },
+    {
+     "t": "Warism",
+     "cls": "topbar-title",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "14.4px"
+    },
+    {
+     "t": "Speed ×5",
+     "cls": "bar-speed bar-reserve",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "14.4px"
+    },
+    {
+     "t": "Ranking",
+     "cls": "",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "12.8px"
+    },
+    {
+     "t": "Germany",
+     "cls": "panel-name",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "16px"
+    },
+    {
+     "t": "Political",
+     "cls": "legend-title",
+     "fg": "rgb(242, 193, 78)",
+     "bg": "rgb(27, 42, 58)",
+     "cr": 8.7,
+     "px": "12px"
+    },
+    {
+     "t": "⚔",
+     "cls": "war-swords",
+     "fg": "rgb(241, 230, 210)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 9.67,
+     "px": "12px"
+    },
+    {
+     "t": "⚔",
+     "cls": "war-swords",
+     "fg": "rgb(241, 230, 210)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 9.67,
+     "px": "12px"
+    },
+    {
+     "t": "Nationalist Spain",
+     "cls": "war-side",
+     "fg": "rgba(242, 244, 247, 0.72)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 10.84,
+     "px": "12px"
+    },
+    {
+     "t": "Spanish Republic",
+     "cls": "war-side",
+     "fg": "rgba(242, 244, 247, 0.72)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 10.84,
+     "px": "12px"
+    },
+    {
+     "t": "Japan",
+     "cls": "war-side",
+     "fg": "rgba(242, 244, 247, 0.72)",
+     "bg": "rgb(52, 55, 60)",
+     "cr": 10.84,
+     "px": "12px"
+    }
+   ]
+  },
+  {
+   "s": "ally chip clicked",
+   "panel": "Italy",
+   "allies": "Germany\nJapan"
+  },
+  {
+   "s": "actions",
+   "icons": 59,
+   "iconButtons": 28
+  },
+  {
+   "s": "place icons",
+   "n": 31
+  },
+  {
+   "s": "icon armed",
+   "cancel": 1,
+   "bar": "Map tools | Revolt | Spawn nation | Breakthrough | Territory | Nuke | Found city | Raze city | ✕ Cancel | Resume | − | Speed ×5 | + | God Mode | Map: Political | Statistics | History | Editor | Playing Germany · 0 selected | 1 January 1938 · Paused | Settings",
+   "hint": "",
+   "armed": 0
+  },
+  {
+   "s"

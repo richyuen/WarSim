@@ -1,0 +1,15 @@
+{
+ "file": "critic/c10_critic_standoff.warsim-scenario",
+ "oldMagic": "WARSIM-SCENARIO\n",
+ "newMagic": "WARISM-SCENARIO\n",
+ "titleAccept": ".warism-scenario,.warsim-scenario",
+ "pending": "Critic standoff 8\nWorld, 1938 · 1 January 1938\nStart this scenario\nCancel",
+ "stuck": {
+  "url": "http://127.0.0.1:5399/?failed=scenario",
+  "text": "Warism\n\nWORLD WAR SIMULATOR\n\nSCENARIOS\nWorld, 1938\n1 January 1938\nRandom world\n1 January 1938\nSCENARIO FILE\n\nStart from a .warism-scenario file, as the editor exports them.\n\nThe scenario file could not be loaded. Choose it again.\nWORLD, 1938\n\nThe world on the eve of the Second World War.\n\nStart date\n1 January 1938\nMap\nEarth · 2048 × 1024\nNations\n102\nSeed\nRandom\nNEW GAME OPTIONS\nMap size\nSmall, 1024 × 512\nMedium, 2048 × 1024\nLarge, 4096 × 2048\nLooping map\nOn\nOff\nNation aggression\nAs in the scenario\nRandom\nNation traits\nAs in the scenario\nRandom\nStarting gold\nAs in the scenario\nRandom\nEqual for all\nCombat efficiency\nAs in the scenario\nDynamic\nProgressive\nStatic\nLocked\nRandom\nStart",
+  "frames": null,
+  "stats": false
+ },
+ "fatal": "page.waitForFunction: Timeout 300000ms exceeded.\n    at C:\\Git\\Warism\\critic\\scripts\\c21_os2_scen.mjs:24:14",
+ "errors": []
+}

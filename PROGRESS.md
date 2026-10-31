@@ -24778,3 +24778,16 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Next:** PLAN 7.5.
 
 - 2026-10-30, outside PLAN (the user's decision, ADR-770): 7.5 GB of untracked critic byproducts of runs 2–19 deleted (run 20 and the 20 cited saved states kept); `.gitignore` keeps saved states, saves and build copies out; step 2a now commits a run's evidence with its report, run 20's committed here. About 12 cited files of runs 18–19 were lost in the clean-up.
+
+## 2026-10-31 — PLAN 7.5: critic run 21 on bd7940de (blocking 0)
+
+- `npm run check:review` green before the run (2 known red: `seaRow1938` Speed x1, `zoomDemo1938`; 0 not known).
+  Evidence PNGs the review's e2e re-rendered were restored, not committed.
+- Scores (as run 20): map 7, diplomacy 7, emergent 7, God Mode 7, editor 7, stats 7, UI 7, performance 7, stability 7;
+  zoom 8, naval 8, tanks 8, aircraft 8, nukes 8. Every dimension at its bar; blocking 0. R20-B1 resolved (12 of 12
+  on seed 4441, 6827, 3917). Non-blocking: a click on an enemy beside an own unit opens the own one's panel more
+  often (3 of 12 on 4441, 7 of 12 on 6827).
+- The DONE condition is not met yet: `zoomDemo1938` (its zoom demo) is red here for its battle's history (0.726
+  of size, bar < 0.5), not the GPU its known-red entry names; the soak and the full sweep last ran on
+  2026-10-16 and 2026-10-19. Filed PLAN 7.161 (the demo) and 7.162 (the DONE runs on HEAD).
+- **Next:** PLAN 7.161.
