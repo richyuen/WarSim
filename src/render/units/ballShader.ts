@@ -15,6 +15,12 @@
  * wings; in front: the helmet and the hull. The sprite's square is BALL_QUAD times the ball's by
  * class, so props reach past it; the ball keeps its size. Props go out with the eyes.
  *
+ * They move on the render clock (PLAN 7.174e), nothing of it sim state: a ball on the march bobs
+ * (`ballBob`, by its walk phase, the march fraction of its frame), a ball blinks now and then
+ * (`blinkShut`, by a hash of its place), its eyes are angry while its formation is engaged and it
+ * flinches, eyes squeezed and shaking, while it is under fire (the snapshot's `hit`); one destroyed
+ * is a ball with crossed eyes that fades where it died (`deadBalls.ts`).
+ *
  * The geometry is in ball units, p in [-1, 1]² over the sprite's square, y down; `eyeCentres` is
  * the shader's own sum, for tests.
  */
@@ -153,10 +159,54 @@ export function propPoint(cls: BallClass, facing: number): { p: [number, number]
   }
 }
 
+/** The bob on the march, ball units up at its height, and bobs a second, by class (`BallClass` order). */
+export const BOB_H: readonly number[] = [0.2, 0.07, 0.07, 0.16, 0.06, 0.05, 0.07, 0];
+export const BOB_HZ: readonly number[] = [2.2, 5, 5, 2.2, 0.8, 1, 5, 0];
+
+/** How far up a ball of class `cls` is at `timeS`, ball units: |sin| of its walk, by `phase` (0–1). */
+export function ballBob(cls: number, timeS: number, phase: number, moving: boolean): number {
+  return moving ? BOB_H[cls]! * Math.abs(Math.sin(Math.PI * (timeS * BOB_HZ[cls]! + phase))) : 0;
+}
+
+/** A blink: every BLINK_EVERY_S to twice that by the ball's seed, shut over BLINK_S. */
+export const BLINK_EVERY_S = 3;
+export const BLINK_S = 0.18;
+
+/** How shut a ball's eyes are at `timeS` (0 open, 1 shut), by its seed (0–1). */
+export function blinkShut(timeS: number, seed: number): number {
+  const period = BLINK_EVERY_S * (1 + seed);
+  const t = (((timeS / period + seed) % 1) + 1) % 1;
+  const share = BLINK_S / period;
+  return t < share ? Math.sin((Math.PI * t) / share) : 0;
+}
+
+/** Under fire: the eyes' height (a share of theirs) and the shake, ball units and a second. */
+export const FLINCH_OPEN = 0.35;
+export const FLINCH_AMP = 0.07;
+export const FLINCH_HZ = 7;
+/** Engaged: the brow cuts the eye from this share of its height down, falling toward the other eye. */
+export const ANGRY_CUT = 0.1;
+export const ANGRY_SLOPE = 0.8;
+
+/** What a ball's state carries (the instance's `aState`): its formation engaged, it fired at. */
+export const BallState = { engaged: 1, hit: 2 } as const;
+
+/** The eyes' height at `timeS` as a share of theirs, for a ball of `state` and seed `seed`. */
+export function eyeOpen(state: number, timeS: number, seed: number): number {
+  return Math.max(0.08, (1 - blinkShut(timeS, seed)) * ((state & BallState.hit) !== 0 ? FLINCH_OPEN : 1));
+}
+
+/** The flinch's shake at `timeS`, ball units across. */
+export function flinchShake(state: number, timeS: number): number {
+  return (state & BallState.hit) !== 0 ? FLINCH_AMP * Math.sin(2 * Math.PI * FLINCH_HZ * timeS) : 0;
+}
+
 const f = (v: number): string => v.toFixed(4);
 const v3 = (c: readonly number[]): string => `vec3(${c.map(f).join(', ')})`;
 const CLASS_OF = Array.from({ length: ATLAS_FRAMES }, (_, frame) => f(ballClassOf(frame))).join(', ');
 const QUAD_OF = Array.from({ length: ATLAS_FRAMES }, (_, frame) => f(BALL_QUAD[ballClassOf(frame)]!)).join(', ');
+const BOBS_H = BOB_H.map(f).join(', ');
+const BOBS_HZ = BOB_HZ.map(f).join(', ');
 
 export const BALL_VS = `#version 300 es
 precision highp float;
@@ -165,7 +215,10 @@ layout(location = 1) in vec4 aPrevCur;
 layout(location = 2) in vec4 aMisc;    // facing, size (cells), frame (+ march), alpha
 layout(location = 3) in vec4 aColor;
 layout(location = 4) in float aFlag;   // the nation's flag slot, -1 none
+layout(location = 5) in float aState;  // BallState bits: engaged 1, hit 2
 uniform vec2 uCam;
+uniform float uTime;       // seconds, the render clock
+uniform float uMarchSpan;  // the march fraction's span above a half (ProxyRenderer)
 uniform float uScale;
 uniform vec2 uViewport;
 uniform float uT;
@@ -177,6 +230,10 @@ uniform float uDpr;
 uniform float uFrameMinPx[${ATLAS_FRAMES}];
 const float CLASS_OF[${ATLAS_FRAMES}] = float[${ATLAS_FRAMES}](${CLASS_OF});
 const float QUAD_OF[${ATLAS_FRAMES}] = float[${ATLAS_FRAMES}](${QUAD_OF});
+const float BOB_H[8] = float[8](${BOBS_H});
+const float BOB_HZ[8] = float[8](${BOBS_HZ});
+out float vOpen;     // the eyes' height, a share of theirs
+out float vAngry;
 out vec2 vP;
 out vec4 vColor;
 out float vSlot;
@@ -193,7 +250,22 @@ void main() {
   vEyes = smoothstep(${f(EYES_NONE_PX)}, ${f(EYES_FULL_PX)}, sizePx / uDpr);
   // Props out (small): the quad is the ball's.
   float quad = vEyes > 0.0 ? QUAD_OF[frame] : 1.0;
-  vec2 px = (pos - uCam) * uScale + aCorner * sizePx * quad;
+  int cls = int(CLASS_OF[frame]);
+  // The march (PLAN 7.174e): the frame's fraction from a half is the walk's phase.
+  float part = aMisc.z - float(frame);
+  float phase = (part - 0.5) / uMarchSpan;
+  float bob = part >= 0.25 ? BOB_H[cls] * abs(sin(3.14159265 * (uTime * BOB_HZ[cls] + phase))) : 0.0;
+  bool hit = aState >= 2.0;
+  vAngry = mod(aState, 2.0) >= 1.0 ? 1.0 : 0.0;
+  float shake = hit ? ${f(FLINCH_AMP)} * sin(6.2831853 * ${f(FLINCH_HZ)} * uTime) : 0.0;
+  // A blink by a hash of the ball's place.
+  float seed = fract(sin(dot(floor(aPrevCur.zw * 256.0), vec2(12.9898, 78.233))) * 43758.5453);
+  float period = ${f(BLINK_EVERY_S)} * (1.0 + seed);
+  float bt = fract(uTime / period + seed);
+  float share = ${f(BLINK_S)} / period;
+  float shut = bt < share ? sin(3.14159265 * bt / share) : 0.0;
+  vOpen = max(0.08, (1.0 - shut) * (hit ? ${f(FLINCH_OPEN)} : 1.0));
+  vec2 px = (pos - uCam) * uScale + aCorner * sizePx * quad + vec2(shake, -bob) * sizePx * 0.5;
   gl_Position = vec4(px.x / (0.5 * uViewport.x), -px.y / (0.5 * uViewport.y), 0.0, 1.0);
   vP = aCorner * 2.0 * quad;
   vPxP = 2.0 / sizePx;
@@ -222,6 +294,8 @@ in vec2 vAim;
 flat in int vClass;
 in float vPxP;
 in float vEyes;
+in float vOpen;
+in float vAngry;
 out vec4 outColor;
 const float R = ${f(BALL_R)};
 const vec3 OUTLINE = vec3(${OUTLINE_RGB.map(f).join(', ')});
@@ -251,12 +325,14 @@ void over(inout vec3 c, inout float a, float d, vec3 fill, float w, float aa) {
   c = mix(c, col, cover);
   a = a + (1.0 - a) * cover;
 }
-// An oval eye at c: 1 inside its white, the white's edge out to its outline.
-vec2 eye(vec2 p, vec2 c, float w, float aa) {
-  vec2 q = (p - c) / vec2(${f(EYE_RX)}, ${f(EYE_RY)});
-  float d = length(q) * ${f(EYE_RY)};   // ball units, about
-  float inside = 1.0 - smoothstep(${f(EYE_RY)} - aa, ${f(EYE_RY)} + aa, d);
-  float white = 1.0 - smoothstep(${f(EYE_RY)} - w - aa, ${f(EYE_RY)} - w + aa, d);
+// An oval eye at c, open: the share of its height shown, its brow cut falling toward the side inward (±1) when angry: 1 inside
+// it, and 1 inside its white (the edge out to its outline).
+vec2 eye(vec2 p, vec2 c, float open, float inward, float w, float aa) {
+  float ry = ${f(EYE_RY)} * open;
+  float d = (length((p - c) / vec2(${f(EYE_RX)}, ry)) - 1.0) * min(${f(EYE_RX)}, ry);
+  if (vAngry > 0.5) d = max(d, (c.y - ry * (1.0 - 2.0 * ${f(ANGRY_CUT)}) + ${f(ANGRY_SLOPE)} * (p.x - c.x) * inward) - p.y);
+  float inside = 1.0 - smoothstep(-aa, aa, d);
+  float white = 1.0 - smoothstep(-w - aa, -w + aa, d);
   return vec2(inside, white);
 }
 void main() {
@@ -316,8 +392,8 @@ void main() {
     // The eyes' box: both ovals and an aa.
     if (props && abs(vP.y - centre.y) < ${f(EYE_RY)} + aa && abs(vP.x - centre.x) < ${f(EYE_GAP + EYE_RX)} + aa) {
       float ew = min(w, 0.45 * ${f(EYE_RY)});
-      vec2 e1 = eye(vP, centre - vec2(${f(EYE_GAP)}, 0.0), ew, aa);
-      vec2 e2 = eye(vP, centre + vec2(${f(EYE_GAP)}, 0.0), ew, aa);
+      vec2 e1 = eye(vP, centre - vec2(${f(EYE_GAP)}, 0.0), vOpen, 1.0, ew, aa);
+      vec2 e2 = eye(vP, centre + vec2(${f(EYE_GAP)}, 0.0), vOpen, -1.0, ew, aa);
       float inside = max(e1.x, e2.x) * vEyes;
       float white = max(e1.y, e2.y);
       b = mix(b, mix(OUTLINE, vec3(1.0), white), inside);

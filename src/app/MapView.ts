@@ -13,6 +13,8 @@ import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
 import { drawSeaBattles } from '../render/units/seaBattles';
 import { FlagAtlas, NO_FLAG_SLOT } from '../render/units/flagAtlas';
+import { BallState } from '../render/units/ballShader';
+import { DeadBalls } from '../render/units/deadBalls';
 import { airFxSize, drawSorties, type PlacedSortie } from '../render/units/sorties';
 import { AirFx } from '../render/fx/air';
 import { NukeFx } from '../render/fx/nuke';
@@ -777,6 +779,10 @@ export class MapView {
     if (shots > 0) this.turretAims.add(this.fire.shots.slice(-shots), arrived, s.tickMs);
     this.firesDropped = s.fires.dropped;
     this.wrecks.add(s.events.count, s.events.data, arrived, s.tick);
+    this.deadBalls.add(s.events.count, s.events.data, arrived, (id) => {
+      const i = this.elementIdBefore.indexOf(id);
+      return i < 0 ? -1 : this.elementNationBefore[i]!;
+    });
     this.airFx.add(s.events.count, s.events.data, arrived);
     this.nukeFx.add(s.events.count, s.events.data, arrived);
     // A tank lost under fire burns: the snapshot says which elements were fired at, the fire
@@ -799,6 +805,7 @@ export class MapView {
     this.loaded = true;
     this.hulls.clear();
     this.wrecks.clear();
+    this.deadBalls.clear();
     this.airFx.clear();
     this.nukeFx.clear();
     this.fire.clear();
@@ -1112,6 +1119,8 @@ export class MapView {
   readonly turretAims = new TurretAims();
   /** The ends of elements at T2 and the wrecks they leave (PLAN 2.4b). */
   readonly wrecks = new WreckFx();
+  /** The balls of the elements destroyed (PLAN 7.174e): drawn in the ball look only. */
+  readonly deadBalls = new DeadBalls();
   /** The tanks lost between two snapshots, where they stood: burning, or left behind (PLAN 3.6d); and the fallen, the guns and the half-tracks (PLAN 3.11d). */
   readonly hulls = new HullFx();
 
@@ -1167,6 +1176,10 @@ export class MapView {
   elementId = new Uint32Array(0);
   elementFormation = new Uint32Array(0);
   elementX = new Float64Array(0);
+  /** Each element's nation (PLAN 7.174e), and the ids and nations of the snapshot before. */
+  elementNation = new Uint16Array(0);
+  private elementIdBefore = new Uint32Array(0);
+  private elementNationBefore = new Uint16Array(0);
   elementY = new Float64Array(0);
   elementStrength = new Uint16Array(0);
   /** The flags of each element's formation, as the snapshot carried them (`FormationFlag`; tests). */
@@ -1184,6 +1197,10 @@ export class MapView {
   /** The flag-atlas slot element sprite `i` was uploaded with (PLAN 7.174b; tests). */
   elementFlagSlot(i: number): number {
     return this.elementProxies.flagSlots[i]!;
+  }
+  /** The ball state element sprite `i` was uploaded with (`BallState` bits; PLAN 7.174e; tests). */
+  elementBallState(i: number): number {
+    return this.elementProxies.states[i]!;
   }
   /** The aim of element `i`'s turret as last uploaded, radians, or null for an element without one (PLAN 7.174d; tests). */
   elementTurretAim(i: number): number | null {
@@ -1248,9 +1265,13 @@ export class MapView {
     const p = this.elementProxies;
     this.elementCount = e.count;
     this.elementTruncated = e.truncated;
+    // The nations of the elements before, for the balls of those this snapshot ends (PLAN 7.174e).
+    this.elementIdBefore = this.elementId;
+    this.elementNationBefore = this.elementNation;
     // Copies for tests (the snapshot buffers go back to the pool).
     this.elementId = e.id.slice(0, e.count);
     this.elementFormation = e.formation.slice(0, e.count);
+    this.elementNation = e.nation.slice(0, e.count);
     this.elementX = e.x.slice(0, e.count);
     this.elementY = e.y.slice(0, e.count);
     this.elementStrength = e.strength.slice(0, e.count);
@@ -1280,6 +1301,8 @@ export class MapView {
       p.data[o + 7] = spriteAlpha(e.strength[i]!, e.size[i]!);
       p.colors.set(this.spriteRgba(e.nation[i]!, e.frame[i]!, e.x[i]!, e.y[i]!), i * 4);
       p.flagSlots[i] = this.flagAtlas.slotOf(e.nation[i]!);
+      // The ball's face (PLAN 7.174e): angry while its formation is engaged, flinching while fired at.
+      p.states[i] = ((e.flags[i]! & FormationFlag.engaged) !== 0 ? BallState.engaged : 0) | (e.hit[i] ? BallState.hit : 0);
     }
     this.elementTurrets = hulls;
     this.elementTurretOwner = new Uint32Array(hulls);
@@ -1287,6 +1310,9 @@ export class MapView {
     const all = appendWakes(p.data, p.colors, e.count, withTurrets);
     // Turrets and wakes have no flag (PLAN 7.174d draws a turret as its hull's barrel, no wake).
     p.flagSlots.fill(NO_FLAG_SLOT, e.count, all);
+    // A turret shakes with its hull's flinch.
+    for (let k = 0; k < hulls; k++) p.states[e.count + k] = p.states[this.elementTurretOwner[k]!]!;
+    p.states.fill(0, withTurrets, all);
     this.elementWakes = all - withTurrets;
     p.upload(all);
     // Near T3 the section is kept, so that the figures can be built in the frame the close tier
@@ -1617,8 +1643,8 @@ export class MapView {
       // Countryballs (PLAN 7.174c): one ball an element at T2 and at T3 (the user's choice: not its
       // figures), so the close handover does not fade the balls; a tank's turret is its barrel
       // (PLAN 7.174d), the wakes after the turrets are not drawn.
-      if (this.elementCount === 0) this.proxies.drawBalls(cam, dpr, t, this.proxies.count, flags, this.flagAtlas.height, 8, offs, this.unitScale, unitsIn, STAND_IN_MAX_PX);
-      else this.elementProxies.drawBalls(cam, dpr, t, this.elementCount + this.elementTurrets, flags, this.flagAtlas.height, ELEMENT_MIN_PX, offs, this.unitScale, unitsIn, undefined, BALL_FRAME_MIN_PX);
+      if (this.elementCount === 0) this.proxies.drawBalls(cam, dpr, t, this.proxies.count, flags, this.flagAtlas.height, 8, offs, this.unitScale, unitsIn, STAND_IN_MAX_PX, undefined, now / 1000);
+      else this.elementProxies.drawBalls(cam, dpr, t, this.elementCount + this.elementTurrets, flags, this.flagAtlas.height, ELEMENT_MIN_PX, offs, this.unitScale, unitsIn, undefined, BALL_FRAME_MIN_PX, now / 1000);
     } else if (this.elementCount === 0) this.proxies.draw(cam, dpr, t, 8, offs, this.unitScale, now / 1000, unitsIn, STAND_IN_MAX_PX);
     else {
       // Where a sprite is too small for a hull, a tank is its small mark (PLAN 3.6e3b).
@@ -1849,6 +1875,8 @@ export class MapView {
     // A struck city's ruin (PLAN 7.11b), under the wrecks: at every tier.
     this.ruinsShown = drawRuins(ctx, this.ruins, cam, this.geo, vw, vh);
     this.wrecks.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, Math.min(this.elementPx, WRECK_MAX_PX * this.unitScale));
+    // A ball destroyed: its crossed eyes over its wreck, fading (PLAN 7.174e).
+    if (this.flagTexture) this.deadBalls.draw(ctx, cam, this.geo, vw, vh, now, this.elementOpacity, this.elementPx, (n) => this.flags.canvasOf(n));
     // The line of contact between two formations in contact facing each other (PLAN 7.11a).
     this.contactLinesShown = this.drawContact(ctx, cam, vw, vh);
     // Toward the enemy of a formation in contact whose enemy is off the frame (PLAN 7.34d).
@@ -2705,7 +2733,7 @@ export class MapView {
     // or units still interpolating toward the latest tick. An idle map costs nothing.
     const c = this.controller.cam;
     const camMoved = c.cx !== this.lastCam.cx || c.cy !== this.lastCam.cy || c.scale !== this.lastCam.scale;
-    const animating = this.unitsAnimating(now) || this.wrecks.animating(now) || this.hulls.animating(now);
+    const animating = this.unitsAnimating(now) || this.wrecks.animating(now) || this.hulls.animating(now) || (this.unitLook === 'balls' && this.deadBalls.animating(now));
     const interpolating = (this.tickMs > 0 && now - this.snapArrival < this.tickMs * 1.5) || animating || this.unitsAnimated;
     if (!(this.resize() || this.dirty || camMoved || interpolating)) return false;
     this.draw(now);
@@ -2718,7 +2746,7 @@ export class MapView {
     // for a change that this draw starts, and "no" again once the clock is past the change's
     // end. A camera step and then a gap of more than the 300 ms of a split left the counters on
     // their parents' centroids, with nothing to draw them on.
-    this.unitsAnimated = this.unitsAnimating(now) || this.wrecks.animating(now) || this.hulls.animating(now);
+    this.unitsAnimated = this.unitsAnimating(now) || this.wrecks.animating(now) || this.hulls.animating(now) || (this.unitLook === 'balls' && this.deadBalls.animating(now));
     return true;
   }
 

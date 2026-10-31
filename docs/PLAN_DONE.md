@@ -16716,3 +16716,24 @@ Of 7.174 (open in PLAN.md):
   - [x] 7.174d The class by props (the user's choice): infantry a helmet, tanks treads and a barrel (turning as the
     turret did), guns a barrel and wheels, ships the ball in a hull, planes wings. AT: e2e evidence of each class
     at T2 and T3 (`docs/evidence/7.174/`); each class's prop pixels found by its ball.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.174 (open in PLAN.md):
+
+  - [x] 7.174e Animation, on the render clock only (nothing of it sim state): a bob on the march (the walk phase,
+    `marchFraction`), blinks at a hashed phase, angry eyes in contact, a flinch when hit (`hit`), ✕ eyes then a
+    fade where destroyed. AT: unit tests of the pure functions (phase → bob, state → eyes); a recorded clip in the
+    evidence; two frames of one ball 0.3 s apart on the march differ in its place.

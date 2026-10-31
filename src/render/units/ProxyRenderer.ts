@@ -119,7 +119,7 @@ const STRIDE = PROXY_STRIDE;
  * The attributes' places, the same in both programs (the classic sprites and the countryballs,
  * PLAN 7.174c), so that one vertex array serves both.
  */
-const ATTRIBS = { aCorner: 0, aPrevCur: 1, aMisc: 2, aColor: 3, aFlag: 4 } as const;
+const ATTRIBS = { aCorner: 0, aPrevCur: 1, aMisc: 2, aColor: 3, aFlag: 4, aState: 5 } as const;
 
 export class ProxyRenderer {
   readonly gl: WebGL2RenderingContext;
@@ -128,6 +128,7 @@ export class ProxyRenderer {
   private readonly instBuf: WebGLBuffer;
   private readonly colorBuf: WebGLBuffer;
   private readonly flagBuf: WebGLBuffer;
+  private readonly stateBuf: WebGLBuffer;
   /** The countryballs' program (PLAN 7.174c), compiled the first time balls are drawn. */
   private ballProgram: twgl.ProgramInfo | null = null;
   private readonly atlas: WebGLTexture;
@@ -144,6 +145,8 @@ export class ProxyRenderer {
    * look; -1 none. Written beside the tint by the element sprites and figures.
    */
   flagSlots = new Float32Array(0);
+  /** Each instance's state for the countryballs' faces (`BallState` bits: engaged, hit; PLAN 7.174e). */
+  states = new Float32Array(0);
 
   constructor(gl: WebGL2RenderingContext, atlasCanvas: HTMLCanvasElement) {
     this.gl = gl;
@@ -178,6 +181,11 @@ export class ProxyRenderer {
     gl.enableVertexAttribArray(loc('aFlag'));
     gl.vertexAttribPointer(loc('aFlag'), 1, gl.FLOAT, false, 0, 0);
     gl.vertexAttribDivisor(loc('aFlag'), 1);
+    this.stateBuf = gl.createBuffer()!;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.stateBuf);
+    gl.enableVertexAttribArray(loc('aState'));
+    gl.vertexAttribPointer(loc('aState'), 1, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribDivisor(loc('aState'), 1);
     gl.bindVertexArray(null);
   }
 
@@ -193,6 +201,9 @@ export class ProxyRenderer {
     const f = new Float32Array(n).fill(-1);
     f.set(this.flagSlots);
     this.flagSlots = f;
+    const st = new Float32Array(n);
+    st.set(this.states);
+    this.states = st;
   }
 
   /** Uploads the first `count` instances of `data`/`colors` (call once per snapshot). */
@@ -207,6 +218,8 @@ export class ProxyRenderer {
       gl.bufferData(gl.ARRAY_BUFFER, this.capacity * 4, gl.DYNAMIC_DRAW);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.flagBuf);
       gl.bufferData(gl.ARRAY_BUFFER, this.capacity * 4, gl.DYNAMIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.stateBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, this.capacity * 4, gl.DYNAMIC_DRAW);
       gl.bindBuffer(gl.ARRAY_BUFFER, this.instBuf);
     }
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.data, 0, count * STRIDE);
@@ -214,6 +227,8 @@ export class ProxyRenderer {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.colors, 0, count * 4);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.flagBuf);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.flagSlots, 0, count);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.stateBuf);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.states, 0, count);
   }
 
   /**
@@ -269,10 +284,10 @@ export class ProxyRenderer {
   /**
    * Draws the first `count` instances as countryballs (PLAN 7.174c, `ballShader.ts`): sized as `draw`
    * sizes them, upright, each with its nation's flag from `flags` (the flag atlas's texture,
-   * `flagH` texels high) by its slot in `flagSlots`. Turrets and wakes, written after the elements,
-   * are left out by `count`.
+   * `flagH` texels high) by its slot in `flagSlots`, their faces by `states` at `timeS` of the render
+   * clock (PLAN 7.174e). The wakes, written after the elements and their turrets, are left out by `count`.
    */
-  drawBalls(cam: Camera, dpr: number, t: number, count: number, flags: WebGLTexture, flagH: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, alpha = 1, maxPx = NO_MAX_PX, frameMinPx: readonly number[] = NO_FRAME_MIN): void {
+  drawBalls(cam: Camera, dpr: number, t: number, count: number, flags: WebGLTexture, flagH: number, minPx = 3, wrapOffsets: readonly number[] = [0], sizeMul = 1, alpha = 1, maxPx = NO_MAX_PX, frameMinPx: readonly number[] = NO_FRAME_MIN, timeS = 0): void {
     const n = Math.min(count, this.count);
     if (n <= 0) return;
     const gl = this.gl;
@@ -285,6 +300,8 @@ export class ProxyRenderer {
       uFlags: flags,
       uFlagH: flagH,
       uDpr: dpr,
+      uTime: timeS,
+      uMarchSpan: MARCH_SPAN,
       uScale: cam.scale * dpr,
       uViewport: [gl.drawingBufferWidth, gl.drawingBufferHeight],
       uT: Math.min(1, Math.max(0, t)),

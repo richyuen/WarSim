@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
-import { BALL_R, BallClass, ballClassOf, ballShade, EYES_FULL_PX, EYES_NONE_PX, eyeCentres, OUTLINE_SHARE, propPoint } from '../../src/render/units/ballShader';
+import { BALL_R, BallClass, ballClassOf, ballShade, BallState, EYES_FULL_PX, EYES_NONE_PX, eyeCentres, FLINCH_HZ, OUTLINE_SHARE, propPoint } from '../../src/render/units/ballShader';
 import { FLAG_ATLAS_COLS, FLAG_PAD, FLAG_SLOT_H, FLAG_SLOT_W } from '../../src/render/units/flagAtlas';
 import { FLAG_H, FLAG_W } from '../../src/shared/flagPixels';
 import { FormationFlag } from '../../src/shared/protocol';
@@ -26,6 +26,8 @@ const FRAMES: number[] = [Frame.infantry, Frame.prone, Frame.gun];
 /** A ball as the page read it: a box of device pixels about it, and its flag's slot from the atlas. */
 interface Ball {
   facing: number;
+  /** `BallState` bits as uploaded: engaged, hit. */
+  state: number;
   /** Ball centre in device px, relative to the box's top left. */
   cx: number;
   cy: number;
@@ -48,11 +50,13 @@ async function open(page: Page): Promise<void> {
 /** Draws once and reads each ball clear of the others in the view (at most 24). */
 function readBalls(page: Page): Promise<{ balls: Ball[]; px: number; dpr: number }> {
   return page.evaluate(
-    ({ frames, cols, slotW, slotH }) => {
+    ({ frames, cols, slotW, slotH, shakeHz }) => {
       const v = window.__warsim!.view!;
       const canvas = document.getElementById('map') as HTMLCanvasElement;
       const gl = canvas.getContext('webgl2')!;
-      v.draw(performance.now());
+      // A time when a flinch's shake is nought (PLAN 7.174e): a whole number of its periods.
+      const now = (Math.ceil(((performance.now() + 100) * shakeHz) / 1000) * 1000) / shakeHz;
+      v.draw(now);
       const dpr = canvas.width / canvas.clientWidth;
       const cam = v.controller.cam;
       const [vw, vh] = [canvas.clientWidth, canvas.clientHeight];
@@ -81,11 +85,11 @@ function readBalls(page: Page): Promise<{ balls: Ball[]; px: number; dpr: number
         const fy = Math.floor(slot / cols) * slotH;
         const flag: number[] = [];
         for (let y = 0; y < slotH; y++) for (let x = 0; x < slotW; x++) for (let k = 0; k < 3; k++) flag.push(atlas.pixels[((fy + y) * 2048 + fx + x) * 4 + k]!);
-        balls.push({ facing: v.elementFacing(i), cx: sx * dpr - x0, cy: sy * dpr - y0, half, side, box, flag });
+        balls.push({ facing: v.elementFacing(i), state: v.elementBallState(i), cx: sx * dpr - x0, cy: sy * dpr - y0, half, side, box, flag });
       }
       return { balls, px: size, dpr };
     },
-    { frames: FRAMES, cols: FLAG_ATLAS_COLS, slotW: FLAG_SLOT_W, slotH: FLAG_SLOT_H },
+    { frames: FRAMES, cols: FLAG_ATLAS_COLS, slotW: FLAG_SLOT_W, slotH: FLAG_SLOT_H, shakeHz: 2 * FLINCH_HZ },
   );
 }
 
@@ -197,7 +201,10 @@ test('countryballs at T2 and T3: the flag in the ball, the outline, the eyes tow
     let flagAll = 0;
     let worst = 0;
     let outlineDark = 0;
+    let calm = 0;
     let eyesWhite = 0;
+    let underFire = 0;
+    let eyesSquint = 0;
     for (const b of balls) {
       const away = Math.cos(b.facing) >= 0 ? -1 : 1; // the side without the eyes
       // A dot without eyes is its flag where the eyes would be (a white there may be the flag's),
@@ -217,14 +224,23 @@ test('countryballs at T2 and T3: the flag in the ball, the outline, the eyes tow
       for (let r = 0.7; r <= BALL_R; r += 0.25 / b.half) dark = Math.min(dark, Math.max(...at(b, 0, r).rgb));
       if (dark < 90) outlineDark++;
       const eyes = eyeCentres(b.facing).map(([x, y]) => at(b, x, y).rgb);
-      if (eyes.every(white)) eyesWhite++;
+      // Under fire the eyes are squeezed to dark slits (a flinch); else white, but for a blink.
+      if ((b.state & BallState.hit) !== 0) {
+        underFire++;
+        if (eyes.every((c) => Math.max(...c) < 90)) eyesSquint++;
+      } else {
+        calm++;
+        if (eyes.every(white)) eyesWhite++;
+      }
     }
-    console.log(`${m} m/px: ball ${size.toFixed(1)} px (dpr ${dpr}), ${balls.length} balls clear of the others; flag points ${flagOk} of ${flagAll} within 40 (worst ${worst.toFixed(0)}); outline dark ${outlineDark}; both eyes white ${eyesWhite}`);
+    console.log(`${m} m/px: ball ${size.toFixed(1)} px (dpr ${dpr}), ${balls.length} balls clear of the others; flag points ${flagOk} of ${flagAll} within 40 (worst ${worst.toFixed(0)}); outline dark ${outlineDark}; both eyes white ${eyesWhite} of ${calm} not under fire, squeezed dark ${eyesSquint} of ${underFire} under fire`);
     expect(balls.length, `${m} m/px: balls read`).toBeGreaterThanOrEqual(8);
     expect(flagOk, `${m} m/px: the flag's colour where the shader puts it${size <= EYES_NONE_PX ? ', at the eyes too (a flag dot)' : ''}`).toBe(flagAll);
     if (size >= EYES_FULL_PX) {
       expect(outlineDark, `${m} m/px: the outline`).toBe(balls.length);
-      expect(eyesWhite, `${m} m/px: two white eyes`).toBe(balls.length);
+      // A blink shuts a ball's eyes for 0.18 s in 3 to 6: a ninth of the balls may blink.
+      expect(eyesWhite, `${m} m/px: two white eyes, not under fire`).toBeGreaterThanOrEqual(Math.floor(calm * 0.89));
+      expect(eyesSquint, `${m} m/px: two dark slits, under fire`).toBeGreaterThanOrEqual(Math.floor(underFire * 0.89));
     }
   }
 
@@ -343,4 +359,75 @@ test('countryballs wear their class: helmet, treads and barrel, the gun, the hul
     expect(f?.checked ?? 0, `${name(c)}: points read`).toBeGreaterThanOrEqual(3);
     expect(f!.ok, `${name(c)}: the prop's colour`).toBe(f!.checked);
   }
+});
+
+// PLAN 7.174e (ADR-777): the balls move on the render clock. A German infantry division ordered
+// east, the game paused while it marches: the same frame drawn at one time is the same picture,
+// and drawn 0.3 s later its balls stand elsewhere (they bob); a division at rest drawn 0.3 s apart
+// moves only for a blink.
+test('countryballs on the march bob: two frames 0.3 s apart differ in their places', async ({ page }, info) => {
+  test.setTimeout(240_000);
+  await open(page);
+  const GER = id('GER');
+  const [bx, by] = cellOf(12.6, 52.5, W, H);
+  const f = await page.evaluate(
+    async ({ GER, INFANTRY, bx, by }) => {
+      const { sim, view } = window.__warsim!;
+      const before = new Set(view!.formationsOf(GER));
+      sim.command({ kind: 'spawnFormation', nation: GER, x: bx, y: by, strength: 0, template: INFANTRY });
+      let tick = (await sim.step(1)).tick;
+      const wait = (t: number): Promise<void> =>
+        new Promise<void>((done) => {
+          const go = (): void => (view!.lastTick === t ? done() : void setTimeout(go, 5));
+          go();
+        });
+      await wait(tick);
+      const f = view!.formationsOf(GER).find((x) => !before.has(x))!;
+      sim.command({ kind: 'moveFormation', id: f, x: bx + 3, y: by });
+      tick = (await sim.step(3)).tick;
+      await wait(tick);
+      return f;
+    },
+    { GER, INFANTRY, bx, by },
+  );
+  const [fx, fy] = (await page.evaluate((f) => window.__warsim!.view!.formationPos(f), f))!;
+  await page.evaluate(({ fx, fy }) => {
+    const v = window.__warsim!.view!;
+    v.controller.set({ cx: fx, cy: fy, scale: (v.metresPerPx * v.controller.cam.scale) / 15 });
+  }, { fx, fy });
+  await page.waitForFunction(() => (window.__warsim!.view!.subscription?.tier ?? 0) >= 2 && window.__warsim!.view!.elementCount > 0, null, { timeout: 20_000 });
+  await page.waitForTimeout(2000); // past the tick's interpolation
+  const marching = await page.evaluate((f) => {
+    const v = window.__warsim!.view!;
+    let n = 0;
+    for (let i = 0; i < v.elementCount; i++) if (v.elementFormation[i] === f && v.elementWalks(i)) n++;
+    return n;
+  }, f);
+  expect(marching, 'the division on the march').toBeGreaterThan(10);
+  // The rows of ball pixels (unlike the ground) about the division, drawn at `ms` of the clock.
+  const shot = (ms: number): Promise<number[]> =>
+    page.evaluate((ms) => {
+      const v = window.__warsim!.view!;
+      const canvas = document.getElementById('map') as HTMLCanvasElement;
+      const gl = canvas.getContext('webgl2')!;
+      v.draw(ms);
+      const px = new Uint8Array(canvas.width * canvas.height * 4);
+      gl.readPixels(0, 0, canvas.width, canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      return Array.from(px.filter((_, k) => k % 4 !== 3));
+    }, ms);
+  const t0 = await page.evaluate(() => performance.now() + 10_000);
+  const a = await shot(t0);
+  const same = await shot(t0);
+  const later = await shot(t0 + 300);
+  const differ = (x: number[], y: number[]): number => {
+    let n = 0;
+    for (let k = 0; k < x.length; k += 3) if (Math.abs(x[k]! - y[k]!) + Math.abs(x[k + 1]! - y[k + 1]!) + Math.abs(x[k + 2]! - y[k + 2]!) > 60) n++;
+    return n;
+  };
+  const still = differ(a, same);
+  const moved = differ(a, later);
+  await page.screenshot({ path: path.join(info.outputPath(), 'march-15m.png') });
+  console.log(`march at 15 m/px: ${marching} balls walking; pixels changed drawing one time twice ${still}, 0.3 s later ${moved}`);
+  expect(still, 'one time, one picture').toBe(0);
+  expect(moved, '0.3 s later the balls stand elsewhere').toBeGreaterThan(marching * 20);
 });

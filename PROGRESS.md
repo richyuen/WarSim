@@ -25074,3 +25074,24 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **Cost:** bench B, RTX 4070 Ti, three runs each: frame 10k 0.349 ms Classic, 0.388 balls; 30k 0.39–0.42, 0.554–0.569;
   under SPEC's 2.0 ms for 10k, over 7.174c's own 10 % bar. ADR-778 (proposed) puts the bar to the user.
 - **Next:** PLAN 7.174e.
+
+## 2026-10-31 — PLAN 7.174e: the countryballs move (done); ADR-778 decided
+
+- **ADR-778 accepted (the user's decision, option a):** the countryballs are held to SPEC's GPU budget (T2 with 10k
+  proxies ≤ 2.0 ms), not to 10 % of Classic.
+- **Built (render clock only, `ballShader.ts`):** a bob on the march by the walk phase (the march fraction of the
+  frame; by class: men 0.2 of the ball at 2.2 a second, vehicles 0.07 at 5, ships 0.06 at 0.8); a blink of 0.18 s every
+  3–6 s by a hash of the ball's place; angry eyes (the brow cut falling inward) while the formation is engaged; a
+  flinch while fired at (the snapshot's `hit`): eyes squeezed to 0.35 of their height, dark slits, and a shake of 0.07
+  ball at 7 a second. A new instance attribute, `ProxyRenderer.states` (engaged, hit), the turrets' copied from their
+  hulls. `deadBalls.ts`: an element destroyed is its ball with crossed eyes over its wreck, in 150 ms, held 1.2 s, out
+  over 1.5 s, sinking a quarter of its radius; its nation from the snapshot before; at most 400 at once. The motion
+  shows while the view redraws (the game running, the camera moving), as the classic walk does: a paused, still map
+  is not redrawn. The first angry cut (0.3 of the eye) left no white with its outline: 0.1, steeper (0.8).
+- **AT:** `tests/unit/ballMotion.test.ts` (bob by class and phase, still at rest, 0.3 s on another height; blinks 4–5
+  in four periods, 0.18 s each; flinch squeeze and shake; the dead ball's fade, nation lookup, cap). `countryballs1938`
+  e2e "on the march bob": 28 balls walking at 15 m/px, one time drawn twice 0 pixels changed, 0.3 s later 14,498. The
+  first test now expects white eyes on balls not fired at (13 of 13) and slits on those fired at, drawn at a time of
+  no shake. Clip `docs/evidence/7.174/e-fight-18m.webm` (a panzer division against a Polish infantry division, 9 s).
+  Bench B: 10k frame 0.385 ms, 30k 0.53 ms (Classic 0.35–0.36, 0.43). No sim input.
+- **Next:** PLAN 7.174f.

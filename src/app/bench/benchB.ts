@@ -71,7 +71,7 @@ function uploadScene(s: ProxyScene): void {
 }
 
 function drawUnits(t: number, timeS: number): void {
-  if (flagTexture) proxies.drawBalls(cam, dpr, t, proxies.count, flagTexture, flagAtlas.height, 3);
+  if (flagTexture) proxies.drawBalls(cam, dpr, t, proxies.count, flagTexture, flagAtlas.height, 3, [0], 1, 1, undefined, undefined, timeS);
   else proxies.draw(cam, dpr, t, 3, [0], 1, timeS);
 }
 

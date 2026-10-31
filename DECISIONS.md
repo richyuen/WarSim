@@ -167,7 +167,7 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
-### ADR-778 · 2026-10-31 · proposed (the user's decision) — PLAN 7.174d: the props' GPU cost against 7.174c's bar
+### ADR-778 · 2026-10-31 · accepted (the user's decision) — PLAN 7.174d: the countryballs are judged by SPEC's GPU budget, not 10 % of Classic
 
 - **Context.** PLAN 7.174c's AT set its own bar: bench B's frame GPU time within 10 % of Classic's (met then:
   30k 0.408 ms against 0.390–0.426). The props of 7.174d (the user's choice) draw past the ball: quads by class
@@ -179,7 +179,8 @@ runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on d
 - **Options:** (a) the bar is SPEC's budget (T2 with 10k proxies ≤ 2.0 ms GPU), not 10 % of Classic (recommended:
   the budget holds five times over); (b) cheaper props: drawn only from a larger ball (T3) or fewer of them, to
   get back within 10 %; (c) keep the 10 % bar and file the props' cost as a numbered task.
-- **Until decided:** 7.174d is ticked on its own AT (the props' pixels); 7.174c's bar is not met at HEAD.
+- **Chosen: (a)** (2026-10-31). 7.174c's bar is SPEC §10's: T2 with 10k proxies ≤ 2.0 ms GPU (balls with props
+  0.39 ms). The countryballs' later parts are held to the same budget.
 
 ### ADR-777 · 2026-10-31 · accepted (the user's decision) — PLAN 7.174: units are countryballs by default; Classic is a setting
 
