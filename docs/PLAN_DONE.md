@@ -16523,3 +16523,22 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   Breakthrough, Territory, Nuke, Found city, Raze city clipped; ADR-771). AT: e2e at 390 × 844 and 844 × 390:
   every tab and every God tool inside the view and hit-testable at its centre, no label truncated (scrollWidth
   ≤ clientWidth of each), a tap on each opens it.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.170 The air list tells wings apart: each row names its wing and its base or place, on at most two lines
+  (critic runs 20–21: Germany's 28 rows read "Fighter group at an airbase · no mission", four lines, no base;
+  `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e playing Germany on 1938 at 1600 × 900: 28 of 28 rows have
+  distinct text, each names a base or place, each row ≤ 2 lines high.

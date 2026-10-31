@@ -57,6 +57,13 @@ const num = (v: number): string => Math.round(v).toLocaleString('en-US');
  * on the map (patrol, strike, supply for a transport, rebase); and a paradrop of the formations
  * selected, the same way (PLAN 5.8v2).
  */
+/** Where a wing is (PLAN 7.170): at sea on its way to a new base, at its airbase, or on its carrier's fleet. */
+function wingWhere(wg: PlayerWing, templates: readonly { nameKey: string }[]): string {
+  if (wg.ferryDays > 0) return t('act.wingFerry', { n: wg.ferryDays });
+  if (wg.carrier) return wg.fleet !== 0 ? t('act.wingOn', { fleet: t('formation.name', { kind: t((templates[wg.fleetTemplate]?.nameKey ?? 'template.carrier_group') as MessageKey), n: wg.fleet }) }) : t('act.wingCarrier');
+  return wg.base !== '' ? t('act.wingAt', { base: wg.base }) : t('act.wingAirbase');
+}
+
 export function ActionsTab({ nation, nations, wars, templates, day, onCommand, wings, wingOrder, onArmWing, followedWing, onFollowWing, selected, dropArmed, onArmDrop, place, assist }: ActionsTabProps) {
   const n = nation.id;
   const others = nations.filter((o) => o.id !== n).sort((a, b) => displayName(a.name).localeCompare(displayName(b.name)));
@@ -174,43 +181,57 @@ export function ActionsTab({ nation, nations, wars, templates, day, onCommand, w
                 label={t('act.wingFollowHint')}
                 testId={`act-wing-${wg.id}-icon`}
               />
-              <span
-                class="god-war-name act-wing-name"
-                role="button"
-                tabIndex={0}
-                aria-pressed={followedWing === wg.id}
-                data-testid={`act-wing-${wg.id}-name`}
-                title={t('act.wingFollowHint')}
-                onClick={() => onFollowWing?.(wg.id)}
-                onKeyDown={(e) => {
-                  if (e.key !== 'Enter' && e.key !== ' ') return;
-                  e.preventDefault();
-                  onFollowWing?.(wg.id);
-                }}
-              >
-                {t((templates[wg.template]?.nameKey ?? 'template.fighter_group') as MessageKey)}
-                <span class="act-cost">
-                  {' '}
-                  {wg.ferryDays > 0 ? t('act.wingFerry', { n: wg.ferryDays }) : t(wg.carrier ? 'act.wingCarrier' : 'act.wingAirbase')} · {t(`act.mission.${wg.mission ?? 'none'}` as MessageKey)}
-                  {wg.flying ? ` · ${t('act.wingFlying')}` : ''}
+              {/* Two lines (PLAN 7.170): its name, as a division's ("Fighter group 412"), and where it is;
+                  then its mission beside its orders. */}
+              <div class="act-wing-body">
+                <span
+                  class="act-wing-name"
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={followedWing === wg.id}
+                  data-testid={`act-wing-${wg.id}-name`}
+                  title={t('act.wingFollowHint')}
+                  onClick={() => onFollowWing?.(wg.id)}
+                  onKeyDown={(e) => {
+                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                    e.preventDefault();
+                    onFollowWing?.(wg.id);
+                  }}
+                >
+                  {/* Short of room, the kind gives way ("Tactical bomber gr…"; its icon shows it): the number
+                      and the place tell the rows apart. */}
+                  <span class="act-wing-kind">{t((templates[wg.template]?.nameKey ?? 'template.fighter_group') as MessageKey)}</span>
+                  <span class="act-wing-tail" data-testid={`act-wing-${wg.id}-tail`}>
+                    {`\u00a0${wg.id}`}
+                    <span class="act-cost" data-testid={`act-wing-${wg.id}-where`}>
+                      {' · '}
+                      {wingWhere(wg, templates)}
+                    </span>
+                  </span>
                 </span>
-              </span>
-              {(['patrol', 'strike', 'supply', 'rebase'] as const)
-                .filter((k) => k === 'rebase' || (wg.transport ? k === 'supply' : k !== 'supply'))
-                .map((k) => (
-                  <button
-                    type="button"
-                    key={k}
-                    class={wingOrder && wingOrder.wing === wg.id && wingOrder.kind === k ? 'god-btn active' : 'god-btn'}
-                    data-testid={`act-wing-${wg.id}-${k}`}
-                    // At sea it takes no order until it is at its new base (PLAN 7.142, `orderFerry`).
-                    disabled={wg.ferryDays > 0}
-                    title={t(`act.wingOrder.${k}` as MessageKey)}
-                    onClick={() => onArmWing(wg.id, k)}
-                  >
-                    {t(`act.wingButton.${k}` as MessageKey)}
-                  </button>
-                ))}
+                <div class="act-wing-orders">
+                  <span class="act-cost act-wing-mission">
+                    {t(`act.mission.${wg.mission ?? 'none'}` as MessageKey)}
+                    {wg.flying ? ` · ${t('act.wingFlying')}` : ''}
+                  </span>
+                  {(['patrol', 'strike', 'supply', 'rebase'] as const)
+                    .filter((k) => k === 'rebase' || (wg.transport ? k === 'supply' : k !== 'supply'))
+                    .map((k) => (
+                      <button
+                        type="button"
+                        key={k}
+                        class={wingOrder && wingOrder.wing === wg.id && wingOrder.kind === k ? 'god-btn active' : 'god-btn'}
+                        data-testid={`act-wing-${wg.id}-${k}`}
+                        // At sea it takes no order until it is at its new base (PLAN 7.142, `orderFerry`).
+                        disabled={wg.ferryDays > 0}
+                        title={t(`act.wingOrder.${k}` as MessageKey)}
+                        onClick={() => onArmWing(wg.id, k)}
+                      >
+                        {t(`act.wingButton.${k}` as MessageKey)}
+                      </button>
+                    ))}
+                </div>
+              </div>
             </div>
           ))}
         </>

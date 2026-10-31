@@ -527,6 +527,13 @@ export interface PlayerWing {
   transport: boolean;
   /** Based on a carrier (its fleet's), not an airbase. */
   carrier: boolean;
+  /**
+   * Its base (PLAN 7.170; critic runs 20–21: 28 rows alike, no base named): the airbase's name, or
+   * '' on a carrier, whose fleet is `fleet` (its id, with `fleetTemplate`, names it); 0 at an airbase.
+   */
+  base: string;
+  fleet: number;
+  fleetTemplate: number;
   /** Its mission, none for null. */
   mission: 'patrol' | 'strike' | 'supply' | null;
   /** In the air on a sortie now. */

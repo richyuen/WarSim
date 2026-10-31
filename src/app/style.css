@@ -1626,6 +1626,43 @@ button.unit-icon.on {
   padding: 0 0.2rem;
   margin: 0 -0.2rem;
 }
+/* A wing's row is two lines beside its icon (PLAN 7.170; critic runs 20–21: four lines, 28 alike):
+   its name and where it is, then its mission beside its orders. */
+.god-tab .god-row.act-wing {
+  flex-wrap: nowrap;
+}
+.act-wing-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.act-wing-name {
+  display: flex;
+  white-space: nowrap;
+  min-width: 0;
+}
+.act-wing-kind {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.act-wing-tail {
+  flex-shrink: 0;
+}
+.act-wing-orders {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.act-wing-mission {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .act-wing-name:hover {
   background: var(--ui-hover);
 }

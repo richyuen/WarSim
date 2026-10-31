@@ -24896,3 +24896,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   and arms and disarms each tool. Upright red with the old CSS. Evidence `docs/evidence/7.169/`.
 - e2e by hand: phoneLayout1938, nukeAlertPhone1938 (14 passed).
 - **Next:** PLAN 7.170.
+
+## 2026-10-31 — PLAN 7.170: the air list names each wing and its base, two lines a row
+
+- Cause: a wing's row said only its kind and "at an airbase" / "on a carrier", and the text, mission and
+  three order buttons wrapped to four lines in the 296 px panel. The worker now sends each wing's base name
+  (`PlayerWing.base`) and, on a carrier, its fleet's id and template (`fleet`, `fleetTemplate`). The row is
+  "Fighter group 1252 · at Tempelhof" (or "on Carrier group 77", or the sea ferry's days), then the mission
+  beside Patrol / Strike / Rebase. Short of room only the kind gives way ("Tactical bomber gr…"; the icon shows
+  it): 1 of Germany's 28 rows was 5 px over.
+- AT: `airOrders1938` "Germany's air wings" (seed 5557, 1600 × 900): 28 rows, 28 texts, each with its number and
+  base whole on one line and the orders on one line below it. Red on the old code. The 7.142 ferry test now
+  asks for the home wing's own airbase by name, not "an airbase". Evidence `docs/evidence/7.170/`.
+- Not covered by an e2e: a carrier wing's "on Carrier group N" (Germany has none on seed 5557).
+- e2e by hand: airOrders1938 (6 passed).
+- **Next:** PLAN 7.171.

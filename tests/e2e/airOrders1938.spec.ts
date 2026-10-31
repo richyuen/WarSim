@@ -1,4 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
+import { mkdirSync } from 'node:fs';
+import path from 'node:path';
 import type {} from '../../src/app/testApi';
 import { cellOf } from '../../src/sim/data/terrain';
 import { NATIONS_1938, SIZE_1938, TEMPLATES_1938 } from '../../src/sim/scenario1938';
@@ -158,6 +160,8 @@ test('a wing at sea to its new base says so on its row, with the days left', asy
   const eng = w.airbases.findIndex((b) => w.cells.controller[b.cell] === ENG) + 1;
   expect(orderFerry(w, sailing, eng)).toBe(0);
   const days = Math.ceil((w.wingFerry.get(sailing)! - w.tick) / 24);
+  // Its row names its airbase (PLAN 7.170), not "an airbase".
+  const homeBase = w.airbases[w.wingBase.get(home)! - 1]!.name;
   expect(days).toBeGreaterThan(1);
   const saved = Buffer.from(node.save()).toString('base64');
 
@@ -178,7 +182,7 @@ test('a wing at sea to its new base says so on its row, with the days left', asy
   await expect(page.getByTestId(`act-wing-${sailing}`)).toContainText(`at sea to its new base, ${days} days`);
   await expect(page.getByTestId(`act-wing-${sailing}-strike`)).toBeDisabled();
   await expect(page.getByTestId(`act-wing-${home}-strike`)).toBeEnabled();
-  await expect(page.getByTestId(`act-wing-${home}`)).toContainText('at an airbase');
+  await expect(page.getByTestId(`act-wing-${home}`)).toContainText(`at ${homeBase}`);
   await expect(page.getByTestId(`act-wing-${home}`)).not.toContainText('at sea');
   await page.getByTestId('tab-actions').locator('xpath=ancestor::aside[1]').screenshot({ path: 'docs/evidence/7.142/a-wing-at-sea-row.png' });
 });
@@ -219,4 +223,56 @@ test('a wing\'s name in the Actions tab selects it and the camera follows it; ag
   await page.keyboard.press('Escape');
   await expect(page.getByTestId(`act-wing-${wing.id}`)).not.toHaveClass(/followed/);
   expect(await page.evaluate(() => window.__warsim!.view!.controller.following)).toBe(false);
+});
+
+// PLAN 7.170 AT (critic runs 20–21, `c21_u_1600_5557.json`: Germany's 28 air wings were 28 rows of
+// "Fighter group at an airbase · no mission", each wrapped to four lines, no base named): playing
+// Germany on seed 5557 at 1600 × 900, each row names its wing ("Fighter group 1252") and its base or
+// carrier, all 28 differ, and each is two lines: the name and place on one (the number and place
+// whole; short of room the kind gives way, its icon shows it), then the mission beside the orders.
+test("Germany's air wings: 28 rows that differ, each naming its base, each of two lines", async ({ page }, info) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto('/?scenario=1938&paused=1&seed=5557');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const GER = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
+  await page.evaluate((n) => window.__warsim!.view!.select(n), GER);
+  await page.getByTestId('take-control').click();
+  await page.getByTestId('tab-actions').click();
+  await expect(page.locator('.act-wing')).toHaveCount(28);
+  const rows = await page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>('.act-wing')].map((r) => {
+      const name = r.querySelector<HTMLElement>('.act-wing-name')!;
+      const orders = r.querySelector<HTMLElement>('.act-wing-orders')!;
+      // The lines the name's words take: the tops of their boxes, those within 6 px one line (the
+      // place is in smaller type, its box a few px lower on the same line).
+      const range = document.createRange();
+      range.selectNodeContents(name);
+      const tops: number[] = [];
+      for (const r of range.getClientRects()) if (r.width > 0 && !tops.some((t) => Math.abs(t - r.top) < 6)) tops.push(r.top);
+      const buttons = [...orders.querySelectorAll('button')].map((b) => Math.round(b.getBoundingClientRect().top));
+      return {
+        text: name.textContent ?? '',
+        nameLines: tops.length,
+        // The number and the place whole (the kind may give way: its icon shows it), inside the row.
+        cut: (() => {
+          const tail = r.querySelector<HTMLElement>('.act-wing-tail')!.getBoundingClientRect();
+          return tail.right > name.getBoundingClientRect().right + 0.5 || tail.right > r.getBoundingClientRect().right;
+        })(),
+        ordersOneLine: new Set(buttons).size === 1,
+        ordersBelow: orders.getBoundingClientRect().top >= name.getBoundingClientRect().bottom - 1,
+        rowWithin: r.getBoundingClientRect().bottom <= orders.getBoundingClientRect().bottom + 6,
+      };
+    }),
+  );
+  const s = JSON.stringify(rows.slice(0, 3));
+  expect(new Set(rows.map((r) => r.text)).size, s).toBe(28);
+  for (const r of rows) {
+    expect(r.text, s).toMatch(/^.+\s\d+ · (at \S.*|on .+ \d+|at sea to its new base, \d+ days?)$/);
+    expect({ nameLines: r.nameLines, cut: r.cut, ordersOneLine: r.ordersOneLine, ordersBelow: r.ordersBelow, rowWithin: r.rowWithin }, r.text).toEqual({ nameLines: 1, cut: false, ordersOneLine: true, ordersBelow: true, rowWithin: true });
+  }
+  const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/7.170') : info.outputPath();
+  mkdirSync(out, { recursive: true });
+  await page.locator('.act-wing').first().scrollIntoViewIfNeeded();
+  await page.getByTestId('tab-actions').locator('xpath=ancestor::aside[1]').screenshot({ path: path.join(out, 'air-rows-germany.png') });
 });

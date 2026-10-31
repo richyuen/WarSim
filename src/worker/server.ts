@@ -1771,7 +1771,8 @@ function playerWings(world: World): PlayerWing[] {
     const lw = world.settings.loopingMap ? world.cells.w : 0;
     const at = up ? sortieAt(s, world.tick, lw) : { x: c.x[id]!, y: c.y[id]! };
     const x = lw > 0 ? ((at.x % lw) + lw) % lw : at.x;
-    out.push({ id, template: c.template[id]!, transport: isTransport(world, id), carrier: base < 0, mission: world.wingMission.get(id)?.kind ?? null, flying: world.sorties.has(id), ferryDays: ferryDays(world, id), x, y: at.y });
+    const fleet = base < 0 && world.formations.has(-base) ? -base : 0;
+    out.push({ id, template: c.template[id]!, transport: isTransport(world, id), carrier: base < 0, base: base > 0 ? (world.airbases[base - 1]?.name ?? '') : '', fleet, fleetTemplate: fleet !== 0 ? c.template[fleet]! : 0, mission: world.wingMission.get(id)?.kind ?? null, flying: world.sorties.has(id), ferryDays: ferryDays(world, id), x, y: at.y });
   }
   return out;
 }
