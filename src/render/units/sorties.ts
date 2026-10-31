@@ -11,6 +11,7 @@ import { SORTIE_STRIDE, SortieRole } from '../../shared/protocol';
 import { Leg, sortieAt, type Sortie } from '../../shared/sorties';
 import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 import { sizeScale } from '../sizeScale';
+import { drawBall2d, type Ball2d } from './ball2d';
 import { LINE_CELLS } from './individuals';
 
 /** A plane's span, CSS px (before the unit size), by role: a fighter's, a bomber's. */
@@ -156,6 +157,8 @@ export function drawSorties(
   colour: (nation: number) => string,
   size = 1,
   close = 0,
+  /** The ball look (PLAN 7.174f): each plane a countryball with wings, of its nation's flag. */
+  flagOf?: (nation: number) => CanvasImageSource | null,
 ): PlacedSortie[] {
   const unit = size;
   const out: PlacedSortie[] = [];
@@ -193,17 +196,21 @@ export function drawSorties(
       const placed: PlacedSortie = { x, y, heading: at.heading, leg: at.leg, planes: n, nation: rows[i + 8]!, span: hand < 0.5 ? symbol : wing, at: [], handover: hand, trueSpan: wing, role };
       out.push(placed);
       ctx.fillStyle = colour(rows[i + 8]!);
+      const ball: Ball2d | undefined = flagOf ? { flag: flagOf(rows[i + 8]!), tint: colour(rows[i + 8]!), look: Math.cos(at.heading) >= 0 ? 1 : -1, prop: 'wings' } : undefined;
       // The symbol, then the plane at its wingspan, each at its share of the handover.
-      if (hand < 1) vee(ctx, x, y, at.heading, n, symbol, alpha * (1 - hand), hand < 0.5 ? placed.at : null);
-      if (hand > 0) vee(ctx, x, y, at.heading, n, wing, alpha * hand, hand < 0.5 ? null : placed.at);
+      if (hand < 1) vee(ctx, x, y, at.heading, n, symbol, alpha * (1 - hand), hand < 0.5 ? placed.at : null, ball);
+      if (hand > 0) vee(ctx, x, y, at.heading, n, wing, alpha * hand, hand < 0.5 ? null : placed.at, ball);
     }
   }
   ctx.restore();
   return out;
 }
 
+/** A plane's countryball's radius in the ball look, a share of the plane's span (PLAN 7.174f). */
+export const PLANE_BALL = 0.5;
+
 /** A wing's planes of `span` at `alpha` with a short trail: a vee, the leader, then one either side behind it; each plane's middle into `at`. */
-function vee(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, n: number, span: number, alpha: number, at: [number, number][] | null): void {
+function vee(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, n: number, span: number, alpha: number, at: [number, number][] | null, ball?: Ball2d): void {
   if (alpha <= 0.01) return;
   ctx.globalAlpha = alpha;
   // A plane under SMALL_PLANE_PX (one at its wingspan, close in) has no edge and no blur, or they
@@ -230,6 +237,8 @@ function vee(ctx: CanvasRenderingContext2D, x: number, y: number, heading: numbe
     const sgn = k === 1 ? -1 : k === 2 ? 1 : 0;
     const [px, py] = [x - cos * b - sin * side * sgn, y - sin * b + cos * side * sgn];
     at?.push([px, py]);
-    plane(ctx, px, py, heading, span, !small);
+    // A countryball at PLANE_BALL of the plane's span (its wings a little wider than the plane).
+    if (ball) drawBall2d(ctx, px, py, PLANE_BALL * span, ball);
+    else plane(ctx, px, py, heading, span, !small);
   }
 }

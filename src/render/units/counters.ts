@@ -12,6 +12,7 @@
  * appears or disappears anywhere except under a counter in the same place.
  */
 import { progress, running } from '../timing';
+import { drawBall2d } from './ball2d';
 import { strengthText } from './markers';
 import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 
@@ -30,6 +31,9 @@ export interface CounterSource {
 export const NAVAL = 1 << 16;
 
 /** A counter's nation as a source gives it: `nation` + NAVAL for a fleet. */
+/** The radius of a counter's ball in the ball look, CSS px (before the unit size; PLAN 7.174f). */
+export const COUNTER_BALL_R = 8;
+
 export function counterNation(nation: number, fleet: boolean): number {
   return fleet ? nation + NAVAL : nation;
 }
@@ -420,6 +424,8 @@ export class CounterLayer {
     flagOf: (nation: number) => CanvasImageSource | null,
     /** Unit-size setting (PLAN 1.39a): scales each counter about its position. */
     size = 1,
+    /** The ball look (PLAN 7.174f): the flag chip a countryball. */
+    balls = false,
   ): void {
     this.drawn = [];
     this.boxes = [];
@@ -466,13 +472,17 @@ export class CounterLayer {
         // A navy's counter (PLAN 4.10a): a sea-blue box and frame with a hull under its strength.
         ctx.fillStyle = naval ? 'rgba(14, 38, 72, 0.9)' : 'rgba(16, 18, 24, 0.85)';
         ctx.fillRect(x, y, w, h);
-        ctx.fillStyle = colorOf(nation);
-        ctx.fillRect(x + 1, y + 1, 12, h - 2);
         const flag = flagOf(nation);
-        if (flag) ctx.drawImage(flag, x + 2, y + 3, 10, 8);
+        if (!balls) {
+          ctx.fillStyle = colorOf(nation);
+          ctx.fillRect(x + 1, y + 1, 12, h - 2);
+          if (flag) ctx.drawImage(flag, x + 2, y + 3, 10, 8);
+        }
         ctx.strokeStyle = naval ? '#8ec5ff' : 'rgba(0, 0, 0, 0.9)';
         ctx.lineWidth = 1;
         ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+        // In the ball look the chip is a countryball over the box's left end (a fleet's hull is the box's own).
+        if (balls) drawBall2d(ctx, x + 7, y + h / 2, COUNTER_BALL_R, { flag, tint: colorOf(nation), look: 1, prop: 'none' });
         if (naval) {
           ctx.fillStyle = '#8ec5ff';
           ctx.beginPath();

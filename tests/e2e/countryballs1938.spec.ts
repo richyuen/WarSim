@@ -1,8 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import path from 'node:path';
 import type {} from '../../src/app/testApi';
-import { BALL_R, BallClass, ballClassOf, ballShade, BallState, EYES_FULL_PX, EYES_NONE_PX, eyeCentres, FLINCH_HZ, OUTLINE_SHARE, propPoint } from '../../src/render/units/ballShader';
+import { BALL_R, BallClass, ballClassOf, ballShade, BallState, EYES_FULL_PX, EYES_NONE_PX, eyeCentres, FLINCH_HZ, OUTLINE_SHARE, propPoint, WING_RGB } from '../../src/render/units/ballShader';
+import { WING_RY, WING_Y } from '../../src/render/units/ball2d';
 import { FLAG_ATLAS_COLS, FLAG_PAD, FLAG_SLOT_H, FLAG_SLOT_W } from '../../src/render/units/flagAtlas';
+import { PLANE_BALL } from '../../src/render/units/sorties';
 import { FLAG_H, FLAG_W } from '../../src/shared/flagPixels';
 import { FormationFlag } from '../../src/shared/protocol';
 import { Frame } from '../../src/shared/unitLooks';
@@ -430,4 +432,132 @@ test('countryballs on the march bob: two frames 0.3 s apart differ in their plac
   console.log(`march at 15 m/px: ${marching} balls walking; pixels changed drawing one time twice ${still}, 0.3 s later ${moved}`);
   expect(still, 'one time, one picture').toBe(0);
   expect(moved, '0.3 s later the balls stand elsewhere').toBeGreaterThan(marching * 20);
+});
+
+/** The map and its overlays composed at device px (counters, markers and planes are on the overlay): RGB rows. */
+function composite(page: Page): Promise<{ px: number[]; w: number; h: number; dpr: number }> {
+  return page.evaluate(() => {
+    const v = window.__warsim!.view!;
+    v.draw(performance.now());
+    const c = document.getElementById('map') as HTMLCanvasElement;
+    const out = document.createElement('canvas');
+    out.width = c.width;
+    out.height = c.height;
+    const ctx = out.getContext('2d')!;
+    ctx.drawImage(c, 0, 0);
+    for (const o of document.querySelectorAll<HTMLCanvasElement>('canvas.map-labels')) ctx.drawImage(o, 0, 0, c.width, c.height);
+    const d = ctx.getImageData(0, 0, c.width, c.height).data;
+    const px: number[] = [];
+    for (let k = 0; k < d.length; k += 4) px.push(d[k]!, d[k + 1]!, d[k + 2]!);
+    return { px, w: c.width, h: c.height, dpr: c.width / c.clientWidth };
+  });
+}
+
+/** The colours of nation `n`'s flag that hold a twentieth of it or more. */
+function flagColours(page: Page, n: number): Promise<number[][]> {
+  return page.evaluate((n) => {
+    const px = window.__warsim!.view!.flags.pixelsOf(n);
+    const count = new Map<number, number>();
+    for (const c of px) count.set(c, (count.get(c) ?? 0) + 1);
+    return [...count].filter(([, k]) => k >= px.length / 20).map(([c]) => [(c >> 16) & 255, (c >> 8) & 255, c & 255]);
+  }, n);
+}
+
+/** The share of the pixels within `r` CSS px of (x, y) that are one of `colours` (within 60: the ball's shading about them). */
+function discOf(img: { px: number[]; w: number; dpr: number }, x: number, y: number, r: number, colours: number[][]): number {
+  let n = 0;
+  let near = 0;
+  for (let dy = -r; dy <= r; dy += 0.5)
+    for (let dx = -r; dx <= r; dx += 0.5) {
+      if (dx * dx + dy * dy > r * r) continue;
+      const o = (Math.floor((y + dy) * img.dpr) * img.w + Math.floor((x + dx) * img.dpr)) * 3;
+      const c = [img.px[o]!, img.px[o + 1]!, img.px[o + 2]!];
+      n++;
+      if (colours.some((f) => dist(c, f) <= 60)) near++;
+    }
+  return near / Math.max(1, n);
+}
+
+// PLAN 7.174f (ADR-777): the far tiers and the sky in the ball look. At 3000 m/px (T0) each
+// counter's chip is a ball of its nation's flag; at 800 m/px (T1) each marker's box; a click on a
+// marker's ball opens its formation's panel; Germany at war with Poland, the planes over the front
+// are winged balls of their flags.
+test('countryballs far out and in the air: counters and markers are flag balls; a click opens the panel; planes have wings', async ({ page }, info) => {
+  test.setTimeout(400_000);
+  await open(page);
+  const [bx, by] = cellOf(14, 52, W, H);
+  const at = async (x: number, y: number, m: number): Promise<void> => {
+    await page.evaluate(({ x, y, m }) => {
+      const v = window.__warsim!.view!;
+      v.controller.set({ cx: x, cy: y, scale: (v.metresPerPx * v.controller.cam.scale) / m });
+    }, { x, y, m });
+    await page.waitForTimeout(1500);
+  };
+  // Inside each ball, below its eyes and clear of its rim: a disc of 0.45 of its radius, a quarter
+  // of the radius below its middle.
+  for (const m of [3000, 800]) {
+    await at(bx, by, m);
+    const items = await page.evaluate((m) => {
+      const v = window.__warsim!.view!;
+      if (m > 2000) return v.counters.drawn.filter((d) => d.alpha > 0.9 && !d.naval).map((d) => ({ nation: d.nation, x: d.x + 7 * v.unitScale, y: d.y + d.h / 2, r: 8 * v.unitScale }));
+      return v.markerRects.filter((r) => r.alpha > 0.9 && r.scale === 1).map((r) => ({ nation: r.nation, x: r.x + r.w / 2, y: r.y + (17 / 2) * v.unitScale, r: 9.5 * v.unitScale }));
+    }, m);
+    const img = await composite(page);
+    await page.screenshot({ path: path.join(info.outputPath(), `far-${m}m.png`) });
+    let ok = 0;
+    const read = items.slice(0, 30);
+    for (const it of read) if (discOf(img, it.x, it.y + it.r * 0.25, it.r * 0.45, await flagColours(page, it.nation)) >= 0.6) ok++;
+    console.log(`${m} m/px: ${items.length} ${m > 2000 ? 'counters' : 'markers'}; ${ok} of ${read.length} read are discs of their flag's colours`);
+    expect(read.length, `${m} m/px: drawn`).toBeGreaterThanOrEqual(10);
+    expect(ok, `${m} m/px: flag balls`).toBeGreaterThanOrEqual(Math.ceil(read.length * 0.9));
+  }
+
+  // A click on a marker's ball opens its formation's panel.
+  const target = await page.evaluate(() => {
+    const v = window.__warsim!.view!;
+    const c = (document.getElementById('map') as HTMLCanvasElement).getBoundingClientRect();
+    const r = v.markerRects.find((m) => m.alpha > 0.9 && m.members.length === 1 && m.x > 200 && m.y > 150 && m.x < c.width - 400 && m.y < c.height - 200)!;
+    return { id: r.id, x: c.left + r.x + r.w / 2, y: c.top + r.y + (17 / 2) * v.unitScale };
+  });
+  await page.mouse.click(target.x, target.y);
+  await expect.poll(() => page.evaluate(() => document.querySelector<HTMLElement>('[data-testid=formation-panel]')?.dataset['formation'] ?? null)).toBe(String(target.id));
+
+  // The air: Germany at war with Poland, an hour at a time until planes are over the front.
+  await page.keyboard.press('Escape');
+  await page.evaluate(({ a, d }) => window.__warsim!.sim.command({ kind: 'declareWar', attacker: a, defender: d }), { a: id('GER'), d: id('POL') });
+  const [fx, fy] = cellOf(17.5, 52.3, W, H);
+  await at(fx, fy, 1000);
+  let planes: { nation: number; x: number; y: number; span: number; look: number }[] = [];
+  for (let h = 0; h < 96 && planes.length < 6; h++) {
+    planes = await page.evaluate(async () => {
+      const w = window.__warsim!;
+      const v = w.view!;
+      const target = v.lastTick + 1;
+      await w.sim.step(1);
+      await new Promise<void>((done) => {
+        const go = (): void => void (v.lastTick >= target ? done() : setTimeout(go, 4));
+        go();
+      });
+      v.draw(performance.now());
+      return v.sortieMarks.flatMap((s) => s.at.map(([x, y]) => ({ nation: s.nation, x, y, span: s.span, look: Math.cos(s.heading) >= 0 ? 1 : -1 })));
+    });
+  }
+  const img = await composite(page);
+  await page.screenshot({ path: path.join(info.outputPath(), 'air-1000m.png') });
+  const wing = WING_RGB.map((c) => c * 255);
+  let winged = 0;
+  let flagged = 0;
+  // A vee's planes fly 0.8 to 0.9 of a span apart: their balls (0.7 of it across) do not touch, their wings may.
+  const clear = planes.filter((p) => planes.every((q) => q === p || Math.hypot(q.x - p.x, q.y - p.y) > p.span * 0.75) && p.x > 20 && p.y > 20);
+  for (const p of clear) {
+    const r = PLANE_BALL * p.span;
+    const u = r / BALL_R;
+    if (discOf(img, p.x - 0.3 * u * p.look, p.y + 0.3 * u, r * 0.35, await flagColours(page, p.nation)) >= 0.5) flagged++;
+    // A wing's colour out of the ball, either side.
+    if ([-1, 1].some((s) => discOf(img, p.x + s * 1.3 * u, p.y + WING_Y * u, Math.max(0.6, WING_RY * u), [wing]) > 0)) winged++;
+  }
+  console.log(`air at 1000 m/px: ${planes.length} planes, ${clear.length} clear of the others; ${flagged} a ball of their flag, ${winged} with wings`);
+  expect(clear.length, 'planes over the front').toBeGreaterThanOrEqual(3);
+  expect(flagged, 'flag balls').toBeGreaterThanOrEqual(Math.ceil(clear.length * 0.8));
+  expect(winged, 'with wings').toBeGreaterThanOrEqual(Math.ceil(clear.length * 0.8));
 });

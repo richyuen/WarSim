@@ -25095,3 +25095,20 @@ No rule changed and nothing on screen changed. One task came out of it.
   no shake. Clip `docs/evidence/7.174/e-fight-18m.webm` (a panzer division against a Polish infantry division, 9 s).
   Bench B: 10k frame 0.385 ms, 30k 0.53 ms (Classic 0.35–0.36, 0.43). No sim input.
 - **Next:** PLAN 7.174f.
+
+## 2026-10-31 — PLAN 7.174f: counters, markers and planes as countryballs (done)
+
+- **Built:** `render/units/ball2d.ts`, a countryball on the Canvas2D overlay as the shader draws one (the flag in a
+  disc, a radial shade, the outline, eyes to a side, a prop: helmet, treads, wheels, wings, hull; no caller's shadow).
+  In the ball look: a T0 counter's flag chip is a ball of radius 8 over its box's left end (`COUNTER_BALL_R`); a T1
+  marker's box is a ball of radius 9.5 wearing its symbol's prop (`markerProp`: armour treads, motorised wheels, a
+  fleet a hull, the rest a helmet), looking the way of its order, with its pips, number, "×n" and a red ring while
+  engaged; the morph's sprite has room for the ball. A plane in flight is a winged ball of radius half its span
+  (`PLANE_BALL`), its wings without an edge under 6 px. Classic draws as before (the look is a last, optional argument).
+- **AT:** `countryballs1938` "far out and in the air": at 3000 m/px 30 of 30 counters read (of 93) and at 800 m/px 30 of
+  30 markers (of 52) are discs of their flag's colours (60 % of the inner disc within 60); a click on a marker's ball
+  opens its formation's panel; Germany at war with Poland, at 1000 m/px 62 planes clear of each other's balls, 57 a ball
+  of their flag and 57 with wings. First tries: planes of 0.35 of a span were 3 px balls whose wings were all edge and
+  greyed by the plane's shadow. Classic specs `counters1938`, `markers1938`, `airT3_1938`, `settings1938` green.
+  Evidence `docs/evidence/7.174/f-*.png`. No sim input.
+- **Next:** PLAN 7.174g.

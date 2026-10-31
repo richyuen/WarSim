@@ -1917,11 +1917,13 @@ export class MapView {
     // In its sprites' tint, as its men and tanks (PLAN 7.51a: Germany's grey was drawn as it is
     // on the map, under a white edge: "white glyphs").
     const tint = (n: number): string => `#${this.nationColor(n).toString(16).padStart(6, '0')}`;
-    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now) - 1, cam, this.geo, vw, vh, 1, tint, this.unitScale, this.shares.individuals);
+    // In the ball look each plane a countryball with wings (PLAN 7.174f).
+    const balls = this.unitLook === 'balls';
+    this.sortieMarks = drawSorties(ctx, this.sorties, this.tickProgress(now) - 1, cam, this.geo, vw, vh, 1, tint, this.unitScale, this.shares.individuals, balls ? flagOf : undefined);
     // The air's fights, bombs and flak (PLAN 5.7b), with the sorties; at T3 a strike's bombs on
     // the men it hit, its formation's drawn elements (PLAN 5.9).
     this.airFx.draw(ctx, cam, this.geo, vw, vh, now, airFxSize(cam.scale, this.unitScale), this.shares.individuals, (f) => this.elementPlaces(f));
-    this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale);
+    this.counters.draw(ctx, src, cam, this.geo, vw, vh, 1 - share, now, hex, flagOf, this.unitScale, balls);
     // The sea battles going on (PLAN 4.10b), at T0 to T2: gone with the figures of T3.
     this.seaMarks = drawSeaBattles(ctx, this.seas, cam, this.geo, vw, vh, 1 - this.shares.individuals, this.unitScale);
     if (share * Math.max(this.morph.box, this.morph.bar) <= 0.01) {
@@ -1966,7 +1968,7 @@ export class MapView {
     this.pipStates.end();
     // (The boxes do not move while they shrink into the T2 sprites: ADR-72.)
     const stacks = this.markerStacks.frame(items, MARKER_W * this.unitScale, MARKER_H * this.unitScale, now, this.morph.scale < 1);
-    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks, this.picked);
+    this.markerRects = drawMarkers(ctx, markers, this.majors, cam, this.geo, vw, vh, share, hex, flagOf, this.unitScale, this.morph, stacks, this.picked, this.unitLook === 'balls');
   }
 
   /** The formations whose order lines the markers of the last frame drew (PLAN 7.4b; tests). */

@@ -16737,3 +16737,25 @@ Of 7.174 (open in PLAN.md):
     `marchFraction`), blinks at a hashed phase, angry eyes in contact, a flinch when hit (`hit`), ✕ eyes then a
     fade where destroyed. AT: unit tests of the pure functions (phase → bob, state → eyes); a recorded clip in the
     evidence; two frames of one ball 0.3 s apart on the march differ in its place.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.174 (open in PLAN.md):
+
+  - [x] 7.174f T0, T1 and the sky (the user's choice: every level). Counters and markers as balls of the flag
+    with eyes, keeping the number, the pips, "×n" and the engaged ring; sorties as winged balls; the sea battles'
+    marks as they are. AT: e2e at 3000 and 800 m/px: a counter and a marker are discs of their flag's colours; a
+    click on a ball opens its formation's panel as on Classic's marker; `sortie` e2e finds a winged ball where the
+    sortie is.

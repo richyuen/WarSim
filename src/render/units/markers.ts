@@ -15,6 +15,7 @@ import type { UnitSymbol } from '../../shared/protocol';
 import { worldToScreen, itemOffsets, type Camera, type MapGeometry } from '../camera';
 import { FADE_MS, smooth } from '../timing';
 import type { StackedMarker } from './markerStacks';
+import { drawBall2d, type Prop2d } from './ball2d';
 import { drawPips, PIP_PANEL_H, type Pips } from './pips';
 
 /** The ink of a retreat's badge on a T1 marker (PLAN 7.4g2). */
@@ -219,7 +220,21 @@ function symbolPath(ctx: CanvasRenderingContext2D, s: UnitSymbol, x: number, y: 
 }
 
 /** The box of a marker with its top-left corner at (x, y): backing, the nation's fill, outline, symbol, flag chip. */
-function boxArt(ctx: CanvasRenderingContext2D, m: MarkerInput, x: number, y: number, colorOf: (nation: number) => string, flagOf: (nation: number) => CanvasImageSource | null): void {
+/** A marker's prop in the ball look (PLAN 7.174f): its symbol's men, tanks, lorries or ships. */
+export function markerProp(symbol: UnitSymbol): Prop2d {
+  return symbol === 'armour' ? 'treads' : symbol === 'motorised' ? 'wheels' : symbol === 'fleet' ? 'hull' : 'helmet';
+}
+
+/** The radius of a marker's ball, CSS px (before the unit size): the box's height and a little. */
+export const MARKER_BALL_R = BOX_H / 2 + 1;
+
+function boxArt(ctx: CanvasRenderingContext2D, m: MarkerInput, x: number, y: number, colorOf: (nation: number) => string, flagOf: (nation: number) => CanvasImageSource | null, balls = false): void {
+  if (balls) {
+    // A countryball in the box's place (PLAN 7.174f), looking the way of its order.
+    const look = m.target && m.target[0] < m.x ? -1 : 1;
+    drawBall2d(ctx, x + BOX_W / 2, y + BOX_H / 2, MARKER_BALL_R, { flag: flagOf(m.nation), tint: colorOf(m.nation), look, prop: markerProp(m.symbol), engaged: m.engaged });
+    return;
+  }
   ctx.fillStyle = 'rgba(16, 18, 24, 0.82)';
   ctx.fillRect(x - 1, y - 1, BOX_W + 2, BOX_H + 1);
   ctx.fillStyle = colorOf(m.nation);
@@ -236,20 +251,24 @@ function boxArt(ctx: CanvasRenderingContext2D, m: MarkerInput, x: number, y: num
 
 /** Room around the box in its picture, CSS px (the engaged outline reaches half a pixel out). */
 const SPRITE_PAD = 2;
+/** And in the ball look, where the ball and its prop reach past the box (PLAN 7.174f). */
+const spritePad = (balls: boolean): number => (balls ? SPRITE_PAD + 2 * MARKER_BALL_R : SPRITE_PAD);
 
 /**
  * A picture of a marker's box at `scale` device px per CSS px, as it is drawn at rest, its corner
  * (`fx`, `fy`) device px into the picture: where the box at rest stands between two device
  * pixels, its picture does too (PLAN 7.1l8; at a ratio of 1.5 a box's corner is on a half pixel).
  */
-function boxSprite(m: MarkerInput, colorOf: (nation: number) => string, flagOf: (nation: number) => CanvasImageSource | null, scale: number, fx: number, fy: number): HTMLCanvasElement {
+function boxSprite(m: MarkerInput, colorOf: (nation: number) => string, flagOf: (nation: number) => CanvasImageSource | null, scale: number, fx: number, fy: number, balls = false): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  c.width = Math.ceil((BOX_W + 2 * SPRITE_PAD) * scale + fx);
-  c.height = Math.ceil((BOX_H + 2 * SPRITE_PAD) * scale + fy);
+  // A ball and its prop reach past the box: room for them in the ball look.
+  const pad = spritePad(balls);
+  c.width = Math.ceil((BOX_W + 2 * pad) * scale + fx);
+  c.height = Math.ceil((BOX_H + 2 * pad) * scale + fy);
   const g = c.getContext('2d')!;
   g.setTransform(scale, 0, 0, scale, fx, fy);
   g.imageSmoothingEnabled = false;
-  boxArt(g, m, SPRITE_PAD, SPRITE_PAD, colorOf, flagOf);
+  boxArt(g, m, pad, pad, colorOf, flagOf, balls);
   return c;
 }
 
@@ -372,6 +391,8 @@ export function drawMarkers(
   stacks?: ReadonlyMap<number, StackedMarker>,
   /** The formation whose panel is open, or 0 (PLAN 2.14f3): its marker, or the stack it is in, has a frame. */
   picked = 0,
+  /** The ball look (PLAN 7.174f): each box a countryball. */
+  balls = false,
 ): PlacedMarker[] {
   const placed: PlacedMarker[] = [];
   const boxAlpha = alpha * morph.box;
@@ -456,7 +477,7 @@ export function drawMarkers(
       // The box, about its centre: at rest as it always was, on the way to T2 smaller and fainter.
       if (boxAlpha * part > 0.01) {
         ctx.globalAlpha = boxAlpha * part;
-        if (morph.scale === 1) boxArt(ctx, m, x, y, colorOf, flagOf);
+        if (morph.scale === 1) boxArt(ctx, m, x, y, colorOf, flagOf, balls);
         else {
           // Shrinking, the box is a picture of itself, scaled smoothly. Scaling its parts would
           // make the pixels of the flag chip (drawn without smoothing) and of the hairlines snap
@@ -468,18 +489,20 @@ export function drawMarkers(
           // 3 % short, and at 1.5 half a pixel off.
           const t = ctx.getTransform();
           const k = Math.max(1, t.a);
-          const [dx, dy] = [t.a * (x - SPRITE_PAD) + t.e, t.d * (y - SPRITE_PAD) + t.f];
+          const pad = spritePad(balls);
+          const [dx, dy] = [t.a * (x - pad) + t.e, t.d * (y - pad) + t.f];
           const fx = Math.round((dx - Math.floor(dx)) * PHASE_STEPS) / PHASE_STEPS;
           const fy = Math.round((dy - Math.floor(dy)) * PHASE_STEPS) / PHASE_STEPS;
-          const key = `${m.nation}|${m.symbol}|${m.engaged ? 1 : 0}|${k}|${fx}|${fy}`;
+          const look = balls && m.target && m.target[0] < m.x ? -1 : 1;
+          const key = `${m.nation}|${m.symbol}|${m.engaged ? 1 : 0}|${k}|${fx}|${fy}|${balls ? look : 0}`;
           let sprite = sprites.get(key);
-          if (!sprite) sprites.set(key, (sprite = boxSprite(m, colorOf, flagOf, k, fx, fy)));
+          if (!sprite) sprites.set(key, (sprite = boxSprite(m, colorOf, flagOf, k, fx, fy, balls)));
           ctx.imageSmoothingEnabled = true;
           ctx.translate(x + BOX_W / 2, y + BOX_H / 2);
           ctx.scale(morph.scale, morph.scale);
           ctx.translate(-(x + BOX_W / 2), -(y + BOX_H / 2));
-          const [sw, sh] = [(BOX_W + 2 * SPRITE_PAD) * k + fx, (BOX_H + 2 * SPRITE_PAD) * k + fy];
-          ctx.drawImage(sprite, 0, 0, sw, sh, x - SPRITE_PAD - fx / k, y - SPRITE_PAD - fy / k, sw / k, sh / k);
+          const [sw, sh] = [(BOX_W + 2 * pad) * k + fx, (BOX_H + 2 * pad) * k + fy];
+          ctx.drawImage(sprite, 0, 0, sw, sh, x - pad - fx / k, y - pad - fy / k, sw / k, sh / k);
           ctx.imageSmoothingEnabled = false;
         }
       }
