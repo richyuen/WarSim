@@ -91,7 +91,7 @@ textarea,
 }
 
 /* God Mode's map tools (PLAN 7.16b): a row of the bar's own, above its controls, while God Mode is
-   on; on a phone it scrolls sideways as the bar does. */
+   on; on a phone it wraps onto rows as the bar does (PLAN 7.169). */
 .god-tools {
   order: -1;
   flex: 1 0 100%;
@@ -1691,7 +1691,7 @@ button.unit-icon.on {
 /* A phone's width (PLAN 7.4f2, the critic's N8): the panels do not lie on each other. The top bar
    spans the view without its tagline, the ranking stands under it and gives way while a nation's,
    a formation's or a top-centre panel is open (the Statistics button still shows it alone), those
-   panels take the view's width, and the bottom bar scrolls sideways rather than run off it. */
+   panels take the view's width, and the bottom bar wraps onto rows rather than run off it. */
 @media (max-width: 600px) {
   .topbar {
     right: 0.5rem;
@@ -1719,20 +1719,12 @@ button.unit-icon.on {
     min-width: 0;
     transform: none;
   }
+  /* The bar and God Mode's tools wrap onto rows of their own, every button whole (PLAN 7.169; critic
+     runs 19-21: scrolled sideways, Map, Statistics, History, Editor and Settings were off the view
+     with no sign of them, and the tools were cut to "Revol", "Breakthr"). The bar is at most the
+     view's width; the panels above stand on its top (`--bar-top`). */
   .bottombar {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    scrollbar-width: thin;
-  }
-  /* God Mode's tools take a row of their own above the controls (PLAN 7.16b). */
-  .bottombar.with-god {
-    flex-wrap: wrap;
-  }
-  .bottombar.with-god .god-tools {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
+    width: calc(100% - 1rem);
   }
   /* The nuclear alert stands on the bottom bar, not over the panels at the top (PLAN 7.16d;
      critic run 7: "on the phone the nuke alert covers the nation panel"). */

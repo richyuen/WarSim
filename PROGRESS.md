@@ -24883,3 +24883,16 @@ No rule changed and nothing on screen changed. One task came out of it.
   saveFormat (6). `gameUrl.test.ts`'s title checks had a fake 3-byte state (the title read the header only): now
   a toy world's, assertions unchanged, and a test that the fake state is refused. e2e editorForces1938 (4) green.
 - **Next:** PLAN 7.169.
+
+## 2026-10-31 — PLAN 7.169: the phone's bar and God Mode's tools wrap onto rows, every button whole
+
+- Cause: at a phone's width (`@media (max-width: 600px)`) the bar was one row scrolled sideways (Map, Statistics,
+  History, Editor, Settings off the view with no sign of them) and God Mode's tools one scrolled row of shrunk
+  buttons ("Revol", "Breakthr"). Now both wrap: the bar is the view's width less the margins, three rows upright
+  (four with the tools); the panels above already stand on `--bar-top`. On its side (844 × 390) nothing changed:
+  it fitted.
+- AT: `phoneLayout1938` "a phone, by touch" at 390 × 844 and 844 × 390: the 9 tabs and 7 God tools in view, each
+  under its own centre, none cut, the bar not scrolling; a tap opens and closes each (Statistics: the ranking)
+  and arms and disarms each tool. Upright red with the old CSS. Evidence `docs/evidence/7.169/`.
+- e2e by hand: phoneLayout1938, nukeAlertPhone1938 (14 passed).
+- **Next:** PLAN 7.170.

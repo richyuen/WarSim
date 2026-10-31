@@ -16503,3 +16503,23 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   labelled with this format and a scenario file, both without run 10's two sections: the save told older with
   no Continue on two visits, the file refused with "older version of Warism" and no Start; the same file whole
   offered); red without the change. Unit: `sectionNames.test.ts`, `saveFormat.test.ts` (the required sections).
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.169 The phone's portrait bar shows every tab and God Mode's tools whole (critic runs 19–21,
+  `critic/c21_p.json`: at 390 × 844 Map, Statistics, History, Editor, Settings off screen; Revolt, Spawn nation,
+  Breakthrough, Territory, Nuke, Found city, Raze city clipped; ADR-771). AT: e2e at 390 × 844 and 844 × 390:
+  every tab and every God tool inside the view and hit-testable at its centre, no label truncated (scrollWidth
+  ≤ clientWidth of each), a tap on each opens it.

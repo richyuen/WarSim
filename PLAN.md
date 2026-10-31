@@ -33,11 +33,6 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
-- [ ] 7.169 The phone's portrait bar shows every tab and God Mode's tools whole (critic runs 19–21,
-  `critic/c21_p.json`: at 390 × 844 Map, Statistics, History, Editor, Settings off screen; Revolt, Spawn nation,
-  Breakthrough, Territory, Nuke, Found city, Raze city clipped; ADR-771). AT: e2e at 390 × 844 and 844 × 390:
-  every tab and every God tool inside the view and hit-testable at its centre, no label truncated (scrollWidth
-  ≤ clientWidth of each), a tap on each opens it.
 - [ ] 7.170 The air list tells wings apart: each row names its wing and its base or place, on at most two lines
   (critic runs 20–21: Germany's 28 rows read "Fighter group at an airbase · no mission", four lines, no base;
   `critic/c21_u_1600_5557.json`; ADR-771). AT: e2e playing Germany on 1938 at 1600 × 900: 28 of 28 rows have
@@ -445,3 +440,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.166 The history export's a/b give a side's nation, not the packed side id (critic runs 19–21, […]
 - [x] 7.167 The ticker merges repeated rows: "⚓ Carrier strike ashore: United States on Greece" three times in a […]
 - [x] 7.168 An old save or scenario that cannot load is refused at the preview with its reason, and a refused save […]
+- [x] 7.169 The phone's portrait bar shows every tab and God Mode's tools whole (critic runs 19–21, […]

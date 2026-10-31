@@ -263,3 +263,71 @@ test.describe('the ranking at a phone\'s width', () => {
     });
   }
 });
+
+// PLAN 7.169 AT (critic runs 19–21, `c21_p.json`: at 390 × 844 the bar scrolled sideways with Map,
+// Statistics, History, Editor and Settings off the view and no sign of them, and God Mode's tools
+// were cut to "Revol", "Spawn na", "Breakthr"): on a phone, upright and on its side, every button
+// of the bar and every God tool is inside the view, is what is under its own centre, shows its
+// label whole, and a tap opens or arms it. No scrolling.
+test.describe('a phone, by touch', () => {
+  test.use({ hasTouch: true });
+  for (const [W, H] of [
+    [390, 844],
+    [844, 390],
+  ] as const) {
+    test(`at ${W} × ${H}: every tab of the bar and every God tool whole, in view and tapped`, async ({ page }, info) => {
+      test.setTimeout(120_000);
+      await page.setViewportSize({ width: W, height: H });
+      await page.goto('/?scenario=1938&paused=1&seed=1938');
+      await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+      await page.getByTestId('god-btn').tap();
+      const tools = ['revolt', 'nation', 'battle', 'brush', 'nuke', 'city', 'raze'].map((k) => `god-tool-${k}`);
+      const tabs = ['pause-btn', 'speed-down', 'speed-up', 'god-btn', 'mapmode-btn', 'stats-btn', 'history-btn', 'editor-btn', 'settings-btn'];
+      const look = () => page.evaluate((ids) => {
+        return ids.map((id) => {
+          const el = document.querySelector<HTMLElement>(`[data-testid="${id}"]`)!;
+          const r = el.getBoundingClientRect();
+          const at = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          const cut = [el, ...el.querySelectorAll<HTMLElement>('*')].some((x) => x.scrollWidth > x.clientWidth + 1);
+          return { id, inView: r.left >= 0 && r.top >= 0 && r.right <= innerWidth + 0.5 && r.bottom <= innerHeight + 0.5, hit: at !== null && (at === el || el.contains(at)), cut };
+        });
+      }, [...tabs, ...tools]);
+      // The bar grows a row for the tools; the panels above it move up with its top on the next frame.
+      const whole = async () => (await look()).filter((x) => !x.inView || !x.hit || x.cut).map((x) => x.id);
+      await expect.poll(whole, { timeout: 5_000 }).toEqual([]);
+      const seen = await look();
+      const out = process.env['EVIDENCE'] ? path.resolve(import.meta.dirname, '../../docs/evidence/7.169') : info.outputPath();
+      mkdirSync(out, { recursive: true });
+      await page.screenshot({ path: path.join(out, `phone-bar-${W}x${H}.png`) });
+      for (const s of seen) expect(s, s.id).toEqual({ id: s.id, inView: true, hit: true, cut: false });
+      expect(await page.evaluate(() => { const b = document.querySelector('[data-testid=bottombar]')!; return b.scrollWidth <= b.clientWidth; }), 'the bar does not scroll').toBe(true);
+
+      // Statistics shows the ranking or hides it.
+      const ranking = page.getByTestId('stats-ranking');
+      const shown = await ranking.count();
+      await page.getByTestId('stats-btn').tap();
+      await expect(ranking).toHaveCount(1 - shown);
+      await page.getByTestId('stats-btn').tap();
+      await expect(ranking).toHaveCount(shown);
+      // A tap on each other tab opens what it names, and again closes it.
+      for (const [id, opens] of [
+        ['mapmode-btn', 'mapmode-menu'],
+        ['history-btn', 'history-panel'],
+        ['editor-btn', 'editor-panel'],
+        ['settings-btn', 'settings-menu'],
+      ] as const) {
+        await page.getByTestId(id).tap();
+        await expect(page.getByTestId(opens), id).toBeVisible();
+        await page.getByTestId(id).tap();
+        await expect(page.getByTestId(opens), id).toHaveCount(0);
+      }
+      // A tap on each God tool arms it, and again disarms it.
+      for (const id of tools) {
+        await page.getByTestId(id).tap();
+        await expect(page.getByTestId(id), id).toHaveAttribute('aria-pressed', 'true');
+        await page.getByTestId(id).tap();
+        await expect(page.getByTestId(id), id).toHaveAttribute('aria-pressed', 'false');
+      }
+    });
+  }
+});
