@@ -24858,3 +24858,13 @@ No rule changed and nothing on screen changed. One task came out of it.
 - AT amended before the code (the first asked for names in a/b, which the name columns hold already).
   `history.test.ts`: 5 of 5 packed kinds export the nation's id; red without the change. No e2e touches it.
 - **Next:** PLAN 7.167.
+
+## 2026-10-31 — PLAN 7.167: the ticker's sea rows of the same words are one, with how many
+
+- The critic's three equal rows were the ticker's sea rows: a carrier group's fleets each striking ashore made a
+  row each ("Carrier strike ashore: United States on Greece"). `mergeSeaRows` (`src/ui/seaRows.ts`) keeps the
+  first of each kind and words, where it stood, with its key (the click flies there), and the count ("×3").
+- AT amended before the code (a 10-year run at Max cannot stop on the hour of the repeat): unit `seaRows.test.ts`;
+  e2e `ticker1938` "three carrier strikes of the same words" (1 row, ×3; 3 rows without the change).
+- e2e by hand: ticker1938 (all green), seaRow1938 (green but its known-red Speed x1 test, on `knownRed.json`).
+- **Next:** PLAN 7.168.

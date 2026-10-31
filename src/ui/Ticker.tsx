@@ -2,6 +2,7 @@ import { dateOfTick } from '../shared/calendar';
 import { kindName, type TickerRow } from '../shared/history';
 import { t, type MessageKey } from './i18n';
 import { historyText } from './historyText';
+import { mergeSeaRows } from './seaRows';
 
 const TICKER_SHORT = 2;
 
@@ -45,13 +46,15 @@ export function Ticker({
   onSea?: (key: string) => void;
 }) {
   // What is shown: all; beside a panel the last events, a sea battle and an order; on a phone two rows.
+  // Sea rows of the same words are one, with how many (PLAN 7.167).
+  const merged = mergeSeaRows(seas);
   const lastOrder = orders.slice(-1);
-  const phoneSea = lastOrder.length === 0 ? seas.slice(0, 1) : [];
+  const phoneSea = lastOrder.length === 0 ? merged.slice(0, 1) : [];
   const [evs, ss, os] = compact
     ? [rows.slice(lastOrder.length + phoneSea.length > 0 ? -1 : -TICKER_SHORT), phoneSea, lastOrder]
     : short
-      ? [rows.slice(-TICKER_SHORT), seas.slice(0, 1), lastOrder]
-      : [rows, seas, orders];
+      ? [rows.slice(-TICKER_SHORT), merged.slice(0, 1), lastOrder]
+      : [rows, merged, orders];
   return (
     <div class={compact ? 'ticker short compact' : short ? 'ticker short' : 'ticker'} data-testid="ticker" role="log" aria-live="polite" aria-label={t('ticker.title')}>
       <ol>
@@ -70,7 +73,10 @@ export function Ticker({
         {ss.map((b) => (
           <li key={`sea-${b.key}`}>
             <button type="button" class="ticker-row sea-battle" data-testid={b.kind === 'raid' ? 'carrier-raid-row' : 'sea-battle-row'} data-sea={b.kind} title={t(b.kind === 'strike' ? 'ticker.toCarrierStrike' : b.kind === 'raid' ? 'ticker.toCarrierRaid' : b.kind === 'closing' ? 'ticker.toSeaClosing' : 'ticker.toSeaBattle')} onClick={() => onSea(b.key)}>
-              <span class="ticker-line">{'⚓'} {b.text}</span>
+              <span class="ticker-line">
+                {'⚓'} {b.text}
+                {b.count > 1 ? <span class="ticker-count"> {t('ticker.times', { n: b.count })}</span> : null}
+              </span>
             </button>
           </li>
         ))}

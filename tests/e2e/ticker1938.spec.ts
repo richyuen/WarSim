@@ -322,3 +322,25 @@ test('a view 1,100 px wide: the bar is inside the view at every UI size offered 
   await page.screenshot({ path: path.join(ev, 'h4-bar-1100-playing.png') });
   await page.evaluate(() => window.__warsim!.settings.setUiScale(1));
 });
+
+// PLAN 7.167 (critic runs 20–21, seed 8243 at year 10: the ticker's last three rows were the same
+// "⚓ Carrier strike ashore: United States on Greece", one per fleet of a carrier group): rows of
+// the same words are one, with how many. The raids are set in the page as the view reports them.
+test('three carrier strikes of the same words: one ticker row, "×3", that flies to the first', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto('/?scenario=1938&paused=1&seed=8243');
+  await page.waitForFunction(() => (window.__warsim?.view?.frames ?? 0) > 0 && window.__warsim!.hud.stats.value !== null, null, { timeout: 60_000 });
+  const [USA, GRE] = ['USA', 'GRE'].map((tag) => NATIONS_1938.findIndex((n) => n.tag === tag) + 1) as [number, number];
+  await page.evaluate(
+    ([by, on]) => {
+      const raid = (fleet: number, x: number) => ({ kx: x, ky: 300, tx: x + 4, ty: 300, by, on, ashore: true, fleet, both: { x: x - 2, y: 296, w: 10, h: 8 } });
+      window.__warsim!.hud.carrierRaids.value = [raid(7, 1100), raid(9, 1110), raid(12, 1120)];
+    },
+    [USA, GRE] as const,
+  );
+  const rows = page.getByTestId('carrier-raid-row');
+  await expect(rows).toHaveCount(1);
+  await expect(rows).toContainText('Carrier strike ashore: United States on Greece');
+  await expect(rows).toContainText('×3');
+});

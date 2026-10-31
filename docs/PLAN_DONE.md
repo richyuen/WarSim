@@ -16459,3 +16459,25 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   ADR-771). AT (amended before the code: the first text asked for names in a/b, but names are in aName/bName
   already, right on every row of the critic's file): unit test `history.test.ts`: a row of each packed kind
   exports a and b as the nation's id (5 of 5), a count that is not a nation stays as it is; red without the change.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.167 The ticker merges repeated rows: "⚓ Carrier strike ashore: United States on Greece" three times in a
+  row is one row with a count (critic runs 20–21, `critic/c21_lw_8243.json`; ADR-771). The repeats are the sea rows
+  (one per fleet of a carrier group), not the history's. AT (amended before the code: the first asked for an e2e
+  run of seed 8243 to year 10 at Max, which cannot stop on the hour the repeat stands): unit test `seaRows.test.ts`
+  (N equal rows of a kind are 1 row with N, where the first stood, its key kept; other kinds and words apart);
+  e2e `ticker1938` (three equal carrier strikes set as the view reports them: 1 row, "×3"; 3 rows without the
+  change).
