@@ -11,6 +11,8 @@ import { NATIONS_1938 } from '../../src/sim/scenario1938';
 const GER = NATIONS_1938.findIndex((n) => n.tag === 'GER') + 1;
 const POL = NATIONS_1938.findIndex((n) => n.tag === 'POL') + 1;
 const count = async (page: Page): Promise<number> => page.getByTestId('history-row').count();
+/** An id as the exports give it (PLAN 7.166): a side's or a strike's nation, not its packed id; any other as it is. */
+const exported = (role: (typeof HISTORY_ROLES)[number][0], v: number): number => (role === 'side' || role === 'strike' ? roleNation(role, v) : v);
 
 test('history log: filters reduce rows, CSV and JSON exports match the filtered rows', async ({ page }, info) => {
   test.setTimeout(180_000);
@@ -68,14 +70,14 @@ test('history log: filters reduce rows, CSV and JSON exports match the filtered 
   expect(lines[0]).toBe('date,tick,type,a,aName,b,bName,text');
   expect(lines.length - 1).toBe(gerAll.length);
   const first = gerAll[0]!;
-  expect(lines[1]!.startsWith(`${isoDate(startDay, first.tick)},${first.tick},${kindName(first.kind)},${first.a},`)).toBe(true);
+  expect(lines[1]!.startsWith(`${isoDate(startDay, first.tick)},${first.tick},${kindName(first.kind)},${exported(HISTORY_ROLES[first.kind]![0], first.a)},`)).toBe(true);
 
   const json = JSON.parse(await save('history-json')) as { date: string; tick: number; type: string; a: number; b: number; aName: string; bName: string; text: string }[];
   expect(json).toHaveLength(gerAll.length);
   json.forEach((rec, i) => {
     const r: HistoryRow = gerAll[i]!;
-    expect(rec).toMatchObject({ tick: r.tick, type: kindName(r.kind), a: r.a, b: r.b, date: isoDate(startDay, r.tick) });
     const [ra, rb] = HISTORY_ROLES[r.kind]!;
+    expect(rec).toMatchObject({ tick: r.tick, type: kindName(r.kind), a: exported(ra, r.a), b: exported(rb, r.b), date: isoDate(startDay, r.tick) });
     // Germany is in the row: as a nation, a side's or a strike's (PLAN 7.33a).
     expect(roleNation(ra, r.a) === GER || roleNation(rb, r.b) === GER).toBe(true);
     expect(rec.text.length).toBeGreaterThan(0);

@@ -24936,3 +24936,12 @@ No rule changed and nothing on screen changed. One task came out of it.
   formation and its enemy. Green on HEAD; red 8 of 8 with the camera aimed 3 cells off (by hand, reverted). The
   fleet's button untouched. Evidence `docs/evidence/7.172/`.
 - **Next:** PLAN 7.162 (the DONE condition's runs).
+
+## 2026-10-31 — PLAN 7.162 (part): history1938's export check follows 7.166's rule
+
+- The full review run on cac50421 (`npm run check:review`) was red on one test not on the known-red list:
+  `history1938` "filters reduce rows, CSV and JSON exports", which still expected a sea battle's packed side id
+  (524307) in the export. 7.166 made the exports give a side's or a strike's nation (19); its gate ran only the
+  tests importing what changed, and this spec reads the export through the page. The test now expects the
+  7.166 rule (`exported`, a side's or strike's nation, any other id as it is), in the JSON rows and the CSV's
+  first line; nothing else of it changed. 3 of 3 pass. The review runs again on this commit.
