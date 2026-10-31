@@ -3,6 +3,7 @@ import { continueUrl, newGameUrl, optionsFromUrl, stagedScenarioUrl, withLooping
 import { checkScenarioFile } from '../../src/app/scenarioFiles';
 import { encodeScenarioFile, SCENARIO_FORMAT } from '../../src/shared/scenarioFile';
 import { SCENARIO_GEOMETRY } from '../../src/shared/scenarios';
+import { Sim } from '../../src/sim/sim';
 
 // PLAN 1.43b: the URLs that load a game from the title screen, and what the title screen can
 // check of a scenario file before it leaves for the game.
@@ -57,7 +58,8 @@ describe('game URLs (PLAN 1.39b1, 1.43b)', () => {
 
 describe('a scenario file on the title screen (PLAN 1.43b)', () => {
   const { w, h } = SCENARIO_GEOMETRY['1938'];
-  const state = new Uint8Array([1, 2, 3]); // the header is checked here, the state by the game
+  // A world's state: since PLAN 7.168 the title checks its sections too (the game checks its hash).
+  const state = new Sim({ scenario: 'toy', seed: 7 }).save();
   const file = (over: Partial<{ format: number; base: string; w: number; h: number }>): Promise<Uint8Array> =>
     encodeScenarioFile({ format: SCENARIO_FORMAT, name: 'Test', base: '1938', w, h, tick: 0, hash: 0, ...over }, state);
 
@@ -66,6 +68,11 @@ describe('a scenario file on the title screen (PLAN 1.43b)', () => {
     expect(ok.scenario).toBe('1938');
     expect(ok.header).toMatchObject({ name: 'Test', base: '1938', w, h });
     expect(ok.size).toBe('M');
+  });
+
+  it('refuses a file whose state is not a world this version loads (PLAN 7.168)', async () => {
+    const bad = await encodeScenarioFile({ format: SCENARIO_FORMAT, name: 'Test', base: '1938', w, h, tick: 0, hash: 0 }, new Uint8Array([1, 2, 3]));
+    await expect(checkScenarioFile(bad)).rejects.toThrow('older version of Warism');
   });
 
   it('accepts a file at another size of its map, and says which (PLAN 7.1b8)', async () => {

@@ -33,11 +33,6 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
-- [ ] 7.168 An old save or scenario that cannot load is refused at the preview with its reason (its format),
-  and a refused save is not offered again (critic runs 19–21, `critic/c21_os2_c10.json`,
-  `critic/c19_os_c10fmt1.json`; ADR-771). AT: e2e with a format-1 save and run 10's scenario file
-  (`critic/c21_critic_standoff.warsim-scenario`): the title says it is an older version and offers no Start
-  (0 trips to `?failed=scenario`); the refused save is absent on the next visit; a current file loads as before.
 - [ ] 7.169 The phone's portrait bar shows every tab and God Mode's tools whole (critic runs 19–21,
   `critic/c21_p.json`: at 390 × 844 Map, Statistics, History, Editor, Settings off screen; Revolt, Spawn nation,
   Breakthrough, Territory, Nuke, Found city, Raze city clipped; ADR-771). AT: e2e at 390 × 844 and 844 × 390:
@@ -449,3 +444,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.165 God Mode's Breakthrough tells what it did, at peace too, and a God revolt is told as a revolt, not […]
 - [x] 7.166 The history export's a/b give a side's nation, not the packed side id (critic runs 19–21, […]
 - [x] 7.167 The ticker merges repeated rows: "⚓ Carrier strike ashore: United States on Greece" three times in a […]
+- [x] 7.168 An old save or scenario that cannot load is refused at the preview with its reason, and a refused save […]

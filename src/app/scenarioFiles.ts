@@ -8,6 +8,7 @@ import type { ScenarioId } from '../shared/protocol';
 import { decodeScenarioFile, encodeScenarioFile, SCENARIO_EXT, SCENARIO_FORMAT, type ScenarioHeader } from '../shared/scenarioFile';
 import { SCENARIO_INFO, scenarioIdOf } from '../shared/scenarios';
 import { getRecord, putRecord } from './saveDb';
+import { missingSections } from '../shared/stateCheck';
 import type { SimClient } from './simClient';
 
 export async function exportScenarioFile(sim: SimClient, name: string, base: string, w: number, h: number): Promise<{ file: Uint8Array; header: ScenarioHeader }> {
@@ -59,12 +60,14 @@ const STAGED_SLOT = 'scenario';
  * otherwise. The state hash is checked when the game loads it (`importScenarioFile`).
  */
 export async function checkScenarioFile(file: Uint8Array): Promise<{ header: ScenarioHeader; scenario: ScenarioId; size: string }> {
-  const { header } = await decodeScenarioFile(file);
+  const { header, bytes } = await decodeScenarioFile(file);
   const scenario = scenarioIdOf(header.base);
   if (scenario === null) throw new Error(`scenario for ${header.base}, which this version does not have`);
   // At any size of its map (PLAN 7.1b8): the game starts at the file's.
   const size = SCENARIO_INFO[scenario].sizes.find((s) => s.w === header.w && s.h === header.h);
   if (!size) throw new Error(`scenario for ${header.base} ${header.w}×${header.h}; here ${header.base} is ${SCENARIO_INFO[scenario].sizes.map((s) => `${s.w}×${s.h}`).join(', ')}`);
+  // Its world has every part this version reads (PLAN 7.168): else it is refused here, with why, not once started.
+  if (missingSections(bytes).length > 0) throw new Error('it was made by an older version of Warism, and this one cannot start it');
   return { header, scenario, size: size.id };
 }
 

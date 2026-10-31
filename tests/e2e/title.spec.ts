@@ -447,10 +447,12 @@ test('the title screen starts a random world with the chosen number of nations, 
   expect(errors).toEqual([]);
 });
 
-// PLAN 7.149 AT (critic run 17, R17-B1): an autosave that does not fit (here a section taken out,
-// as a save from before ADR-737 lacks `formations.struck`) is refused through Continue: the title
-// screen says it cannot be loaded, no game starts, and the autosave is left as it was. Before,
-// the save's map, date and tick came in, the rest of the 1938 start stayed, and Resume ran it.
+// PLAN 7.149 AT (critic run 17, R17-B1): an autosave that does not fit is refused through Continue:
+// the title screen says it cannot be loaded, no game starts, and the autosave is left as it was.
+// Before, the save's map, date and tick came in, the rest of the 1938 start stayed, and Resume ran
+// it. Since PLAN 7.168 (ADR-774) a save lacking a section a load needs (as one from before ADR-737
+// lacks `formations.struck`) is refused by the title itself; the game's refusal is of one that
+// has every section and does not fit: here a column one element short.
 test('Continue with a save that does not fit returns to the title, which says so; nothing starts', async ({ page }, info) => {
   test.setTimeout(180_000);
   const errors: string[] = [];
@@ -461,7 +463,7 @@ test('Continue with a save that does not fit returns to the title, which says so
   const sections = decodeSections(node.save());
   const at = sections.findIndex((s) => s.name === 'formations.struck');
   expect(at).toBeGreaterThan(0);
-  sections.splice(at, 1);
+  sections[at] = { ...sections[at]!, data: sections[at]!.data.slice(0, sections[at]!.data.length - 1) };
   const packed = await packSave(encodeSections(sections));
   const b64 = Buffer.from(packed).toString('base64');
   await page.goto('/');
@@ -598,4 +600,56 @@ test('an autosave written by this version carries its state format and is offere
   await page.goto('/');
   await expect(page.getByTestId('title-continue')).toBeVisible();
   await expect(page.getByTestId('title-save-older')).toHaveCount(0);
+});
+
+// PLAN 7.168 AT (critic runs 19–21: run 10's save and scenario file, made before ADR-737's
+// `formations.struck` and the air's `world.airStart`, were offered on the title and failed once
+// started; the save was offered again on the next visit, the file said only "Choose it again"). A
+// save labelled with this version's format, as the critic's tool wrote it, and a scenario file of
+// the same state: both lacking those two sections. Each is refused on the title with its reason.
+test("a save and a scenario file lacking parts this version reads: refused on the title, with why, never started", async ({ page }) => {
+  test.setTimeout(180_000);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.setViewportSize({ width: 1400, height: 800 });
+  const node = new Sim({ scenario: '1938', seed: 55, assets: assets1938(SIZE_1938.w) });
+  node.step(72);
+  const strip = (bytes: Uint8Array): Uint8Array => encodeSections(decodeSections(bytes).filter((s) => s.name !== 'formations.struck' && s.name !== 'world.airStart'));
+  const old = strip(node.save());
+  const b64 = Buffer.from(await packSave(old)).toString('base64');
+  await page.goto('/');
+  await expect(page.getByTestId('title-screen')).toBeVisible();
+  await page.evaluate(
+    ([b, format]) =>
+      new Promise<void>((resolve, reject) => {
+        const bytes = Uint8Array.from(atob(b), (c) => c.charCodeAt(0));
+        const open = indexedDB.open('warsim', 1);
+        open.onupgradeneeded = () => open.result.createObjectStore('saves', { keyPath: 'slot' });
+        open.onerror = () => reject(open.error ?? new Error('indexedDB open failed'));
+        open.onsuccess = () => {
+          const put = open.result.transaction('saves', 'readwrite').objectStore('saves').put({ slot: 'autosave', scenario: '1938', tick: 72, format, savedAt: Date.now(), bytes, seed: 55, options: {} });
+          put.onerror = () => reject(put.error ?? new Error('indexedDB put failed'));
+          put.onsuccess = () => resolve();
+        };
+      }),
+    [b64, STATE_FORMAT] as const,
+  );
+  // The save: told older, no Continue, on this visit and the next.
+  for (let visit = 0; visit < 2; visit++) {
+    await page.reload();
+    await expect(page.getByTestId('title-save-older')).toContainText('older version');
+    await expect(page.getByTestId('title-continue')).toHaveCount(0);
+  }
+  // The scenario file: refused when chosen, with why; no Start, no game.
+  const { bytes, hash } = node.exportScenario();
+  const header = { format: SCENARIO_FORMAT, name: 'Old standoff', base: '1938', w: SIZE_1938.w, h: SIZE_1938.h, tick: node.tick, hash };
+  await page.getByTestId('title-scenario-file').setInputFiles({ name: 'old.warism-scenario', mimeType: 'application/octet-stream', buffer: Buffer.from(await encodeScenarioFile(header, strip(bytes))) });
+  await expect(page.getByTestId('title-file-error')).toContainText('older version of Warism');
+  await expect(page.getByTestId('title-file-pending')).toHaveCount(0);
+  await expect(page.getByTestId('title-file-start')).toHaveCount(0);
+  expect(new URL(page.url()).search).toBe('');
+  // The same file whole is offered as before.
+  await page.getByTestId('title-scenario-file').setInputFiles({ name: 'whole.warism-scenario', mimeType: 'application/octet-stream', buffer: Buffer.from(await encodeScenarioFile(header, bytes)) });
+  await expect(page.getByTestId('title-file-pending')).toBeVisible();
+  expect(errors).toEqual([]);
 });

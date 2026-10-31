@@ -3,6 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { sameStateFormat, STATE_FORMAT } from '../../src/shared/saveFormat';
 import { collectSections } from '../../src/sim/core/state';
+import { decodeSections, encodeSections } from '../../src/sim/core/sections';
 import { SIZE_1938 } from '../../src/sim/scenario1938';
 import { Sim } from '../../src/sim/sim';
 import { assets1938 } from '../helpers/earth';
@@ -18,6 +19,8 @@ import { assets1938 } from '../helpers/earth';
 // add the new format's list to the pin file. Never edit an earlier format's list.
 
 const PINS = path.join(__dirname, 'saveFormat.json');
+/** Of those, the ones a load cannot do without (PLAN 7.168): what the title screen asks of a save or a scenario file. */
+const REQUIRED = path.join(__dirname, '../../src/shared/stateRequired.json');
 
 function startSections(): string[] {
   const sim = new Sim({ scenario: '1938', seed: 7, assets: assets1938(SIZE_1938.w) });
@@ -50,4 +53,35 @@ describe('the state format of a save (PLAN 7.152a)', () => {
     expect(sameStateFormat(STATE_FORMAT - 1)).toBe(false);
     expect(sameStateFormat(STATE_FORMAT + 1)).toBe(false);
   });
+});
+
+// PLAN 7.168: the title screen refuses a save or a scenario file that lacks a section a load cannot
+// do without. Not every pinned section: some come with the 1938 start alone (`world.airStart`,
+// `world.wingBase`), and a random or toy world's save, without them, loads. Found by taking each
+// section of a toy world's save out in turn: those whose absence makes the load throw.
+describe('the sections a load cannot do without (PLAN 7.168)', () => {
+  it('are pinned per state format, each a pinned section, and are the ones whose absence makes a load throw', () => {
+    const s = new Sim({ scenario: 'toy', seed: 7 });
+    s.step(48);
+    const secs = decodeSections(s.save());
+    const now: string[] = [];
+    for (let i = 0; i < secs.length; i++) {
+      try {
+        new Sim({ scenario: 'toy', seed: 7 }).load(encodeSections(secs.filter((_, j) => j !== i)));
+      } catch {
+        now.push(`${secs[i]!.name}:${secs[i]!.dtype}`);
+      }
+    }
+    now.sort();
+    const required = JSON.parse(readFileSync(REQUIRED, 'utf8')) as Record<string, string[]>;
+    if (process.env.SAVE_FORMAT_PIN === '1' && required[STATE_FORMAT] === undefined) {
+      required[STATE_FORMAT] = now;
+      writeFileSync(REQUIRED, `${JSON.stringify(required, null, 2)}
+`);
+    }
+    expect(required[STATE_FORMAT], `no required sections pinned for state format ${STATE_FORMAT}: run this test with SAVE_FORMAT_PIN=1`).toEqual(now);
+    const pins = JSON.parse(readFileSync(PINS, 'utf8')) as Record<string, string[]>;
+    expect(now.filter((x) => !pins[STATE_FORMAT]!.includes(x))).toEqual([]);
+    expect(now).toContain('formations.struck:u8');
+  }, 60_000);
 });

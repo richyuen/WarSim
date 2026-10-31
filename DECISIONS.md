@@ -167,6 +167,26 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-774 · 2026-10-31 · accepted — PLAN 7.168: the title refuses a save or a scenario file lacking a section a load needs
+
+- **Context.** Critic runs 19–21: run 10's save (labelled with this state format by the critic's tool) was offered
+  with Continue, failed once started, and was offered again on the next visit; run 10's scenario file was offered
+  with Start and failed with "Choose it again". Both lack `formations.struck` (ADR-737) and `world.airStart`; the
+  files of runs 17, 20 and 21 lack nothing. The title had only the record's format label, and the scenario file
+  no state format at all.
+- **Decision.** The title reads the sections of the state from their directory alone (`src/shared/sectionNames.ts`:
+  the app may not import the sim, SPEC §2.1; a unit test holds it to `decodeSections`), and refuses a save or a
+  scenario file that lacks a section a load cannot do without: the save is told as from an older version with no
+  Continue (on every visit; the record is kept), the file with "it was made by an older version of Warism, and
+  this one cannot start it" and no Start. The sections a load needs are pinned per state format in
+  `src/shared/stateRequired.json`, found by `saveFormat.test.ts`: each section of a toy world's save taken out in
+  turn, those whose absence makes the load throw (111 of 119). Not the full pinned list of the 1938 start:
+  `world.airStart` and `world.wingBase` come with it alone, and a random world's save, without them, loads.
+- **The 7.149 test** (`title.spec.ts` "Continue with a save that does not fit") planted a save without
+  `formations.struck` to show the game's refusal; the title now refuses that save itself (the new test). Its
+  save is now one with every section and a column one element short, which the title cannot see and the game
+  refuses (`formations.struck: length 1467, expected 1468`); every assertion of it unchanged.
+
 ### ADR-773 · 2026-10-31 · accepted (the user's decision) — PLAN 7.163: what is drawn under a click wins, for the panel and the selection
 
 - **Context.** ADR-769 (PLAN 7.160) made a click while playing select and open the played nation's formation

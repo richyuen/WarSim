@@ -16481,3 +16481,25 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   (N equal rows of a kind are 1 row with N, where the first stood, its key kept; other kinds and words apart);
   e2e `ticker1938` (three equal carrier strikes set as the view reports them: 1 row, "×3"; 3 rows without the
   change).
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.168 An old save or scenario that cannot load is refused at the preview with its reason, and a refused save
+  is not offered to continue again (critic runs 19–21, `critic/c21_os2_c10.json`, `critic/c20_os_c10fmt1.json`;
+  ADR-771, ADR-774). AT (amended before the code: "absent on the next visit" read as "not offered to continue";
+  the save is kept): e2e `title.spec.ts` "a save and a scenario file lacking parts this version reads" (a save
+  labelled with this format and a scenario file, both without run 10's two sections: the save told older with
+  no Continue on two visits, the file refused with "older version of Warism" and no Start; the same file whole
+  offered); red without the change. Unit: `sectionNames.test.ts`, `saveFormat.test.ts` (the required sections).

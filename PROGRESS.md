@@ -24868,3 +24868,18 @@ No rule changed and nothing on screen changed. One task came out of it.
   e2e `ticker1938` "three carrier strikes of the same words" (1 row, ×3; 3 rows without the change).
 - e2e by hand: ticker1938 (all green), seaRow1938 (green but its known-red Speed x1 test, on `knownRed.json`).
 - **Next:** PLAN 7.168.
+
+## 2026-10-31 — PLAN 7.168: the title refuses a save or a scenario file lacking a section a load needs (ADR-774)
+
+- Probe: run 10's scenario file and save each lack `formations.struck` and `world.airStart`; runs 17, 20, 21's lack
+  nothing. A random or toy world's save lacks `world.airStart` and `world.wingBase` and loads: those two are optional.
+- Fix: `sectionNames` (shared, the directory only) and `missingSections` against `src/shared/stateRequired.json`
+  (the 111 sections whose absence makes a toy load throw, found and pinned by `saveFormat.test.ts`). The title's
+  save is "older" when it lacks one (no Continue, every visit, record kept); `checkScenarioFile` refuses such a file
+  with why.
+- The 7.149 test's save is now a column one element short (refused by the game, not visible to the title); its
+  assertions unchanged (ADR-774).
+- AT: e2e title.spec (14 with randomWorld, all green; the new test red without the change); unit sectionNames,
+  saveFormat (6). `gameUrl.test.ts`'s title checks had a fake 3-byte state (the title read the header only): now
+  a toy world's, assertions unchanged, and a test that the fake state is refused. e2e editorForces1938 (4) green.
+- **Next:** PLAN 7.169.

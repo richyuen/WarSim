@@ -1,4 +1,5 @@
 import { render } from 'preact';
+import { unpackSave } from '../shared/saveCodec';
 import { sameStateFormat } from '../shared/saveFormat';
 import { LISTED_SCENARIOS, SCENARIO_INFO, scenarioIdOf, scenarioPreviewPath } from '../shared/scenarios';
 import { TitleScreen } from '../ui/TitleScreen';
@@ -6,6 +7,7 @@ import { readAutosave, type SaveRecord } from './autosave';
 import { startGame } from './game';
 import { continueUrl, newGameUrl, stagedScenarioUrl } from './gameUrl';
 import { checkScenarioFile, stageScenarioFile } from './scenarioFiles';
+import { missingSections } from '../shared/stateCheck';
 import { applyUiScale } from './settings';
 import '@fontsource/lato/400.css';
 import '@fontsource/lato/700.css';
@@ -40,7 +42,10 @@ if (scenarioId !== null) {
     save = await readAutosave();
     const id = save ? scenarioIdOf(save.scenario) : null;
     if (!save || id === null) return null;
-    return { info: SCENARIO_INFO[id], tick: save.tick, savedAt: save.savedAt, older: !sameStateFormat(save.format) };
+    // Older: of another state format, or lacking a part this version reads (PLAN 7.168: a save
+    // labelled with this format by a tool, from run 10's version, was offered and failed once started).
+    const older = !sameStateFormat(save.format) || missingSections(await unpackSave(save.bytes).catch(() => new Uint8Array())).length > 0;
+    return { info: SCENARIO_INFO[id], tick: save.tick, savedAt: save.savedAt, older };
   };
   if (uiRoot) {
     render(
