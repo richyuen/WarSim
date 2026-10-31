@@ -40,6 +40,15 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   battle again the way the test means it (step until the event, not a pinned day), never the bar moved.
   AT: `npx playwright test tests/e2e/zoomDemo1938.spec.ts` green alone on this machine, twice, with every
   assertion as it stands; the test off `knownRed.json` in the same commit.
+- [ ] 7.163 While playing, a click on an enemy counter at the front opens the enemy's panel (critic run 21,
+  non-blocking 1 and 2; the user's request, 2026-10-31). ADR-769's own-first pick hides the enemy beside an own
+  counter: the clicked enemy's panel 5 of 12 on seed 4441 (scale 12), 0 of 12 on 6827; and the fallback
+  (`formationPick`) can open a panel with nothing selected (6827, Japanese division 382). Rule: when the drawn
+  top of the click is an enemy counter and the click selects no own formation, the panel is the enemy's; a panel
+  never names a formation of the played nation that is not selected.
+  AT: an e2e replaying the critic's EX2 (4441, day 60, 12 Polish formations nearest a German, scale 12) and SXG
+  (6827, day 45): clicked enemy's panel ≥ 10 of 12 on 4441 and ≥ 9 of 12 on 6827; an own panel without its
+  selection 0 of 24; `formationClickPanel1938` (own clicks 12 of 12) still green.
 - [ ] 7.162 The DONE condition's runs on the HEAD after 7.161 (the last soak was 2026-10-16, the last full
   sweep 2026-10-19): `npm run check:full` (green but for `knownRed.json`), a 30-minute `npm run soak` of the
   1938 scenario, a sweep of 10+ unseen seeds over decades, the performance budgets (`npm run bench`).
