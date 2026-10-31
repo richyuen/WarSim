@@ -24970,3 +24970,23 @@ No rule changed and nothing on screen changed. One task came out of it.
   judged GPU figures (351.9 and 184.3 fps), on a screenshot of the software rasteriser's T2 that timed out at 180 s;
   `bench -- G` again did not. `docs/evidence/7.162/bench-G.log`, `bench-G-game.json`, `bench-all-first-run.txt`.
 - **Next:** PLAN 7.173.
+
+## 2026-10-31 — PLAN 7.173 (part): the break-up's births are revolts; at war full suppression keeps the war's reserve (ADR-776)
+
+- **What adds the nations** (`tools/diag/birthsByYear.ts`; seeds 1481, 1483, 1487, 1490 × 50 years, HEAD and 30dfd3c,
+  the code of the 727d sweep): revolts. 34–38 a decade from year 21 on 30dfd3c, 288–483 on HEAD; revivals and
+  released puppets as before. HEAD's world is a treadmill (founded, conquered, founded again: eliminations 42–49 a
+  decade then, 273–444 now), and in years 31–40 the births outrun the deaths (348 against 266): the break-up.
+- **Since which commit** (bisect of the revolts in years 1–15 on 1483 + 1487 + 1490; 30dfd3c 66, HEAD 174): no one
+  commit. Steps over the landing work 7.46c–7.90d; the largest PLAN 7.69 (`91d596b8`, ADR-621, the capital landing:
+  111 → 165, and 124 → 155 on three other seeds; HEAD without it 135). `docs/evidence/7.173/bisect.md`.
+- **The cause** (`revoltWhy.ts`, new `tools/diag/capitalFar.ts`, year-30 saves of 1481 and 1483): the statelets rise
+  on the great powers' own far core land, as overextension strains it. On 30dfd3c those powers suppressed in full
+  on treasuries of months to years of income (the USA 826,000–868,000 gold); on HEAD at the half level, treasuries
+  of a few thousand under the full level's bar (ADR-436: a month of it over 3 months of income). The rules since
+  spend the treasury and none keeps that bar.
+- **Rule** (ADR-776): at war the full level keeps WAR_RESERVE_MONTHS (none), as the army's orders do; in peace as
+  before. From the year-30 saves, revolts in 5 years 82 → 31 (1481) and 47 → 21 (1483), the living counts falling;
+  early (years 1–15) 174 → 113. A variant without the peace reserve read no better. Unit test in `economicAi.test.ts`.
+  Pin b22bcdd1 → dc41c283. Gate green.
+- **Next:** the AT sweep, seeds 1491–1500 × 50 years.

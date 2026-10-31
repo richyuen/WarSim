@@ -167,6 +167,28 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-776 · 2026-10-31 · accepted — PLAN 7.173: at war, full suppression keeps the war's reserve; the pin moves
+
+- **Context.** The 762u sweep (1481–1490) broke up on 5 of 10 seeds, against 10 of 10 on 741–750 (727d,
+  30dfd3c). The births are revolts (`birthsByYear.ts`, four seeds × 50 years): 34–38 a decade from year 21 on
+  30dfd3c, 288–483 on HEAD, the same land founded, conquered and founded again, the births over the deaths in years
+  31–40. A bisect of the revolts in years 1–15 (`docs/evidence/7.173/bisect.md`) finds no one commit: steps over
+  the landing work 7.46c–7.90d, the largest PLAN 7.69 (ADR-621, the user's; a quarter of the rise at HEAD). From
+  year-30 saves, HEAD's statelets rise on the great powers' own far core land, their treasuries under the full
+  suppression's bar (ADR-436: a month of it over RESERVE_MONTHS of income) and suppressing at the half level;
+  on 30dfd3c the same powers suppressed in full on treasuries of months to years of income. The rules since
+  (the warship's saving, the transports, the ferry's want, the reserve cut at war, the levy) spend the treasury,
+  and none keeps that bar.
+- **Decision.** `suppressionLevel` takes the months of reserve: at war WAR_RESERVE_MONTHS (none), as the army's
+  orders keep at war (ADR-615); in peace RESERVE_MONTHS, as before. The half level's room is unchanged.
+- **Tried.** A (kept): the war reserve at war. B: no reserve in peace either. Revolts in years 1–15 on
+  1483 + 1487 + 1490: 30dfd3c 66, HEAD 174, A 113, B 131. Five years on from HEAD's year-30 saves: 1481
+  82 → A 31, B 32; 1483 47 → A 21, B 21; the living counts falling (A 1481 101 → 96, 1483 113 → 91) where
+  HEAD's rose (1481 101 → 118). B gives no more late and less early; A is the narrower rule.
+- **Not done:** PLAN 7.69's capital landing is not undone (ADR-621, the user's; without it HEAD's early revolts
+  174 → 135, under A's).
+- **Pin:** b22bcdd1 → dc41c283.
+
 ### ADR-775 · 2026-10-31 · accepted — PLAN 7.172: a land formation's "To its fight" already frames what is drawn; the critic measured the sim anchor
 
 - **Context.** Critic runs 18–21 (`c21_ft_5381_d21.json`): after "To its fight" on 8 land formations of seed 5381

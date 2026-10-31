@@ -105,6 +105,15 @@ describe('economic AI (PLAN 1.26)', () => {
     expect(suppressionLevel(false, 1e9, income, income)).toBe(0);
   });
 
+  it('at war a month of full suppression over the war reserve pays for it (PLAN 7.173)', () => {
+    const income = 100;
+    const month = SUPPRESSION_COST * SUPPRESS_FULL * income;
+    // A treasury of a month of it, no surplus: nothing in peace, the full level at war.
+    expect(suppressionLevel(true, WAR_RESERVE_MONTHS * income + month, income, 0)).toBe(0);
+    expect(suppressionLevel(true, WAR_RESERVE_MONTHS * income + month, income, 0, WAR_RESERVE_MONTHS)).toBe(SUPPRESS_FULL);
+    expect(suppressionLevel(true, WAR_RESERVE_MONTHS * income + month - 1, income, 0, WAR_RESERVE_MONTHS)).toBe(0);
+  });
+
   it('with the AI off nothing is disbanded or ordered', () => {
     const s = peaceful();
     s.world.settings.aiEnabled = false;

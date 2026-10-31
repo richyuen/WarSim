@@ -2374,8 +2374,9 @@ are amplified. At strategic zoom this shows as a pulsing marker with crossed swo
     of the order of battle where that is more (`START_ARMY_MONTHS`; 16 nations of 1938): no
     army of the start is disbanded in the first hour.
   - *Suppression:* while a held province has unrest ≥ 40: 1 while the treasury holds a month
-    of it over 3 months of income, else 0.5 while the balance before suppression is over 15% of
-    income, else 0 (PLAN 7.3e2, ADR-436). The month's balance takes the level set.
+    of it over 3 months of income (at war over the war reserve, none: PLAN 7.173, ADR-776), else
+    0.5 while the balance before suppression is over 15% of income, else 0 (PLAN 7.3e2, ADR-436).
+    The month's balance takes the level set.
   - *Building:* up to 1 + income/400 orders in training at once, one more for a nation holding a land front where its
     side is outnumbered on land (`outnumberedOnLand`; PLAN 7.146b, ADR-739) (at most 6; ADR-47). It needs
     army upkeep, counting the orders in training, under 35% × (0.3 + 0.7 × aggression/100) of

@@ -1,0 +1,956 @@
+{
+ "seed": 1490,
+ "years": 50,
+ "rows": [
+  {
+   "year": 1,
+   "living": 96,
+   "born": 0,
+   "died": 6,
+   "kinds": {
+    "AllianceJoined": 16,
+    "WarDeclared": 23,
+    "SeaBattle": 14,
+    "CapitalCaptured": 23,
+    "ConvoyRaided": 18,
+    "AirWar": 29,
+    "AirRaids": 33,
+    "PuppetReleased": 2,
+    "PeaceSigned": 16,
+    "PuppetCreated": 6,
+    "MajorBattleStarted": 13,
+    "MajorBattleEnded": 13,
+    "AllianceLeft": 4,
+    "LandCeded": 5,
+    "NationEliminated": 6,
+    "AllianceDissolved": 2,
+    "UnionFormed": 3,
+    "FormationsDisbanded": 6
+   }
+  },
+  {
+   "year": 2,
+   "living": 96,
+   "born": 2,
+   "died": 2,
+   "kinds": {
+    "FormationsDisbanded": 15,
+    "ConvoyRaided": 32,
+    "AirWar": 8,
+    "AirRaids": 36,
+    "SeaBattle": 19,
+    "CapitalCaptured": 9,
+    "AllianceLeft": 2,
+    "LandCeded": 9,
+    "NationEliminated": 3,
+    "PeaceSigned": 25,
+    "WarDeclared": 26,
+    "PuppetCreated": 3,
+    "RevoltSpawned": 4,
+    "AllianceJoined": 3,
+    "UnionFormed": 2,
+    "NationAnnexed": 1,
+    "AllianceDissolved": 1,
+    "PuppetReleased": 4
+   }
+  },
+  {
+   "year": 3,
+   "living": 96,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 103,
+    "AirWar": 18,
+    "AirRaids": 36,
+    "AllianceLeft": 3,
+    "AllianceDissolved": 3,
+    "CapitalCaptured": 10,
+    "FormationsDisbanded": 2,
+    "SeaBattle": 14,
+    "PeaceSigned": 5,
+    "WarDeclared": 5,
+    "PuppetCreated": 1,
+    "LandCeded": 1,
+    "AllianceJoined": 2
+   }
+  },
+  {
+   "year": 4,
+   "living": 97,
+   "born": 3,
+   "died": 2,
+   "kinds": {
+    "WarDeclared": 14,
+    "AllianceJoined": 4,
+    "ConvoyRaided": 99,
+    "AirWar": 10,
+    "AirRaids": 36,
+    "LandCeded": 8,
+    "CapitalCaptured": 9,
+    "AllianceLeft": 1,
+    "AllianceDissolved": 1,
+    "NationEliminated": 2,
+    "PeaceSigned": 14,
+    "RevoltSpawned": 3,
+    "NationRevived": 1,
+    "PuppetCreated": 1
+   }
+  },
+  {
+   "year": 5,
+   "living": 94,
+   "born": 3,
+   "died": 6,
+   "kinds": {
+    "ConvoyRaided": 94,
+    "AirRaids": 32,
+    "CapitalCaptured": 9,
+    "PeaceSigned": 11,
+    "UnionFormed": 2,
+    "WarDeclared": 9,
+    "LandCeded": 20,
+    "PuppetIntegrated": 3,
+    "NationEliminated": 6,
+    "RevoltSpawned": 3,
+    "NationRevived": 2,
+    "AllianceJoined": 3,
+    "AirWar": 1,
+    "AllianceLeft": 2,
+    "PuppetReleased": 1,
+    "NationAnnexed": 2
+   }
+  },
+  {
+   "year": 6,
+   "living": 94,
+   "born": 1,
+   "died": 1,
+   "kinds": {
+    "ConvoyRaided": 124,
+    "AirRaids": 31,
+    "LandCeded": 4,
+    "WarDeclared": 7,
+    "SeaBattle": 2,
+    "CapitalCaptured": 2,
+    "NationEliminated": 1,
+    "AirWar": 3,
+    "PeaceSigned": 4,
+    "RevoltSpawned": 1,
+    "UnionFormed": 1,
+    "AllianceLeft": 2,
+    "AllianceDissolved": 1
+   }
+  },
+  {
+   "year": 7,
+   "living": 93,
+   "born": 0,
+   "died": 1,
+   "kinds": {
+    "AllianceJoined": 3,
+    "ConvoyRaided": 132,
+    "AirRaids": 28,
+    "PeaceSigned": 8,
+    "PuppetCreated": 1,
+    "WarDeclared": 4,
+    "NationAnnexed": 1,
+    "NationEliminated": 1,
+    "CapitalCaptured": 2,
+    "PuppetReleased": 4
+   }
+  },
+  {
+   "year": 8,
+   "living": 83,
+   "born": 0,
+   "died": 10,
+   "kinds": {
+    "ConvoyRaided": 118,
+    "AirRaids": 24,
+    "WarDeclared": 7,
+    "PeaceSigned": 6,
+    "LandCeded": 3,
+    "CapitalCaptured": 2,
+    "PuppetCreated": 1,
+    "PuppetIntegrated": 9,
+    "NationEliminated": 10,
+    "SeaBattle": 16
+   }
+  },
+  {
+   "year": 9,
+   "living": 83,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 80,
+    "AirRaids": 31,
+    "PeaceSigned": 9,
+    "AirWar": 2,
+    "AllianceJoined": 1,
+    "SeaBattle": 4,
+    "LandCeded": 7,
+    "CapitalCaptured": 1,
+    "WarDeclared": 7,
+    "PuppetCreated": 1
+   }
+  },
+  {
+   "year": 10,
+   "living": 82,
+   "born": 0,
+   "died": 1,
+   "kinds": {
+    "ConvoyRaided": 67,
+    "AirWar": 4,
+    "AirRaids": 29,
+    "LandCeded": 9,
+    "PeaceSigned": 5,
+    "AllianceLeft": 1,
+    "NationEliminated": 1,
+    "WarDeclared": 3,
+    "CapitalCaptured": 4,
+    "SeaBattle": 1
+   }
+  },
+  {
+   "year": 11,
+   "living": 82,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 29,
+    "AirRaids": 19,
+    "CapitalCaptured": 3,
+    "PeaceSigned": 7,
+    "PuppetReleased": 2,
+    "LandCeded": 15,
+    "WarDeclared": 10,
+    "AirWar": 4
+   }
+  },
+  {
+   "year": 12,
+   "living": 81,
+   "born": 0,
+   "died": 1,
+   "kinds": {
+    "ConvoyRaided": 47,
+    "AirRaids": 23,
+    "LandCeded": 7,
+    "CapitalCaptured": 5,
+    "PeaceSigned": 5,
+    "WarDeclared": 3,
+    "AirWar": 4,
+    "AllianceLeft": 1,
+    "AllianceDissolved": 1,
+    "NationEliminated": 1,
+    "MajorBattleStarted": 1,
+    "MajorBattleEnded": 1,
+    "SeaBattle": 8
+   }
+  },
+  {
+   "year": 13,
+   "living": 81,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 45,
+    "AirRaids": 25,
+    "LandCeded": 7,
+    "PeaceSigned": 3,
+    "AirWar": 1,
+    "AllianceLeft": 2,
+    "AllianceDissolved": 1,
+    "AllianceJoined": 3,
+    "WarDeclared": 4
+   }
+  },
+  {
+   "year": 14,
+   "living": 81,
+   "born": 1,
+   "died": 1,
+   "kinds": {
+    "ConvoyRaided": 30,
+    "AirRaids": 26,
+    "LandCeded": 9,
+    "WarDeclared": 12,
+    "SeaBattle": 2,
+    "CapitalCaptured": 2,
+    "PeaceSigned": 12,
+    "PuppetReleased": 3,
+    "RevoltSpawned": 1,
+    "NationRevived": 1,
+    "AirWar": 2,
+    "NationEliminated": 1
+   }
+  },
+  {
+   "year": 15,
+   "living": 83,
+   "born": 2,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 24,
+    "AirRaids": 8,
+    "LandCeded": 8,
+    "WarDeclared": 12,
+    "PeaceSigned": 9,
+    "CapitalCaptured": 3,
+    "RevoltSpawned": 3,
+    "NationRevived": 3,
+    "NationAnnexed": 1,
+    "NationEliminated": 1,
+    "PuppetCreated": 1
+   }
+  },
+  {
+   "year": 16,
+   "living": 83,
+   "born": 1,
+   "died": 1,
+   "kinds": {
+    "ConvoyRaided": 24,
+    "AirRaids": 11,
+    "LandCeded": 13,
+    "PeaceSigned": 5,
+    "CapitalCaptured": 1,
+    "AllianceLeft": 1,
+    "NationEliminated": 1,
+    "WarDeclared": 4,
+    "SeaBattle": 5,
+    "RevoltSpawned": 1,
+    "NationRevived": 1
+   }
+  },
+  {
+   "year": 17,
+   "living": 83,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 27,
+    "AirRaids": 17,
+    "LandCeded": 24,
+    "PeaceSigned": 8,
+    "WarDeclared": 9,
+    "CapitalCaptured": 3,
+    "PuppetCreated": 3,
+    "PuppetReleased": 3,
+    "AllianceJoined": 2
+   }
+  },
+  {
+   "year": 18,
+   "living": 84,
+   "born": 1,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 28,
+    "AirRaids": 35,
+    "LandCeded": 31,
+    "SeaBattle": 5,
+    "WarDeclared": 8,
+    "NukeDecided": 1,
+    "NukeCasualties": 1,
+    "PeaceSigned": 7,
+    "RevoltSpawned": 1,
+    "NationRevived": 1,
+    "CapitalCaptured": 1,
+    "AirWar": 1,
+    "PuppetCreated": 1,
+    "AllianceJoined": 1
+   }
+  },
+  {
+   "year": 19,
+   "living": 85,
+   "born": 2,
+   "died": 1,
+   "kinds": {
+    "ConvoyRaided": 26,
+    "AirRaids": 36,
+    "LandCeded": 30,
+    "PeaceSigned": 8,
+    "WarDeclared": 11,
+    "CapitalCaptured": 8,
+    "AirWar": 2,
+    "PuppetCreated": 4,
+    "NationAnnexed": 1,
+    "NationEliminated": 1,
+    "SeaBattle": 12,
+    "PuppetReleased": 4,
+    "AllianceJoined": 2,
+    "RevoltSpawned": 2,
+    "NationRevived": 1
+   }
+  },
+  {
+   "year": 20,
+   "living": 86,
+   "born": 1,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 44,
+    "AirWar": 12,
+    "AirRaids": 35,
+    "LandCeded": 12,
+    "PeaceSigned": 13,
+    "PuppetCreated": 2,
+    "WarEnded": 1,
+    "WarDeclared": 8,
+    "RevoltSpawned": 1,
+    "NationRevived": 1,
+    "AllianceJoined": 1,
+    "CapitalCaptured": 2
+   }
+  },
+  {
+   "year": 21,
+   "living": 86,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 18,
+    "AirRaids": 31,
+    "LandCeded": 7,
+    "CapitalCaptured": 8,
+    "FormationsDisbanded": 2,
+    "AirWar": 4,
+    "PuppetReleased": 5,
+    "PeaceSigned": 8,
+    "AllianceJoined": 3,
+    "PuppetCreated": 4,
+    "WarDeclared": 7,
+    "SeaBattle": 4
+   }
+  },
+  {
+   "year": 22,
+   "living": 86,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "AirWar": 17,
+    "AirRaids": 30,
+    "LandCeded": 5,
+    "SeaBattle": 2,
+    "WarDeclared": 8,
+    "PuppetReleased": 1,
+    "PeaceSigned": 6,
+    "PuppetCreated": 3
+   }
+  },
+  {
+   "year": 23,
+   "living": 85,
+   "born": 0,
+   "died": 1,
+   "kinds": {
+    "CapitalCaptured": 5,
+    "AirRaids": 9,
+    "LandCeded": 8,
+    "PeaceSigned": 6,
+    "WarDeclared": 4,
+    "SeaBattle": 2,
+    "AirWar": 3,
+    "AllianceLeft": 1,
+    "NationEliminated": 1,
+    "PuppetReleased": 1,
+    "PuppetCreated": 2
+   }
+  },
+  {
+   "year": 24,
+   "living": 84,
+   "born": 2,
+   "died": 3,
+   "kinds": {
+    "CapitalCaptured": 2,
+    "WarDeclared": 5,
+    "LandCeded": 11,
+    "NationEliminated": 3,
+    "AirRaids": 26,
+    "RevoltSpawned": 2,
+    "PeaceSigned": 6,
+    "ConvoyRaided": 1,
+    "UnionFormed": 1,
+    "PuppetCreated": 2,
+    "NationAnnexed": 1
+   }
+  },
+  {
+   "year": 25,
+   "living": 84,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "AirRaids": 4,
+    "PuppetReleased": 1,
+    "LandCeded": 12,
+    "WarDeclared": 5,
+    "FormationsDisbanded": 2,
+    "PeaceSigned": 4,
+    "AllianceJoined": 1
+   }
+  },
+  {
+   "year": 26,
+   "living": 85,
+   "born": 1,
+   "died": 0,
+   "kinds": {
+    "WarDeclared": 5,
+    "PeaceSigned": 4,
+    "AirWar": 4,
+    "AirRaids": 15,
+    "LandCeded": 9,
+    "PuppetCreated": 1,
+    "CapitalCaptured": 4,
+    "FormationsDisbanded": 1,
+    "RevoltSpawned": 1,
+    "NationRevived": 1
+   }
+  },
+  {
+   "year": 27,
+   "living": 87,
+   "born": 2,
+   "died": 0,
+   "kinds": {
+    "AirRaids": 16,
+    "PeaceSigned": 7,
+    "WarDeclared": 6,
+    "RevoltSpawned": 2,
+    "NationRevived": 2,
+    "CapitalCaptured": 3,
+    "SeaBattle": 1,
+    "AirWar": 4,
+    "PuppetReleased": 1,
+    "LandCeded": 3,
+    "AllianceJoined": 1
+   }
+  },
+  {
+   "year": 28,
+   "living": 88,
+   "born": 1,
+   "died": 0,
+   "kinds": {
+    "PeaceSigned": 7,
+    "WarDeclared": 10,
+    "FormationsDisbanded": 4,
+    "AirWar": 3,
+    "AirRaids": 16,
+    "CapitalCaptured": 3,
+    "PuppetCreated": 2,
+    "RevoltSpawned": 1,
+    "NationRevived": 1,
+    "LandCeded": 14,
+    "PuppetReleased": 1
+   }
+  },
+  {
+   "year": 29,
+   "living": 86,
+   "born": 0,
+   "died": 2,
+   "kinds": {
+    "AirRaids": 31,
+    "LandCeded": 20,
+    "WarDeclared": 4,
+    "PeaceSigned": 8,
+    "CapitalCaptured": 3,
+    "PuppetCreated": 3,
+    "NationAnnexed": 2,
+    "NationEliminated": 2,
+    "AirWar": 4,
+    "AllianceLeft": 1,
+    "AllianceDissolved": 1
+   }
+  },
+  {
+   "year": 30,
+   "living": 86,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "PuppetReleased": 1,
+    "LandCeded": 5,
+    "WarDeclared": 4,
+    "PeaceSigned": 2,
+    "PuppetCreated": 2,
+    "AirRaids": 3,
+    "CapitalCaptured": 2
+   }
+  },
+  {
+   "year": 31,
+   "living": 86,
+   "born": 2,
+   "died": 2,
+   "kinds": {
+    "LandCeded": 22,
+    "WarDeclared": 7,
+    "SeaBattle": 4,
+    "PeaceSigned": 6,
+    "PuppetCreated": 1,
+    "NationAnnexed": 2,
+    "AllianceLeft": 1,
+    "AllianceDissolved": 1,
+    "NationEliminated": 2,
+    "RevoltSpawned": 2,
+    "AirRaids": 19,
+    "CapitalCaptured": 1
+   }
+  },
+  {
+   "year": 32,
+   "living": 86,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "AirRaids": 29,
+    "LandCeded": 14,
+    "UnionFormed": 1,
+    "AllianceLeft": 1,
+    "AllianceDissolved": 1,
+    "PeaceSigned": 2
+   }
+  },
+  {
+   "year": 33,
+   "living": 87,
+   "born": 1,
+   "died": 0,
+   "kinds": {
+    "AirRaids": 30,
+    "PeaceSigned": 5,
+    "WarDeclared": 9,
+    "RevoltSpawned": 1,
+    "LandCeded": 5,
+    "AllianceJoined": 1,
+    "SeaBattle": 149,
+    "CapitalCaptured": 2,
+    "PuppetCreated": 1
+   }
+  },
+  {
+   "year": 34,
+   "living": 84,
+   "born": 0,
+   "died": 3,
+   "kinds": {
+    "SeaBattle": 302,
+    "AirRaids": 15,
+    "LandCeded": 10,
+    "WarDeclared": 5,
+    "CapitalCaptured": 7,
+    "AllianceLeft": 2,
+    "NationEliminated": 3,
+    "PeaceSigned": 6,
+    "PuppetCreated": 2
+   }
+  },
+  {
+   "year": 35,
+   "living": 82,
+   "born": 0,
+   "died": 2,
+   "kinds": {
+    "AirRaids": 18,
+    "PeaceSigned": 8,
+    "PuppetCreated": 2,
+    "WarDeclared": 5,
+    "LandCeded": 1,
+    "CapitalCaptured": 2,
+    "NationAnnexed": 2,
+    "AllianceLeft": 2,
+    "NationEliminated": 2,
+    "AllianceJoined": 1,
+    "AirWar": 2,
+    "SeaBattle": 43
+   }
+  },
+  {
+   "year": 36,
+   "living": 82,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "SeaBattle": 150,
+    "AirRaids": 32,
+    "WarDeclared": 7,
+    "PuppetReleased": 1,
+    "CapitalCaptured": 3,
+    "PeaceSigned": 6,
+    "PuppetCreated": 3,
+    "AllianceJoined": 5,
+    "AirWar": 4,
+    "LandCeded": 1
+   }
+  },
+  {
+   "year": 37,
+   "living": 81,
+   "born": 0,
+   "died": 1,
+   "kinds": {
+    "AirRaids": 28,
+    "CapitalCaptured": 5,
+    "PeaceSigned": 5,
+    "PuppetCreated": 2,
+    "WarDeclared": 4,
+    "SeaBattle": 9,
+    "LandCeded": 1,
+    "NationEliminated": 1,
+    "AirWar": 2,
+    "PuppetReleased": 1,
+    "AllianceJoined": 4
+   }
+  },
+  {
+   "year": 38,
+   "living": 81,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 1,
+    "AirRaids": 32,
+    "PuppetReleased": 2,
+    "CapitalCaptured": 2,
+    "PeaceSigned": 2,
+    "WarDeclared": 4,
+    "LandCeded": 2,
+    "UnionFormed": 1
+   }
+  },
+  {
+   "year": 39,
+   "living": 83,
+   "born": 2,
+   "died": 0,
+   "kinds": {
+    "AirRaids": 30,
+    "AirWar": 7,
+    "LandCeded": 6,
+    "PeaceSigned": 4,
+    "PuppetReleased": 3,
+    "WarDeclared": 4,
+    "RevoltSpawned": 2,
+    "NationRevived": 2,
+    "CapitalCaptured": 1,
+    "PuppetCreated": 1,
+    "AllianceJoined": 1
+   }
+  },
+  {
+   "year": 40,
+   "living": 81,
+   "born": 0,
+   "died": 2,
+   "kinds": {
+    "CapitalCaptured": 4,
+    "AirRaids": 4,
+    "AllianceLeft": 2,
+    "AllianceDissolved": 2,
+    "LandCeded": 10,
+    "NationEliminated": 2,
+    "PeaceSigned": 3,
+    "PuppetReleased": 2,
+    "WarDeclared": 2,
+    "AllianceJoined": 1,
+    "UnionFormed": 1,
+    "NukeDecided": 1,
+    "NukeCasualties": 1
+   }
+  },
+  {
+   "year": 41,
+   "living": 82,
+   "born": 3,
+   "died": 2,
+   "kinds": {
+    "PeaceSigned": 11,
+    "PuppetCreated": 3,
+    "WarDeclared": 11,
+    "LandCeded": 51,
+    "RevoltSpawned": 6,
+    "AllianceJoined": 3,
+    "CapitalCaptured": 10,
+    "NationAnnexed": 1,
+    "NationEliminated": 3,
+    "AirWar": 4,
+    "AirRaids": 29,
+    "AllianceLeft": 2,
+    "PuppetReleased": 3,
+    "AllianceDissolved": 1
+   }
+  },
+  {
+   "year": 42,
+   "living": 81,
+   "born": 0,
+   "died": 1,
+   "kinds": {
+    "AirRaids": 36,
+    "PuppetReleased": 4,
+    "PeaceSigned": 8,
+    "PuppetCreated": 3,
+    "WarDeclared": 9,
+    "SeaBattle": 6,
+    "ConvoyRaided": 21,
+    "RevoltSpawned": 1,
+    "LandCeded": 9,
+    "CapitalCaptured": 7,
+    "AllianceLeft": 1,
+    "NationEliminated": 1,
+    "AllianceJoined": 1,
+    "AirWar": 1
+   }
+  },
+  {
+   "year": 43,
+   "living": 82,
+   "born": 1,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 19,
+    "AirRaids": 33,
+    "RevoltSpawned": 1,
+    "WarDeclared": 9,
+    "NationRevived": 1,
+    "LandCeded": 3,
+    "PeaceSigned": 7,
+    "AirWar": 4,
+    "AllianceJoined": 1,
+    "CapitalCaptured": 3,
+    "PuppetReleased": 1
+   }
+  },
+  {
+   "year": 44,
+   "living": 82,
+   "born": 1,
+   "died": 1,
+   "kinds": {
+    "CapitalCaptured": 4,
+    "AllianceLeft": 1,
+    "NationEliminated": 1,
+    "ConvoyRaided": 12,
+    "AirRaids": 8,
+    "PuppetReleased": 1,
+    "PeaceSigned": 10,
+    "PuppetCreated": 6,
+    "WarDeclared": 4,
+    "LandCeded": 5,
+    "RevoltSpawned": 1,
+    "FormationsDisbanded": 1
+   }
+  },
+  {
+   "year": 45,
+   "living": 81,
+   "born": 0,
+   "died": 1,
+   "kinds": {
+    "WarDeclared": 3,
+    "FormationsDisbanded": 2,
+    "AirRaids": 11,
+    "LandCeded": 11,
+    "CapitalCaptured": 3,
+    "AllianceLeft": 1,
+    "NationEliminated": 1,
+    "PeaceSigned": 2,
+    "PuppetCreated": 1
+   }
+  },
+  {
+   "year": 46,
+   "living": 81,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "LandCeded": 17,
+    "FormationsDisbanded": 2,
+    "AirRaids": 11,
+    "WarDeclared": 4,
+    "CapitalCaptured": 1,
+    "PuppetReleased": 1,
+    "PeaceSigned": 4,
+    "PuppetCreated": 2,
+    "ConvoyRaided": 17,
+    "AirWar": 1
+   }
+  },
+  {
+   "year": 47,
+   "living": 81,
+   "born": 0,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 36,
+    "AirRaids": 22,
+    "LandCeded": 7,
+    "UnionFormed": 1
+   }
+  },
+  {
+   "year": 48,
+   "living": 82,
+   "born": 1,
+   "died": 0,
+   "kinds": {
+    "ConvoyRaided": 30,
+    "AirRaids": 32,
+    "LandCeded": 8,
+    "RevoltSpawned": 1,
+    "WarDeclared": 4,
+    "PeaceSigned": 2,
+    "PuppetReleased": 2,
+    "PuppetCreated": 1,
+    "AirWar": 1
+   }
+  },
+  {
+   "year": 49,
+   "living": 82,
+   "born": 1,
+   "died": 1,
+   "kinds": {
+    "AirRaids": 4,
+    "LandCeded": 10,
+    "PeaceSigned": 6,
+    "RevoltSpawned": 2,
+    "WarDeclared": 6,
+    "NationRevived": 1,
+    "AllianceJoined": 2,
+    "NationAnnexed": 1,
+    "NationEliminated": 2,
+    "CapitalCaptured": 3,
+    "AllianceLeft": 1,
+    "AllianceDissolved": 1,
+    "PuppetCreated": 1
+   }
+  },
+  {
+   "year": 50,
+   "living": 83,
+   "born": 1,
+   "died": 0,
+   "kinds": {
+    "PuppetReleased": 3,
+    "PeaceSigned": 4,
+    "PuppetCreated": 1,
+    "RevoltSpawned": 1,
+    "WarDeclared": 3,
+    "LandCeded": 3,
+    "AllianceJoined": 1,
+    "AirRaids": 1
+   }
+  }
+ ]
+}

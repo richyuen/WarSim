@@ -31,7 +31,10 @@
  *    SUPPRESS_LEVEL while the budget has room (B before any suppression > SUPPRESS_ROOM × income),
  *    else 0. B then takes the level set (PLAN 7.3e2, ADR-436: from the surplus alone, France with
  *    5,000 gold suppressed nothing while its far core land rose, and four fifths of the land given
- *    back by revolt was ceded by holders that suppressed, at the half level).
+ *    back by revolt was ceded by holders that suppressed, at the half level). At war the reserve
+ *    is WAR_RESERVE_MONTHS, as the army's orders keep (PLAN 7.173, ADR-776: the treasuries the
+ *    later rules spend held under the full level's bar, and the far core land of the great
+ *    powers at war rose again and again; revolts from year-30 saves 82 → 31 and 47 → 21 in 5 years).
  * 3. Build: up to 1 + income/PARALLEL_INCOME orders in training at once (and OUTNUMBERED_SLOTS more for a nation
  *    holding a land front where its side is outnumbered on land, PLAN 7.146b; at most MAX_PARALLEL),
  *    while army upkeep (with the orders in training) is below ARMY_SHARE × (PEACE_ARMY_BASE +
@@ -484,7 +487,7 @@ export function economicAi(tables: EconomyTables, mix: BuildMix): (world: World)
       }
       // 2. Suppression, and the month's balance with the level set (it was taken with last month's).
       const was = nc.suppression[n]!;
-      nc.suppression[n] = suppressionLevel(restless.has(n), nc.gold[n]!, income, balance + SUPPRESSION_COST * was * income);
+      nc.suppression[n] = suppressionLevel(restless.has(n), nc.gold[n]!, income, balance + SUPPRESSION_COST * was * income, atWar ? WAR_RESERVE_MONTHS : RESERVE_MONTHS);
       balance -= SUPPRESSION_COST * (nc.suppression[n]! - was) * income;
       if (!world.rules) return;
       // 2b. A means of delivery for its warheads (PLAN 7.6b), before research takes the month's
@@ -715,12 +718,13 @@ export function budgetOf(world: World, n: number, acc: { gross: ArrayLike<number
 /**
  * The suppression level of a nation (PLAN 7.3e2, ADR-436) with a restless province or none, `gold`,
  * `income` and `balance`, the month's balance before any suppression: SUPPRESS_FULL while its
- * treasury holds a month of it over RESERVE_MONTHS of income, else SUPPRESS_LEVEL while the
- * balance has room for it (over SUPPRESS_ROOM of income), else 0.
+ * treasury holds a month of it over `reserveMonths` of income, else SUPPRESS_LEVEL while the
+ * balance has room for it (over SUPPRESS_ROOM of income), else 0. The reserve is RESERVE_MONTHS in
+ * peace and WAR_RESERVE_MONTHS at war (PLAN 7.173, ADR-776), as the army's orders keep.
  */
-export function suppressionLevel(restless: boolean, gold: number, income: number, balance: number): number {
+export function suppressionLevel(restless: boolean, gold: number, income: number, balance: number, reserveMonths = RESERVE_MONTHS): number {
   if (!restless) return 0;
-  if (gold - SUPPRESSION_COST * SUPPRESS_FULL * income >= RESERVE_MONTHS * income) return SUPPRESS_FULL;
+  if (gold - SUPPRESSION_COST * SUPPRESS_FULL * income >= reserveMonths * income) return SUPPRESS_FULL;
   return balance > SUPPRESS_ROOM * income ? SUPPRESS_LEVEL : 0;
 }
 
