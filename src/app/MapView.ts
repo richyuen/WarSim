@@ -12,6 +12,7 @@ import { drawTags, layoutTags, type PlacedTag, type TagInput, type TagObstacle }
 import { MarkerStacks, type StackItem } from '../render/units/markerStacks';
 import { CounterLayer, counterNation, type CounterSource } from '../render/units/counters';
 import { drawSeaBattles } from '../render/units/seaBattles';
+import { FlagAtlas, NO_FLAG_SLOT } from '../render/units/flagAtlas';
 import { airFxSize, drawSorties, type PlacedSortie } from '../render/units/sorties';
 import { AirFx } from '../render/fx/air';
 import { NukeFx } from '../render/fx/nuke';
@@ -659,6 +660,8 @@ export class MapView {
       if (s.nations.data[o + NationField.living] === 1) this.capitals.set(id, [s.nations.data[o + NationField.capitalX]!, s.nations.data[o + NationField.capitalY]!]);
     }
     this.applyPalette();
+    // The living nations' flags, before the sprites take their slots (PLAN 7.174b).
+    this.syncFlagAtlas();
     const f = s.formations;
     // Copies for picking and selection rings (the snapshot buffers go back to the pool).
     // The selected ids' generations before, to tell a formation from one that took its id.
@@ -741,6 +744,7 @@ export class MapView {
       p.colors[i * 4 + 1] = (col >> 8) & 255;
       p.colors[i * 4 + 2] = col & 255;
       p.colors[i * 4 + 3] = 255;
+      p.flagSlots[i] = this.flagAtlas.slotOf(f.nation[i]!);
     }
     p.upload(f.count);
     // The elements of the snapshot before, for the tanks lost since (PLAN 3.6d). Not across a
@@ -1257,11 +1261,14 @@ export class MapView {
       // What is left of the element: its share of its size (PLAN 2.11g; an empty one is gone from the sim).
       p.data[o + 7] = spriteAlpha(e.strength[i]!, e.size[i]!);
       p.colors.set(this.spriteRgba(e.nation[i]!, e.frame[i]!, e.x[i]!, e.y[i]!), i * 4);
+      p.flagSlots[i] = this.flagAtlas.slotOf(e.nation[i]!);
     }
     this.elementTurrets = hulls;
     this.elementTurretOwner = new Uint32Array(hulls);
     const withTurrets = appendTurrets(p.data, p.colors, e.count, this.elementTurretOwner);
     const all = appendWakes(p.data, p.colors, e.count, withTurrets);
+    // Turrets and wakes are no ball's (PLAN 7.174c draws neither in that look).
+    p.flagSlots.fill(NO_FLAG_SLOT, e.count, all);
     this.elementWakes = all - withTurrets;
     p.upload(all);
     // Near T3 the section is kept, so that the figures can be built in the frame the close tier
@@ -1425,6 +1432,7 @@ export class MapView {
       const px0 = e.prevX[i]! + near;
       const moving = marching(e.flags[i]!);
       const rgba = this.spriteRgba(e.nation[i]!, frame, e.x[i]!, e.y[i]!);
+      const flagSlot = this.flagAtlas.slotOf(e.nation[i]!);
       for (let k = 0; k < n; k++, j++) {
         const o = j * PROXY_STRIDE;
         const dx = off[k * 2]! * s;
@@ -1438,6 +1446,7 @@ export class MapView {
         p.data[o + 6] = shownFrame(frame, inContact) + (moving ? marchFraction(hash2(e.id[i]!, k)) : 0);
         p.data[o + 7] = 1;
         p.colors.set(rgba, j * 4);
+        p.flagSlots[j] = flagSlot;
         owner[j] = e.id[i]!;
         cellsOf[j] = size;
         xs[j] = e.x[i]! + dx;
@@ -1448,7 +1457,9 @@ export class MapView {
     this.individualTurrets = hulls;
     this.individualTurretOwner = new Uint32Array(hulls);
     // And a ship under way its wake (PLAN 4.7b).
-    p.upload(appendWakes(p.data, p.colors, total, appendTurrets(p.data, p.colors, total, this.individualTurretOwner)));
+    const figuresAll = appendWakes(p.data, p.colors, total, appendTurrets(p.data, p.colors, total, this.individualTurretOwner));
+    p.flagSlots.fill(NO_FLAG_SLOT, total, figuresAll);
+    p.upload(figuresAll);
     this.individualCount = total;
     this.individualOwner = owner;
     this.individualCells = cellsOf;
@@ -2298,6 +2309,18 @@ export class MapView {
     return best;
   }
 
+  /**
+   * The living nations' flags in one texture for the countryball look (PLAN 7.174b), kept with each
+   * snapshot and with each change of a painted flag; on the GPU only while that look is chosen.
+   */
+  readonly flagAtlas = new FlagAtlas();
+  private flagAtlasVersion = -1;
+
+  private syncFlagAtlas(): void {
+    this.flagAtlas.sync(this.capitals.keys(), (id) => this.flags.pixelsOf(id));
+    this.flagAtlasVersion = this.flags.version;
+  }
+
   /** Nation flags (PLAN 1.37b): custom pixel flags, else the scenario's, else one made from id and colour. */
   readonly flags = new FlagStore(
     (id) => this.ownColor.get(id),
@@ -2679,6 +2702,9 @@ export class MapView {
     const cam = this.controller.cam;
     // T0 has counters (PLAN 2.2), T1 markers (PLAN 2.1), below them the sprites (PLAN 2.3, 2.6).
     this.tierShares(now);
+    // A flag painted since the last frame is in the atlas in this one (PLAN 7.174b).
+    if (this.flags.version !== this.flagAtlasVersion) this.syncFlagAtlas();
+    if (this.unitLook === 'balls') this.flagAtlas.upload(this.gl);
     this.drawWebGl(now);
     this.drawLabels(cam, dpr, now);
     // Unit markers below capital flags, so capitals stay readable (PLAN 2.1); the flags keep

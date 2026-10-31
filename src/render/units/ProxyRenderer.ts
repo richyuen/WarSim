@@ -130,6 +130,11 @@ export class ProxyRenderer {
   /** CPU-side instance data: [prevX, prevY, curX, curY, facing, size, frame, alpha]. */
   data = new Float32Array(0);
   colors = new Uint8Array(0);
+  /**
+   * Each instance's slot in the flag atlas (`flagAtlas.ts`, PLAN 7.174b), for the countryball
+   * look; -1 none. Written beside the tint by the element sprites and figures.
+   */
+  flagSlots = new Float32Array(0);
 
   constructor(gl: WebGL2RenderingContext, atlasCanvas: HTMLCanvasElement) {
     this.gl = gl;
@@ -171,6 +176,9 @@ export class ProxyRenderer {
     const c = new Uint8Array(n * 4);
     c.set(this.colors);
     this.colors = c;
+    const f = new Float32Array(n).fill(-1);
+    f.set(this.flagSlots);
+    this.flagSlots = f;
   }
 
   /** Uploads the first `count` instances of `data`/`colors` (call once per snapshot). */

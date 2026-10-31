@@ -25021,3 +25021,17 @@ No rule changed and nothing on screen changed. One task came out of it.
 - **AT:** `tests/unit/unitLook.test.ts` (the default, the fallback); `settings1938` e2e: the view's look follows the
   select at once, survives a reload, and an unknown stored value is the default. UI only, no sim input.
 - **Next:** PLAN 7.174b.
+
+## 2026-10-31 — PLAN 7.174b: every living nation's flag in one texture (done)
+
+- **Built:** `render/units/flagAtlas.ts`: slots of 38 × 26 (the 36 × 24 flag and a pad of its edge), 53 a row across 2048
+  px, the height the least power of two from 128 that holds the rows (4,134 slots at 2048); a dead nation's slot goes
+  to the next; a flag is written again only when `FlagStore.pixelsOf` gives a new array (a paint, a colour change).
+  `MapView` syncs it with each snapshot's living nations and on a change of `FlagStore.version`, and uploads it (the
+  changed rows) only while the look is 'balls'. `ProxyRenderer.flagSlots`: each stand-in, element sprite and figure's
+  slot beside its tint; turrets and wakes none. Nothing reads the slots on the GPU until 7.174c.
+- **AT:** `tests/unit/flagAtlas.test.ts`: 102 living nations of the 1938 start and 722 after a revolt forced in every
+  province each have a slot of their own with their flag at its middle, corners and pad; the 17 dead none; 512 px high;
+  a painted flag is in it at the next sync, an unchanged one not written again; past the last slot a nation has none.
+  In the built game with 'balls': the GPU texture's texels at ten slots' middles equal the CPU copy's, no GL error.
+- **Next:** PLAN 7.174c.

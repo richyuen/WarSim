@@ -37,10 +37,7 @@ of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: t
   countryball, a circle filled with its nation's flag, with eyes, animated; a setting turns back to the
   look of today ("Classic"). View only: no sim input, the seed-99 pin unchanged by every part.
   - [x] 7.174a The setting. `Settings.unitLook` ('balls' | 'classic', key `warsim.unitLook`), a row in […]
-  - [ ] 7.174b The flags on the GPU. One texture of every nation's flag (`FlagStore.pixelsOf`, 36×24 a slot),
-    rebuilt when `FlagStore.version` moves or a nation is founded, and each element instance's slot beside its
-    tint. AT: unit test: each living nation of the 1938 start and of a world after a forced revolt has a slot;
-    the texel at a slot's middle equals its flag's; a painted flag is in the texture on the next frame.
+  - [x] 7.174b The flags on the GPU. One texture of every nation's flag (`FlagStore.pixelsOf`, 36×24 a slot), […]
   - [ ] 7.174c The ball at T2 and T3 (the user's choice: one ball per element at T3, not its figures). A second
     program of `ProxyRenderer` (SPEC §8's two-program precedent, no branch in the classic one): a disc filled with
     the flag, shaded round, a dark outline, two white eyes; upright, mirrored left or right by its facing, the eyes

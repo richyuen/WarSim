@@ -16650,3 +16650,24 @@ Of 7.174 (open in PLAN.md):
     once, at the end); specs of the balls set 'balls' themselves. AT: unit test of the setting's load (the
     default, a bad value falls back to it); `settings1938` e2e: the choice switches the look at once and survives
     a reload.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+Of 7.174 (open in PLAN.md):
+
+  - [x] 7.174b The flags on the GPU. One texture of every nation's flag (`FlagStore.pixelsOf`, 36×24 a slot),
+    rebuilt when `FlagStore.version` moves or a nation is founded, and each element instance's slot beside its
+    tint. AT: unit test: each living nation of the 1938 start and of a world after a forced revolt has a slot;
+    the texel at a slot's middle equals its flag's; a painted flag is in the texture on the next frame.
