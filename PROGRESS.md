@@ -24945,3 +24945,28 @@ No rule changed and nothing on screen changed. One task came out of it.
   tests importing what changed, and this spec reads the export through the page. The test now expects the
   7.166 rule (`exported`, a side's or strike's nation, any other id as it is), in the JSON rows and the CSV's
   first line; nothing else of it changed. 3 of 3 pass. The review runs again on this commit.
+
+## 2026-10-31 — PLAN 7.162: the DONE condition's runs on HEAD (fbca2cc4): green; the sweep's break-up filed as 7.173
+
+- **check:full** (`npm run check:review`, every stage, a red test run again alone): green, 0 red, the known-red
+  `seaRow1938` passing too. The first run, on cac50421, was red on `history1938`'s export test (7.166's rule, fixed
+  in fbca2cc4). `docs/evidence/7.162/check-review-fbca2cc4.json` and `-steps.txt`.
+- **Soak** (`npm run soak -- --scenario 1938 --seed 99 --minutes 30 --affinity 0xFFFF`): green, 28.06 years
+  (245,784 ticks) in 30.0 min, 5 saves and loads, the twins equal at every compare, no exception, nothing not
+  finite; final hash 6b8c9cea. `docs/evidence/7.162/soak-1938-seed99-30min.json` and `.log`. Slower than 7.2b's
+  42.6 years in 30 min (2026-10-16): the tick has grown since; within the bar, noted.
+- **Sweep** (`npm run sweep -- --first 1481 --tag 762u`, seeds 1481–1490 × 50 years, the next unseen block): land
+  changing controller in the last 5 years 35.0–82.7 %, ≥ 1 % on 10 of 10 (the AT). The sweep's own verdict
+  FAILING: largest land or income over the limit on 3 (1486, 1488: the USA 36.9 % and 39.8 % of the land; 1490:
+  54.4 % of the income; "no hegemon" is struck from the DONE condition, ADR-740: reported); no break-up 5 of 10.
+  `docs/sweeps/2026-10-31-sweep-762u.md`, copy in the evidence. A first sweep on 751–760 (`--tag 762`, chosen in
+  error: not of the unseen block, PLAN 7's rule) had borders moving 10 of 10, limits 10 of 10, no break-up 4 of 10.
+- **Break-up filed as PLAN 7.173:** on 741–750 (2026-10-19) the living nations stayed at most × 0.97 of their
+  earlier most, 10 of 10; now up to × 1.30 and × 1.36, on half the seeds. A regression of a mechanism, two seed
+  blocks alike; not in the DONE condition's words, filed so it is not passed by.
+- **Bench** (`npm run bench`, then `npm run bench -- G`): GPU T0 347.6 fps with 102 nations (budget 60), T2 182.9
+  fps with 10,752 sprites on screen (budget 30), both PASS, GPU 0.519 and 1.064 ms (SPEC 1 and 2), draw CPU p50
+  2.0 and 4.5 ms (6). The software rasteriser, reported: 2.9 and 2.6 fps. The first full bench crashed after its
+  judged GPU figures (351.9 and 184.3 fps), on a screenshot of the software rasteriser's T2 that timed out at 180 s;
+  `bench -- G` again did not. `docs/evidence/7.162/bench-G.log`, `bench-G-game.json`, `bench-all-first-run.txt`.
+- **Next:** PLAN 7.173.

@@ -1,6 +1,6 @@
 {
   "bench": "BP",
-  "date": "2026-10-02T15:39:59.064Z",
+  "date": "2026-10-31T16:13:00.627Z",
   "result": {
     "stack": "PixiJS 8.22.0 ParticleContainer (CPU interpolation)",
     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Ti (0x00002782) Direct3D11 vs_5_0 ps_5_0, D3D11)",
@@ -12,27 +12,27 @@
     "cases": [
       {
         "proxies": 10000,
-        "frames": 6983,
-        "seconds": 2.9897,
-        "fps": 2335.6858547680367,
+        "frames": 7761,
+        "seconds": 3.0060999999999996,
+        "fps": 2581.7504407704337,
         "frameMsP50": 0.2999999999999545,
-        "frameMsP95": 1.2000000000002728,
-        "cpuMsP50": 0.19999999552965164,
-        "cpuMsP95": 1.1000000014901161,
-        "gpuFrameMs": 0.11496106666666667,
+        "frameMsP95": 1.300000000000182,
+        "cpuMsP50": 0.10000000894069672,
+        "cpuMsP95": 1.2000000029802322,
+        "gpuFrameMs": 0.15001599999999998,
         "gpuUnitsMs": null,
-        "tickUploadMsP50": 0.30000000447034836
+        "tickUploadMsP50": 0.30000001192092896
       },
       {
         "proxies": 30000,
-        "frames": 4236,
-        "seconds": 2.9993,
-        "fps": 1412.3295435601642,
+        "frames": 4123,
+        "seconds": 3.0000999999999998,
+        "fps": 1374.2875237492085,
         "frameMsP50": 0.599999999999909,
-        "frameMsP95": 1.5,
+        "frameMsP95": 1.6000000000003638,
         "cpuMsP50": 0.4000000059604645,
-        "cpuMsP95": 1.3999999985098839,
-        "gpuFrameMs": 0.31791786666666666,
+        "cpuMsP95": 1.4000000059604645,
+        "gpuFrameMs": 0.29303466666666667,
         "gpuUnitsMs": null,
         "tickUploadMsP50": 1
       }

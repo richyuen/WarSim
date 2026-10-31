@@ -1,6 +1,6 @@
 {
   "bench": "A",
-  "date": "2026-10-05T02:31:28.765Z",
+  "date": "2026-10-31T16:12:45.682Z",
   "result": {
     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Ti (0x00002782) Direct3D11 vs_5_0 ps_5_0, D3D11)",
     "viewport": [
@@ -13,38 +13,38 @@
       1024
     ],
     "nations": 150,
-    "genMs": 434.29999999701977,
-    "uploadMs": 2.2000000029802322,
+    "genMs": 429.29999999701977,
+    "uploadMs": 2.5999999940395355,
     "drawMs": {
-      "T0-world": 0.5187754666666666,
-      "europe-4px": 0.483072,
-      "close-48px": 0.4500650666666666,
-      "close-48px-ground": 0.8660992000000001,
-      "close-400px-ground": 0.952064,
-      "close-48px-ground-coast-coverage": 0.7482831999999999,
-      "close-400px-ground-coast-coverage": 0.7049386666666667,
-      "close-48px-ground-coast-mask": 0.7750314666666667,
-      "close-400px-ground-coast-mask": 0.7349589333333333,
-      "close-55px-ground-things": 0.8099328,
+      "T0-world": 0.5784746666666667,
+      "europe-4px": 0.5479424,
+      "close-48px": 0.5041664,
+      "close-48px-ground": 0.9070250666666666,
+      "close-400px-ground": 0.9815722666666667,
+      "close-48px-ground-coast-coverage": 0.7701066666666667,
+      "close-400px-ground-coast-coverage": 0.7290538666666666,
+      "close-48px-ground-coast-mask": 0.7824213333333333,
+      "close-400px-ground-coast-mask": 0.7548416,
+      "close-55px-ground-things": 0.8555861333333333,
       "close-55px-ground-things-cpu": 0.5,
       "close-55px-ground-things-count": 8685
     },
     "t0": {
-      "frames": 11942,
-      "seconds": 4.3203,
-      "fps": 2764.1598963034976,
+      "frames": 10917,
+      "seconds": 3.0115,
+      "fps": 3625.1037688859374,
       "frameMsP50": 0.09999999999990905,
-      "frameMsP95": 0.20000000000004547,
+      "frameMsP95": 0.1999999999998181,
       "cpuMsP50": 0,
-      "cpuMsP95": 0.10000000149011612
+      "cpuMsP95": 0.09999999403953552
     },
     "t0TileChurn": {
-      "frames": 2108,
-      "seconds": 3.1617000000000006,
-      "fps": 666.7299237751841,
+      "frames": 508,
+      "seconds": 3.6289000000000007,
+      "fps": 139.987323982474,
       "frameMsP50": 0.3999999999996362,
       "frameMsP95": 0.6000000000003638,
-      "cpuMsP50": 0.30000000447034836,
+      "cpuMsP50": 0.29999999701976776,
       "cpuMsP95": 0.5,
       "tilesPerFrame": 32
     }

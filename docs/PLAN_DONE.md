@@ -16584,3 +16584,24 @@ taken up. Unseen seeds: 1401 on, ten a task, none reused, none a seed the critic
   after the press the formation's drawn counter or elements inside the view on 8 of 8, and at least one enemy
   formation it is in contact with inside the view on 8 of 8; the fleet's "To its fight" (`c21_fp2_4877.json`'s
   case) unchanged.
+
+<!-- moved 2026-10-31 -->
+
+## Phase 0 — Foundations & benchmarks
+## Phase 1 — Baseline parity
+### 1A Data & scenario
+### 1B Core sim
+### 1C Presentation & tools
+## Phase 2 — Semantic zoom
+## Phase 3 — Armour
+## Phase 4 — Naval
+## Phase 5 — Air
+## Phase 6 — Nuclear AI
+## Phase 7 — Balance, polish, soak
+
+- [x] 7.162 The DONE condition's runs on the HEAD after 7.161 (the last soak was 2026-10-16, the last full
+  sweep 2026-10-19): `npm run check:full` (green but for `knownRed.json`), a 30-minute `npm run soak` of the
+  1938 scenario, a sweep of 10+ unseen seeds over decades, the performance budgets (`npm run bench`).
+  AT: soak 30 min, 0 crashes, 0 desyncs; the sweep's last decade with borders moving on 10 of 10 seeds;
+  strategic ≥ 60 fps with 100+ nations, tactical ≥ 30 fps at 10,000+ proxies; each figure in PROGRESS.md
+  with its file under `docs/evidence/7.162/`.
