@@ -33,14 +33,6 @@ Balance sweeps were suspended while phases 2–6 were built (ADR-58); in Phase 7
 Unseen seeds: 1461 on, ten a task, none reused, none a seed the critic has run (`critic/c*_seed*`). The notes
 of critic runs 11–17 and their reviews are in `docs/PLAN_DONE.md` ("Phase 7: the critic runs' notes").
 
-- [ ] 7.172 A land formation's "To its fight" frames the formation and its own fight: the formation on screen
-  with the enemy it is in contact with (critic runs 18–21, `critic/c20_ft_5381_d21.json`: seed 5381 day 21,
-  8 formations in contact, the formation itself off screen on 6 of 8, no enemy on screen on 2 of 8; the user's
-  request, ADR-771). Land formations are slow enough to frame where they are drawn (unlike wings, ADR-771).
-  AT: e2e replaying the critic's case (5381, day 21, the 8 formations of `c20_ft_5381_d21.json`, 1600 × 900):
-  after the press the formation's drawn counter or elements inside the view on 8 of 8, and at least one enemy
-  formation it is in contact with inside the view on 8 of 8; the fleet's "To its fight" (`c21_fp2_4877.json`'s
-  case) unchanged.
 - [ ] 7.162 The DONE condition's runs on the HEAD after 7.161 (the last soak was 2026-10-16, the last full
   sweep 2026-10-19): `npm run check:full` (green but for `knownRed.json`), a 30-minute `npm run soak` of the
   1938 scenario, a sweep of 10+ unseen seeds over decades, the performance budgets (`npm run bench`).
@@ -435,3 +427,4 @@ Not read at the start of an iteration. The gate and `npm run critic:due` read th
 - [x] 7.169 The phone's portrait bar shows every tab and God Mode's tools whole (critic runs 19–21, […]
 - [x] 7.170 The air list tells wings apart: each row names its wing and its base or place, on at most two lines […]
 - [x] 7.171 On touch, a long press on a foreign nation opens the same nation menu (declare war and the rest) as a […]
+- [x] 7.172 A land formation's "To its fight" frames the formation and its own fight: the formation on screen […]

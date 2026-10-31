@@ -167,6 +167,25 @@ level directly; hillshade at higher zoom adds procedural detail (SPEC §8 T2/T3)
 runtime. Regenerating assets is idempotent (`npm run data -- --check` fails on drift), and
 `tests/unit/data-manifest.test.ts` verifies sha256, sizes, known places and pyramid consistency.
 
+### ADR-775 · 2026-10-31 · accepted — PLAN 7.172: a land formation's "To its fight" already frames what is drawn; the critic measured the sim anchor
+
+- **Context.** Critic runs 18–21 (`c21_ft_5381_d21.json`): after "To its fight" on 8 land formations of seed 5381
+  on day 21, the formation off screen on 6 of 8, no engaged enemy on screen on 2 of 8; filed as PLAN 7.172 with the
+  user's request to fix the camera (ADR-771). Replayed on HEAD the case is the same world (the same ids, zoom and
+  picture as the critic's shots), and the camera frames the formation's drawn block and the block of the enemy it
+  faces, 8 of 8. The critic's script placed each formation at `inspect().formations[].x/y`, its sim anchor, which
+  stands about half a cell from the block drawn (`blockPose`, what the panel's fight box and the view use): 376's
+  anchor (1679.96, 380.96) against its block (1680.40, 381.40); at 978 px a cell that is −39 px, off the top,
+  while the block is in the middle. Its "enemies on screen" counted engaged enemies by their anchors the same way.
+  It waited 2.5 s, and 746's flight was not over then (1310 m/px mid-flight; 268 m/px settled).
+- **Decision.** No code change. PLAN 7.172's AT, which counts what is drawn, is the new
+  `tests/e2e/fightCamera1938.spec.ts`: the critic's 8 formations, after the press and the camera's flight (the
+  camera still for 300 ms), the formation and the enemy its panel frames drawn inside the view (`formationsInBox`,
+  the box select's own test), 8 of 8. Green on HEAD; red 8 of 8 with the camera aimed 3 cells off (checked by hand,
+  not committed). The fleet's "To its fight" is untouched (no code changed; its test is 7.126's).
+- **For the critic:** a formation's place on the screen is where it is drawn: the view's `formationPos(id)` or
+  `formationsInBox`, not its sim position.
+
 ### ADR-774 · 2026-10-31 · accepted — PLAN 7.168: the title refuses a save or a scenario file lacking a section a load needs
 
 - **Context.** Critic runs 19–21: run 10's save (labelled with this state format by the critic's tool) was offered

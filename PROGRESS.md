@@ -24925,3 +24925,14 @@ No rule changed and nothing on screen changed. One task came out of it.
   Evidence `docs/evidence/7.171/`.
 - e2e by hand: touchMenu1938, player1938, playerActions1938, phoneLayout1938 (23 passed).
 - **Next:** PLAN 7.172.
+
+## 2026-10-31 — PLAN 7.172: a land formation's "To its fight" frames it and its enemy; no change was needed (ADR-775)
+
+- Replayed the critic's case on HEAD (seed 5381, day 21, its 8 formations, 1600 × 900): the camera frames the
+  formation's drawn block and the enemy's it faces, 8 of 8, at the critic's zoom; the critic's own shots show the
+  same pictures. Its "off screen" came from its measure: the sim anchor (`inspect().formations[].x/y`) stands about
+  half a cell from the drawn block, some 490 px at 20 m/px; and a 2.5 s wait caught 746's camera mid-flight.
+- AT: new `fightCamera1938`, counting what is drawn (`formationsInBox`) after the camera settles: 8 of 8 for the
+  formation and its enemy. Green on HEAD; red 8 of 8 with the camera aimed 3 cells off (by hand, reverted). The
+  fleet's button untouched. Evidence `docs/evidence/7.172/`.
+- **Next:** PLAN 7.162 (the DONE condition's runs).
